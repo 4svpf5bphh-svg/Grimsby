@@ -1,0 +1,2162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Grimsby Companion v2.6.3 Level Up Fix</title>
+<style>
+:root{
+  --bg:#f6f7f8; --card:#fff; --text:#14171a; --muted:#6b7280; --line:#e5e7eb;
+  --accent:#e8f1ef; --accent-line:#b9d3cd; --danger:#fcecec;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.app{max-width:480px;margin:0 auto;min-height:100vh;padding:16px 16px 90px}
+.screen{display:none}.screen.active{display:block}
+.row{display:flex;align-items:center;gap:12px}.between{justify-content:space-between}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-height:48px}
+.btn.accent{background:var(--accent);border-color:var(--accent-line)}
+.btn.danger{background:var(--danger)}
+.full{width:100%}
+.title{font-size:26px;font-weight:800}.sub{font-size:14px;color:var(--muted)}
+.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.big{font-size:32px;font-weight:800}.mid{font-size:20px;font-weight:750}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{text-align:center;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.status{margin-top:12px;display:none;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:13px}
+.status.show{display:flex}
+.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,255,255,.97);border-top:1px solid var(--line);padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));z-index:50}
+.nav button{border:0;background:transparent;padding:10px 4px;font-size:12px;border-radius:12px}
+.nav button.active{background:var(--accent);font-weight:700}
+.hidden{display:none!important}
+.list{display:flex;flex-direction:column;gap:10px}
+.back{border:0;background:transparent;font-size:28px;padding:4px 10px 4px 0}
+input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);font-size:22px;background:#fff}
+.sep{height:1px;background:var(--line);margin:14px 0}
+.muted{color:var(--muted)} .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
+.form-active{border-color:var(--accent-line);background:var(--accent)}
+.notice{padding:12px 14px;border-radius:14px;background:#eef5f3;border:1px solid #cfe1dc;font-size:14px}
+.small{font-size:13px}
+</style>
+
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#101412">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Grimsby">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+</head>
+<body>
+<noscript>
+  <div style="max-width:480px;margin:40px auto;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
+    <h2>Grimsby Companion</h2>
+    <p>This prototype needs JavaScript enabled to run.</p>
+  </div>
+</noscript>
+<div class="app">
+  <section id="home" class="screen active">
+    <div class="row between">
+      <div><div class="title">Grimsby</div><div id="homeIdentity" class="sub">Level 5 Orc • Circle of the Moon Druid</div></div>
+      <button id="inspirationBtn" class="btn" style="min-width:54px;padding:10px">★</button>
+    </div>
+
+    <div id="dynamicStatus" class="status"></div>
+
+    <div id="hpCard" class="card full mt16" style="text-align:left;cursor:pointer">
+      <div class="row between">
+        <div>
+          <div class="kicker">Hit Points</div>
+          <div class="mt8"><span id="homeHp" class="big">43</span><span id="homeHpMax" class="muted"> / 43</span></div>
+          <div id="homeTempWrap" class="sub hidden">+ <span id="homeTemp">0</span> Temp HP</div>
+        </div>
+        <div style="text-align:right;min-width:86px">
+          <div class="kicker">AC</div>
+          <div id="homeAc" class="big">16</div>
+          <button id="shieldToggle" type="button"
+            style="margin-top:4px;border:0;background:transparent;padding:2px 0;font-size:12px;color:var(--muted);font-weight:650">
+            Shield ✓
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2 mt12">
+      <button id="wildCard" class="btn accent" style="text-align:left">
+        <div class="kicker">Wild Shape</div>
+        <div id="wildCardTitle" class="mid mt8">Transform</div>
+        <div id="wildCardSub" class="sub mt8">2 / 2 uses</div>
+      </button>
+      <button id="famCard" class="btn" style="text-align:left">
+        <div class="kicker">Familiar</div>
+        <div class="mid mt8">Raven</div>
+        <div id="homeFamiliarHp" class="sub mt8">11 / 11 HP</div>
+      </button>
+    </div>
+
+    <button id="restCard" class="btn full mt12" style="text-align:left">
+      <div class="row between"><div><b>Rest</b><div class="sub mt8">Short or Long Rest</div></div><span>›</span></div>
+    </button>
+  </section>
+
+  <section id="hp" class="screen">
+    <div class="row"><button class="back" data-back="home">‹</button><div><div class="title" style="font-size:22px">Hit Points</div><div class="sub">Live character HP</div></div></div>
+    <div class="grid2 mt16">
+      <div class="stat"><div class="kicker">Current HP</div><div id="hpCurrent" class="big">43</div></div>
+      <div class="stat"><div class="kicker">Temp HP</div><div id="hpTemp" class="big">0</div></div>
+    </div>
+    <div class="card mt16">
+      <div class="kicker">Amount</div>
+      <input id="hpAmount" class="mt8" type="number" inputmode="numeric" min="0" value="" placeholder="Enter amount">
+      <div class="grid3 mt12">
+        <button id="minusOne" class="btn">−1</button>
+        <button id="plusOne" class="btn">+1</button>
+        <button id="clearAmount" class="btn">Clear</button>
+      </div>
+      <div class="grid3 mt12">
+        <button id="damageBtn" class="btn danger">Damage</button>
+        <button id="healBtn" class="btn">Heal</button>
+        <button id="tempBtn" class="btn">Temp HP</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="wild" class="screen">
+    <div class="row"><button class="back" data-back="home">‹</button><div><div class="title" style="font-size:22px">Wild Shape</div><div id="wildUses" class="sub">2 / 2 uses available</div></div></div>
+    <div class="notice mt16">Choose a known form. Grimsby keeps his own HP and gains 15 Temp HP when he transforms.</div>
+    <div id="forms" class="list mt16"></div>
+    <button id="learnForm" class="btn full mt12">Manage Known Forms <span id="knownFormCount" class="sub">(6 / 6 known)</span></button>
+  </section>
+
+  <section id="beast" class="screen">
+    <div class="row between">
+      <div class="row"><button class="back" data-back="home">‹</button><div><div id="beastName" class="title" style="font-size:22px">Brown Bear</div><div class="sub">Wild Shaped</div></div></div>
+      <button id="beastActionBtn" class="btn accent">Transform</button>
+    </div>
+    <div class="grid3 mt16">
+      <div class="stat"><div class="kicker">HP</div><div id="beastHp" class="mid">43</div></div>
+      <div class="stat"><div class="kicker">Temp</div><div id="beastTemp" class="mid">15</div></div>
+      <div class="stat"><div class="kicker">AC</div><div class="mid">17</div></div>
+    </div>
+    <div id="beastPreviewNotice" class="notice mt12 hidden"></div>
+    <div class="card mt16">
+      <div class="row between"><div><div class="kicker">Movement</div><div id="beastSpeed" class="mid mt8"></div></div><div style="text-align:right"><div class="kicker">Size</div><div id="beastSize" class="mid mt8"></div></div></div>
+    </div>
+    <div class="card mt12">
+      <b>Actions & Traits</b>
+      <div id="beastTraits" class="list mt12"></div>
+    </div>
+    <div class="notice mt12">This form is persistent across the app. Use the bottom navigation normally; returning Home keeps Grimsby transformed.</div>
+  </section>
+
+  <section id="familiar" class="screen">
+    <div class="row"><button class="back" data-back="home">‹</button><div><div class="title" style="font-size:22px">Raven</div><div class="sub">Familiar • Familiar Friend</div></div></div>
+    <div class="grid3 mt16">
+      <div class="stat"><div class="kicker">HP</div><div><span id="familiarHp">12</span><span id="familiarHpMax" class="sub"> / 12</span></div></div>
+      <div class="stat"><div class="kicker">AC</div><div class="mid">12</div></div>
+      <div class="stat"><div class="kicker">Fly</div><div class="mid">50 ft</div></div>
+    </div>
+
+    <div class="card mt12">
+      <div class="row between"><b>Manage HP</b><span class="sub">Fortified Familiar included</span></div>
+      <div class="grid3 mt12">
+        <button id="famDamage" class="btn">−1 HP</button>
+        <button id="famHeal" class="btn">+1 HP</button>
+        <button id="famFull" class="btn">Full</button>
+      </div>
+    </div>
+
+    <div class="card mt12">
+      <b>Stats & Senses</b>
+      <div class="sep"></div>
+      <div class="sub">STR −4 • DEX +2 • CON +0 • INT −3 • WIS +1 • CHA −2</div>
+      <div class="sep"></div>
+      <div class="sub">Perception +3 • Passive Perception 13 • Walk 10 ft • Fly 50 ft</div>
+    </div>
+
+    <div class="card mt12">
+      <b>Actions & Traits</b>
+      <div class="sep"></div>
+      <div><b>Mimicry</b><div class="sub mt8">Can imitate simple sounds it has heard; a listener can identify the imitation with a DC 10 Wisdom (Insight) check.</div></div>
+      <div class="sep"></div>
+      <div><b>Beak</b><div class="sub mt8">+4 to hit • Reach 5 ft • 1 Piercing damage.</div></div>
+    </div>
+
+    <div class="card mt12">
+      <div class="row between">
+        <div><b>Helpful Friend</b><div class="sub mt8">Advantage on a proficient skill check while your familiar is close enough • PB uses per Long Rest.</div></div>
+        <button id="famHelpUse" class="btn accent" style="min-width:92px">Use</button>
+      </div>
+      <div id="famHelpCount" class="sub mt8">3 / 3 uses</div>
+    </div>
+  </section>
+
+  <section id="rest" class="screen">
+    <div class="row"><button class="back" data-back="home">‹</button><div><div class="title" style="font-size:22px">Rest</div><div class="sub">Recover resources</div></div></div>
+    <button id="shortRest" class="btn full mt16" style="text-align:left"><b>Short Rest</b><div class="sub mt8">Restore 1 expended Wild Shape use and all Adrenaline Rush uses. You may also spend Hit Dice below.</div></button>
+
+    <div class="card mt12">
+      <div class="row between"><div><b>Hit Dice</b><div class="sub mt8">Druid d8 • roll adds <span id="restConBonus">CON +3</span></div></div><b id="hitDiceCount">5 / 5</b></div>
+      <button id="spendHitDie" class="btn full mt12">Roll & Spend 1 Hit Die</button>
+      <div id="hitDieResult" class="sub mt8"></div>
+    </div>
+
+    <button id="longRest" class="btn accent full mt12" style="text-align:left"><b>Long Rest</b><div class="sub mt8">Restore HP, Hit Dice, spell slots, Wild Shape and long-rest resources.</div></button>
+    <div id="restMsg" class="sub mt12"></div>
+  </section>
+
+
+  <section id="character" class="screen">
+    <div class="row between">
+      <div><div class="title">Character</div><div id="characterSubtitle" class="sub">Grimsby • Level 5 Druid</div></div>
+      <div class="stat" style="padding:10px 14px"><div class="kicker">PB</div><div id="characterPb" class="mid">+3</div></div>
+    </div>
+
+    <div class="grid2 mt16">
+      <button class="btn" data-character-screen="abilities" style="text-align:left">
+        <div class="kicker">Core</div><div class="mid mt8">Abilities</div><div class="sub mt8">Scores & modifiers</div>
+      </button>
+      <button class="btn" data-character-screen="skills" style="text-align:left">
+        <div class="kicker">Checks</div><div class="mid mt8">Skills & Saves</div><div class="sub mt8">Proficiencies included</div>
+      </button>
+      <button class="btn" data-character-screen="attacks" style="text-align:left">
+        <div class="kicker">Combat</div><div class="mid mt8">Attacks</div><div class="sub mt8">Normal-form attacks</div>
+      </button>
+      <button class="btn" data-character-screen="features" style="text-align:left">
+        <div class="kicker">Rules</div><div class="mid mt8">Features & Feats</div><div class="sub mt8">Druid, Orc & feats</div>
+      </button>
+    </div>
+
+    <div class="list mt12">
+      <button class="btn full" data-character-screen="wild" style="text-align:left">
+        <div class="row between"><div><b>Wild Shape Forms</b><div id="knownFormsSummary" class="sub mt8">6 known forms</div></div><span>›</span></div>
+      </button>
+      <button class="btn full" data-character-screen="familiar" style="text-align:left">
+        <div class="row between"><div><b>Raven Familiar</b><div class="sub mt8">Open companion sheet</div></div><span>›</span></div>
+      </button>
+      <button class="btn full" data-character-screen="details" style="text-align:left">
+        <div class="row between"><div><b>Character Details</b><div class="sub mt8">Species, background, class & equipment</div></div><span>›</span></div>
+      </button>
+      <button class="btn full" data-character-screen="languages" style="text-align:left">
+        <div class="row between"><div><b>Languages</b><div id="characterLanguageSummary" class="sub mt8">Common • Orc • Druidic • 1 choice open</div></div><span>›</span></div>
+      </button>
+    </div>
+  </section>
+
+  <section id="abilities" class="screen">
+    <div class="row"><button class="back" data-back="character">‹</button><div><div class="title" style="font-size:22px">Abilities</div><div class="sub">Score • modifier</div></div></div>
+    <div class="grid2 mt16">
+      <div class="stat"><div class="kicker">Strength</div><div id="abilityStr" class="big">10</div><div id="modStr" class="sub">+0</div></div>
+      <div class="stat"><div class="kicker">Dexterity</div><div id="abilityDex" class="big">14</div><div id="modDex" class="sub">+2</div></div>
+      <div class="stat"><div class="kicker">Constitution</div><div id="abilityCon" class="big">16</div><div id="modCon" class="sub">+3</div></div>
+      <div class="stat"><div class="kicker">Intelligence</div><div id="abilityInt" class="big">8</div><div id="modInt" class="sub">−1</div></div>
+      <div class="stat"><div class="kicker">Wisdom</div><div id="abilityWis" class="big">18</div><div id="modWis" class="sub">+4</div></div>
+      <div class="stat"><div class="kicker">Charisma</div><div id="abilityCha" class="big">8</div><div id="modCha" class="sub">−1</div></div>
+    </div>
+    <div class="card mt12"><div class="row between"><span>Spell Save DC</span><b id="abilitySpellDc">15</b></div><div class="sep"></div><div class="row between"><span>Spell Attack</span><b id="abilitySpellAttack">+7</b></div></div>
+  </section>
+
+  <section id="skills" class="screen">
+    <div class="row"><button class="back" data-back="character">‹</button><div><div class="title" style="font-size:22px">Skills & Saves</div><div class="sub">Proficiencies already calculated</div></div></div>
+    <div class="card mt16">
+      <b>Saving Throws</b>
+      <div class="sep"></div>
+      <div class="row between"><span>Strength</span><b id="saveStr">+0</b></div><div class="sep"></div>
+      <div class="row between"><span>Dexterity</span><b id="saveDex">+2</b></div><div class="sep"></div>
+      <div class="row between"><span>Constitution</span><b id="saveCon">+3</b></div><div class="sep"></div>
+      <div class="row between"><span>Intelligence <span class="sub">• proficient</span></span><b id="saveInt">+2</b></div><div class="sep"></div>
+      <div class="row between"><span>Wisdom <span class="sub">• proficient</span></span><b id="saveWis">+7</b></div><div class="sep"></div>
+      <div class="row between"><span>Charisma</span><b id="saveCha">−1</b></div>
+    </div>
+    <div class="card mt12">
+      <b>Proficient Skills</b>
+      <div class="sep"></div>
+      <div class="row between"><span>Medicine</span><b id="skillMedicine">+7</b></div><div class="sep"></div>
+      <div class="row between"><span>Nature <span class="sub">• Magician</span></span><b id="skillNature">+6</b></div><div class="sep"></div>
+      <div class="row between"><span>Religion</span><b id="skillReligion">+2</b></div><div class="sep"></div>
+      <div class="row between"><span>Survival</span><b id="skillSurvival">+7</b></div>
+    </div>
+  </section>
+
+  <section id="attacks" class="screen">
+    <div class="row"><button class="back" data-back="character">‹</button><div><div class="title" style="font-size:22px">Attacks</div><div class="sub">Normal form</div></div></div>
+    <div class="card mt16">
+      <div class="row between"><div><b>Quarterstaff</b><div class="sub mt8">Melee • Reach 5 ft</div></div><div style="text-align:right"><div class="kicker">To Hit</div><div id="quarterstaffToHit" class="mid">+3</div></div></div>
+      <div class="sep"></div><div class="sub">1d6 bludgeoning one-handed • 1d8 two-handed. Equipping the shield keeps the quarterstaff one-handed.</div>
+    </div>
+    <div class="notice mt12">Wild Shape attacks live on the active beast sheet so this page stays focused on Grimsby's normal form.</div>
+  </section>
+
+  <section id="features" class="screen">
+    <div class="row"><button class="back" data-back="character">‹</button><div><div class="title" style="font-size:22px">Features & Feats</div><div class="sub">Tap-free quick reference for now</div></div></div>
+    <div class="list mt16">
+      <div class="card"><b>Wild Shape</b><div class="sub mt8">Bonus Action transformation. Grimsby keeps his own HP. Moon forms gain 3 × Druid level Temp HP and use the Moon Druid AC rule.</div></div>
+      <div class="card"><b>Wild Resurgence</b><div class="sub mt8">When Wild Shape is empty, spend a spell slot to regain one use. Once per Long Rest, spend one Wild Shape use to regain a level 1 spell slot. Interactive controls are in Combat → Resources.</div></div>
+      <div class="card"><b>Primal Order: Magician</b><div class="sub mt8">Extra Druid cantrip and Wisdom-based bonus to the selected Intelligence skill check.</div></div>
+      <div class="card"><b>Familiar Friend</b><div class="sub mt8">Find Familiar is always prepared with one free cast per Long Rest; the Raven gains +10 max HP and Helpful Friend uses are tracked on its companion sheet.</div></div>
+      <div class="card"><b>Conjuration Adept</b><div class="sub mt8">Wisdom increase already included. Conjuration spell access and concentration benefit are tracked by the rules engine.</div></div>
+      <div class="card"><b>Circle of the Moon</b><div class="sub mt8">Improved Wild Shape forms, Moon-specific transformed defenses, and subclass spellcasting while transformed where allowed.</div></div>
+      <div class="card"><b>Orc: Adrenaline Rush</b><div class="sub mt8">Bonus Action Dash; gain 3 Temp HP. 3 uses, restored on a Short or Long Rest. Tracked in Combat.</div></div>
+      <div class="card"><b>Orc: Relentless Endurance</b><div class="sub mt8">When reduced to 0 HP without being killed outright, drop to 1 HP instead. Once per Long Rest. Tracked in Combat.</div></div>
+      <div class="card"><b>Orc: Darkvision</b><div class="sub mt8">Darkvision 120 ft.</div></div>
+      <div id="dynamicLevelFeatures"></div>
+    </div>
+  </section>
+
+  <section id="details" class="screen">
+    <div class="row"><button class="back" data-back="character">‹</button><div><div class="title" style="font-size:22px">Character Details</div><div class="sub">Identity & equipment</div></div></div>
+    <div class="card mt16">
+      <div class="row between"><span>Species</span><b>Orc</b></div><div class="sep"></div>
+      <div class="row between"><span>Class</span><b id="detailClass">Druid 5</b></div><div class="sep"></div>
+      <div class="row between"><span>Subclass</span><b>Circle of the Moon</b></div><div class="sep"></div>
+      <div class="row between"><span>Background</span><b>Hermit</b></div><div class="sep"></div>
+      <div class="row between"><span>Primal Order</span><b>Magician</b></div>
+    </div>
+    <div class="card mt12">
+      <div class="row between">
+        <div><b>Equipment</b><div id="equipmentSummary" class="sub mt8"></div></div>
+        <button id="openEquipment" class="btn" style="min-height:40px;padding:8px 12px">Manage</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="equipment" class="screen">
+    <div class="row"><button class="back" data-back="details">‹</button><div><div class="title" style="font-size:22px">Equipment</div><div class="sub">Items Grimsby is carrying</div></div></div>
+    <div id="equipmentList" class="list mt16"></div>
+    <div class="card mt12">
+      <div class="kicker">Add equipment</div>
+      <input id="equipmentInput" class="mt8" type="text" placeholder="e.g. Potion of Healing" style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);font-size:16px;background:#fff">
+      <button id="addEquipment" class="btn accent full mt12">Add Item</button>
+    </div>
+  </section>
+
+  <section id="languages" class="screen">
+    <div class="row"><button class="back" data-back="character">‹</button><div><div class="title" style="font-size:22px">Languages</div><div class="sub">Languages Grimsby knows</div></div></div>
+    <div class="card mt16">
+      <div class="row between"><span>Common</span><b>Standard</b></div><div class="sep"></div>
+      <div class="row between"><span>Orc</span><b>Standard choice</b></div><div class="sep"></div>
+      <div class="row between"><span>Druidic</span><b>Druid feature</b></div>
+      <div id="extraLanguageRow" class="hidden"><div class="sep"></div><div class="row between"><span id="extraLanguageName"></span><b>Standard choice</b></div></div>
+    </div>
+    <div id="languageChoiceCard" class="card mt12">
+      <b>Choose remaining standard language</b>
+      <div class="sub mt8">2024 characters know Common plus two chosen Standard Languages. Orc is already one of Grimsby's choices; Druidic comes separately from his class.</div>
+      <select id="languageSelect" class="mt12" style="width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:16px">
+        <option value="">Select language…</option>
+        <option>Common Sign Language</option>
+        <option>Draconic</option>
+        <option>Dwarvish</option>
+        <option>Elvish</option>
+        <option>Giant</option>
+        <option>Gnomish</option>
+        <option>Goblin</option>
+        <option>Halfling</option>
+      </select>
+      <button id="saveLanguage" class="btn accent full mt12">Add Language</button>
+    </div>
+    <button id="changeLanguage" class="btn full mt12 hidden">Change chosen language</button>
+  </section>
+
+
+
+  <section id="manageforms" class="screen">
+    <div class="row"><button class="back" data-back="wild">‹</button><div><div class="title" style="font-size:22px">Manage Known Forms</div><div class="sub">Manage Grimsby's known forms</div></div></div>
+    <div class="notice mt16">Tap one of Grimsby's known forms to mark it for replacement, then tap an available form. This changes the known-form list only — it never uses Wild Shape. New form slots unlock automatically as Grimsby levels.</div>
+    <div class="card mt16">
+      <b>Known Forms</b>
+      <div id="knownFormsManage" class="list mt12"></div>
+    </div>
+    <div class="card mt12">
+      <b>Available Forms</b>
+      <div id="availableFormsManage" class="list mt12"></div>
+    </div>
+  </section>
+
+  <section id="combat" class="screen">
+    <div class="row between">
+      <div><div class="title">Combat</div><div id="combatSubtitle" class="sub">Grimsby • Normal Form</div></div>
+      <div class="stat" style="padding:10px 14px"><div class="kicker">Initiative</div><div id="combatInitiative" class="mid">+2</div></div>
+    </div>
+
+    <div class="card mt16">
+      <div class="row between">
+        <div>
+          <div class="kicker">Hit Points</div>
+          <div><span id="combatHp" class="big">43</span><span id="combatHpMax" class="muted"> / 43</span></div>
+          <div id="combatTempWrap" class="sub hidden">+ <span id="combatTemp">0</span> Temp HP</div>
+        </div>
+        <div style="text-align:right;min-width:86px">
+          <div class="kicker">AC</div>
+          <div id="combatAc" class="big">16</div>
+          <button id="combatShieldToggle" type="button"
+            style="margin-top:4px;border:0;background:transparent;padding:2px 0;font-size:12px;color:var(--muted);font-weight:650">
+            Shield ✓
+          </button>
+        </div>
+      </div>
+      <button id="combatHpBtn" class="btn full mt12">Manage HP</button>
+    </div>
+
+    <div id="combatShapeBanner" class="notice mt12 hidden"></div>
+
+    <div class="grid2 mt12">
+      <button id="combatPrimaryAction" class="btn accent" style="text-align:left">
+        <div class="kicker">Primary Action</div>
+        <div id="combatPrimaryTitle" class="mid mt8">Quarterstaff</div>
+        <div id="combatPrimarySub" class="sub mt8">View attack</div>
+      </button>
+      <button id="combatWildBtn" class="btn" style="text-align:left">
+        <div class="kicker">Wild Shape</div>
+        <div id="combatWildTitle" class="mid mt8">Transform</div>
+        <div id="combatWildSub" class="sub mt8">2 / 2 uses</div>
+      </button>
+    </div>
+
+    <button id="combatStatusBtn" class="btn full mt12" style="text-align:left">
+      <div class="row between">
+        <div style="min-width:0">
+          <b>Combat Status</b>
+          <div id="combatStatusSummary" class="sub mt8">No concentration or conditions</div>
+          <div id="combatStatusEffects" class="list mt12 hidden"></div>
+        </div>
+        <span>›</span>
+      </div>
+    </button>
+
+    <div class="card mt12">
+      <div class="row between"><div><b>Resources</b><div class="sub mt8">Wild Shape, Wild Resurgence & Orc traits</div></div><span id="combatWildUses" class="mid">2/2</span></div>
+
+      <div class="sep"></div>
+      <div><b>Wild Resurgence</b><div id="wildResurgenceSummary" class="sub mt8"></div></div>
+      <div class="grid2 mt12">
+        <button id="resurgenceGainWild" class="btn">Slot → Wild Shape</button>
+        <button id="resurgenceGainSlot" class="btn">Wild Shape → 1st Slot</button>
+      </div>
+
+      <div class="sep"></div>
+      <div class="row between">
+        <div><b>Adrenaline Rush</b><div class="sub mt8">Bonus Action Dash + 3 Temp HP</div></div>
+        <button id="useAdrenaline" class="btn accent" style="min-width:84px">Use</button>
+      </div>
+      <div id="adrenalineCount" class="sub mt8">3 / 3 uses</div>
+
+      <div class="sep"></div>
+      <div class="row between">
+        <div><b>Relentless Endurance</b><div class="sub mt8">0 HP → 1 HP instead • 1 / Long Rest</div></div>
+        <button id="useRelentless" class="btn" style="min-width:84px">Use</button>
+      </div>
+      <div id="relentlessStatus" class="sub mt8">Ready</div>
+    </div>
+  </section>
+
+  <section id="combatstatus" class="screen">
+    <div class="row"><button class="back" data-back="combat">‹</button><div><div class="title" style="font-size:22px">Combat Status</div><div class="sub">Concentration & conditions</div></div></div>
+
+    <div class="card mt16">
+      <b>Concentration</b>
+      <div id="concentrationActive" class="notice mt12 hidden"></div>
+      <select id="concentrationSelect" class="mt12" style="width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:16px">
+        <option value="">Choose a concentration spell…</option>
+      </select>
+      <div id="concentrationSaveHint" class="notice mt12 hidden"></div>
+      <div class="grid2 mt12">
+        <button id="startConcentration" class="btn accent">Set</button>
+        <button id="clearConcentration" class="btn">Clear</button>
+      </div>
+    </div>
+
+    <div class="card mt12">
+      <b>Conditions</b>
+      <div id="conditionChips" class="status show mt12"></div>
+      <select id="conditionSelect" class="mt12" style="width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:16px">
+        <option value="">Add a condition…</option>
+        <option>Blinded</option><option>Charmed</option><option>Deafened</option><option>Frightened</option>
+        <option>Grappled</option><option>Incapacitated</option><option>Invisible</option><option>Paralyzed</option>
+        <option>Petrified</option><option>Poisoned</option><option>Prone</option><option>Restrained</option>
+        <option>Stunned</option><option>Unconscious</option>
+      </select>
+      <button id="addCondition" class="btn accent full mt12">Add Condition</button>
+    </div>
+  </section>
+
+
+  <section id="spells" class="screen">
+    <div class="row between">
+      <div><div class="title">Spells</div><div id="spellHeaderStats" class="sub">DC 15 • Spell Attack +7</div></div>
+      <div class="stat" style="padding:10px 14px"><div class="kicker">Prepared</div><div><span id="preparedCount" class="mid">0</span><span id="preparedCapLabel" class="sub"> / 9</span></div></div>
+    </div>
+
+    <div class="card mt16">
+      <div class="row between"><b>Spell Slots</b><span class="sub">Tap Use / Restore</span></div>
+      <div id="slotTracker" class="list mt12"></div>
+    </div>
+
+    <div class="card mt12">
+      <div class="row between">
+        <div><b>Familiar Friend</b><div class="sub mt8">Find Familiar • free cast once per Long Rest</div></div>
+        <button id="freeFamiliarCast" class="btn accent" style="min-width:92px">Cast Free</button>
+      </div>
+      <div id="familiarCastNote" class="sub mt8">Doesn't spend a spell slot or material components.</div>
+    </div>
+
+    <div class="card mt12">
+      <input id="spellSearch" type="search" placeholder="Search spells…"
+        style="width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--line);font-size:16px;background:#fff">
+      <div id="spellFilters" class="row mt12" style="overflow-x:auto;padding-bottom:2px">
+        <button class="chip form-active" data-spell-filter="all">All</button>
+        <button class="chip" data-spell-filter="0">Cantrip</button>
+        <button class="chip" data-spell-filter="1">1st</button>
+        <button class="chip" data-spell-filter="2">2nd</button>
+        <button class="chip" data-spell-filter="3">3rd</button>
+        <button class="chip highSpellFilter" data-spell-filter="4">4th</button>
+        <button class="chip highSpellFilter" data-spell-filter="5">5th</button>
+        <button class="chip highSpellFilter" data-spell-filter="6">6th</button>
+        <button class="chip highSpellFilter" data-spell-filter="7">7th</button>
+        <button class="chip highSpellFilter" data-spell-filter="8">8th</button>
+        <button class="chip highSpellFilter" data-spell-filter="9">9th</button>
+        <button class="chip" data-spell-filter="prepared">Prepared</button>
+        <button class="chip" data-spell-filter="granted">Granted</button>
+        <button class="chip" data-spell-filter="concentration">Concentration</button>
+        <button class="chip" data-spell-filter="bonus">Bonus Action</button>
+        <button class="chip" data-spell-filter="new">New 2026</button>
+      </div>
+    </div>
+
+    <div id="spellLegend" class="notice mt12">
+      <div id="spellSaveStatus" class="sub">✓ Spell choices auto-save on this device.</div>
+      <div class="mt8"><b>Prepared choices:</b> choose up to <span id="legendPreparedCap">9</span> Druid spells of levels you can cast. Always-prepared and feat-granted spells do not count against that total.</div>
+    </div>
+
+    <div id="spellList" class="list mt12"></div>
+  </section>
+
+
+
+  <section id="spellDetail" class="screen">
+    <div class="row">
+      <button id="spellDetailBack" class="back">‹</button>
+      <div style="min-width:0">
+        <div id="spellDetailTitle" class="title" style="font-size:22px">Spell</div>
+        <div id="spellDetailMeta" class="sub"></div>
+      </div>
+    </div>
+
+    <div id="spellDetailBadges" class="status show mt16"></div>
+
+    <div class="card mt12">
+      <b>What it does</b>
+      <div id="spellDetailSummary" class="sub mt8"></div>
+    </div>
+
+    <div id="spellDetailMaterialCard" class="notice mt12" style="display:none">
+      <b>Material</b>
+      <div id="spellDetailMaterial" class="small mt8"></div>
+    </div>
+
+    <div id="spellDetailWildCard" class="notice mt12" style="display:none">
+      <b>Wild Shape</b>
+      <div class="small mt8">Grimsby can cast this spell while transformed through Circle of the Moon.</div>
+    </div>
+  </section>
+
+  <section id="more" class="screen">
+    <div>
+      <div class="title">More</div>
+      <div class="sub">Utilities, notes & app controls</div>
+    </div>
+
+    <button id="moreRest" class="btn full mt16" style="text-align:left">
+      <div class="row between">
+        <div>
+          <b>Rest</b>
+          <div class="sub mt8">Short Rest • Long Rest • restore resources</div>
+        </div>
+        <span>›</span>
+      </div>
+    </button>
+
+
+    <div id="installPwaCard" class="card mt12 hidden">
+      <b>Install Grimsby on iPhone</b>
+      <div class="sub mt8">In Safari, tap Share → Add to Home Screen. After that, Grimsby opens like an app.</div>
+    </div>
+
+    <button id="moreLevelUp" class="btn accent full mt12" style="text-align:left">
+      <div class="row between"><div><b>Level Up</b><div id="levelUpSummary" class="sub mt8">Druid 5 → 6</div></div><span>›</span></div>
+    </button>
+
+    <button id="moreLevelHistory" class="btn full mt12" style="text-align:left">
+      <div class="row between"><div><b>Level History</b><div id="levelHistorySummary" class="sub mt8">Current level 5</div></div><span>›</span></div>
+    </button>
+
+    <button id="moreNotes" class="btn full mt12" style="text-align:left">
+      <div class="row between">
+        <div>
+          <b>Adventure Notes</b>
+          <div id="notesSummary" class="sub mt8">No notes yet</div>
+        </div>
+        <span>›</span>
+      </div>
+    </button>
+
+    <button id="moreQuickRef" class="btn full mt12" style="text-align:left">
+      <div class="row between">
+        <div>
+          <b>Quick Reference</b>
+          <div class="sub mt8">Actions, Bonus Actions, Reactions & key reminders</div>
+        </div>
+        <span>›</span>
+      </div>
+    </button>
+
+    <button id="moreSettings" class="btn full mt12" style="text-align:left">
+      <div class="row between">
+        <div>
+          <b>Character & App Settings</b>
+          <div class="sub mt8">Initiative modifier and character-management tools</div>
+        </div>
+        <span>›</span>
+      </div>
+    </button>
+
+    <div class="card mt12">
+      <b>At a Glance</b>
+      <div class="sep"></div>
+      <div class="row between"><span class="sub">Wild Shape</span><b id="moreWild">2 / 2</b></div>
+      <div class="sep"></div>
+      <div class="row between"><span class="sub">Familiar Friend</span><b id="moreFamiliarCast">Ready</b></div>
+      <div class="sep"></div>
+      <div class="row between"><span class="sub">Prepared spells</span><b id="morePrepared">0 / 9</b></div><div class="sep"></div><div class="row between"><span class="sub">Adrenaline Rush</span><b id="moreAdrenaline">3 / 3</b></div>
+    </div>
+  </section>
+
+
+  <section id="levelup" class="screen">
+    <div class="row"><button class="back" data-back="more">‹</button><div><div class="title" style="font-size:22px">Level Up</div><div id="levelUpSubtitle" class="sub">Grimsby • Druid 5 → 6</div></div></div>
+    <div id="levelMaxNotice" class="notice mt16 hidden">Grimsby is already level 20.</div>
+    <div id="levelUpBody">
+      <div class="card mt16"><b>Automatic Changes</b><div id="levelAutomaticChanges" class="list mt12"></div></div>
+      <div class="card mt12">
+        <b>Hit Points</b><div id="levelHpHelp" class="sub mt8"></div>
+        <select id="levelHpMode" class="mt12" style="width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:16px">
+          <option value="fixed">Take fixed HP</option><option value="roll">Roll d8</option>
+        </select>
+        <button id="rollLevelHp" class="btn full mt12 hidden">Roll d8</button>
+        <div id="levelHpResult" class="notice mt12"></div>
+      </div>
+      <div id="elementalChoiceCard" class="card mt12 hidden">
+        <b>Level 7 • Elemental Fury</b>
+        <div class="sub mt8">Choose the path Grimsby keeps; it improves automatically at level 15.</div>
+        <select id="elementalChoice" class="mt12" style="width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:16px">
+          <option value="">Choose…</option>
+          <option value="Primal Strike">Primal Strike • weapon / Beast attacks</option>
+          <option value="Potent Spellcasting">Potent Spellcasting • Druid cantrip damage</option>
+        </select>
+      </div>
+      <div id="featChoiceCard" class="card mt12 hidden">
+        <b id="featChoiceTitle">Feat / Ability Score Improvement</b>
+        <div class="sub mt8">Record the feat and any ability increase it grants. For a normal ASI, use +2 to one score or +1 to two.</div>
+        <input id="levelFeatName" placeholder="Feat name, e.g. Ability Score Improvement" style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);font-size:16px;background:#fff;margin-top:12px">
+        <div class="grid2 mt12">
+          <select id="levelAbility1" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:15px">
+            <option value="">No ability increase</option><option value="str">STR +1</option><option value="dex">DEX +1</option><option value="con">CON +1</option><option value="int">INT +1</option><option value="wis">WIS +1</option><option value="cha">CHA +1</option>
+          </select>
+          <select id="levelAbility2" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:15px">
+            <option value="">No second increase</option><option value="str">STR +1</option><option value="dex">DEX +1</option><option value="con">CON +1</option><option value="int">INT +1</option><option value="wis">WIS +1</option><option value="cha">CHA +1</option>
+          </select>
+        </div>
+        <button id="sameAbilityTwice" class="btn full mt12">Make first ability +2</button>
+        <div id="abilityChoiceNote" class="sub mt8"></div>
+      </div>
+      <div class="notice mt12"><b>Spell choices are safe.</b><div class="small mt8">Level Up never clears prepared spells or known cantrips. It only increases limits and unlocks new spell levels.</div></div>
+      <button id="confirmLevelUp" class="btn accent full mt16">Confirm Level Up</button>
+      <div id="levelUpMessage" class="sub mt8"></div>
+    </div>
+  </section>
+
+  <section id="levelhistory" class="screen">
+    <div class="row"><button class="back" data-back="more">‹</button><div><div class="title" style="font-size:22px">Level History</div><div class="sub">Review committed level-ups</div></div></div>
+    <div id="levelHistoryList" class="list mt16"></div>
+    <button id="undoLastLevel" class="btn full mt12">Undo Most Recent Level Up</button>
+    <div id="undoLevelMessage" class="sub mt8"></div>
+  </section>
+
+  <section id="notes" class="screen">
+    <div class="row">
+      <button class="back" data-back="more">‹</button>
+      <div>
+        <div class="title" style="font-size:22px">Adventure Notes</div>
+        <div class="sub">Session notes, NPCs, clues & reminders</div>
+      </div>
+    </div>
+
+    <div class="card mt16">
+      <textarea id="notesInput" placeholder="Write notes here…"
+        style="width:100%;min-height:260px;padding:14px 16px;border-radius:14px;border:1px solid var(--line);font-size:16px;background:#fff;resize:vertical"></textarea>
+      <button id="saveNotes" class="btn accent full mt12">Save Notes</button>
+      <div id="notesSaved" class="sub mt8"></div>
+    </div>
+  </section>
+
+  <section id="quickref" class="screen">
+    <div class="row">
+      <button class="back" data-back="more">‹</button>
+      <div>
+        <div class="title" style="font-size:22px">Quick Reference</div>
+        <div class="sub">Grimsby's common turn options</div>
+      </div>
+    </div>
+
+    <div class="card mt16">
+      <b>Action</b>
+      <div class="sep"></div>
+      <div><b>Attack</b><div class="sub mt8">Quarterstaff in normal form, or the active beast's listed attack while Wild Shaped.</div></div>
+      <div class="sep"></div>
+      <div><b>Cast a Spell</b><div class="sub mt8">Use a spell with an Action casting time. While Wild Shaped, only spells specifically allowed by Circle of the Moon are available.</div></div>
+      <div class="sep"></div>
+      <div><b>Dash / Disengage / Dodge / Help / Hide / Ready / Search / Study / Utilize</b><div class="sub mt8">Standard combat actions.</div></div>
+    </div>
+
+    <div class="card mt12">
+      <b>Bonus Action</b>
+      <div class="sep"></div>
+      <div><b>Wild Shape</b><div class="sub mt8">Transform using one Wild Shape use.</div></div><div class="sep"></div><div><b>Adrenaline Rush</b><div class="sub mt8">Bonus Action Dash and gain 3 Temp HP; 3 uses per Short or Long Rest.</div></div>
+      <div class="sep"></div>
+      <div><b>Misty Step</b><div class="sub mt8">Granted through Conjuration Adept when available.</div></div>
+    </div>
+
+    <div class="card mt12">
+      <b>Reaction</b>
+      <div class="sep"></div>
+      <div><b>Relentless Endurance</b><div class="sub mt8">No action required: when reduced to 0 HP without being killed outright, you can drop to 1 HP instead once per Long Rest.</div></div><div class="sep"></div><div class="sub">Other reactions available from the current form, spell, feature, or trigger appear on their relevant detail screen.</div>
+    </div>
+
+    <div class="notice mt12">
+      <b>Conjuration Adept</b>
+      <div class="small mt8">When maintaining Concentration on a Conjuration spell, remember the extra Wisdom modifier benefit shown on the Combat status screen.</div>
+    </div>
+  </section>
+
+  <section id="settings" class="screen">
+    <div class="row">
+      <button class="back" data-back="more">‹</button>
+      <div>
+        <div class="title" style="font-size:22px">Character & App Settings</div>
+        <div class="sub">Small adjustments without cluttering the main sheet</div>
+      </div>
+    </div>
+
+    <div class="card mt16">
+      <label for="initiativeInput"><b>Initiative Bonus</b></label>
+      <div class="sub mt8">Current Grimsby default is +2 from Dexterity.</div>
+      <input id="initiativeInput" type="number" inputmode="numeric"
+        style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);font-size:16px;background:#fff;margin-top:12px">
+      <button id="saveInitiative" class="btn accent full mt12">Save Initiative</button>
+    </div>
+
+    <div class="card mt12">
+      <b>Character Management</b>
+      <div class="sub mt8">For now, equipment, languages and Wild Shape forms are managed from Character. Spell preparation is managed from Spells.</div>
+    </div>
+  </section>
+
+  <section id="placeholder" class="screen">
+    <div id="placeholderTitle" class="title" style="font-size:22px"></div>
+    <div id="placeholderBody" class="sub mt8"></div>
+    <div id="shapeBanner" class="notice mt16 hidden"></div>
+  </section>
+</div>
+
+<nav class="nav" id="nav">
+  <button class="active" data-nav="home">Home</button>
+  <button data-nav="Character">Character</button>
+  <button data-nav="Combat">Combat</button>
+  <button data-nav="Spells">Spells</button>
+  <button data-nav="More">More</button>
+</nav>
+
+<script>
+(()=>{
+let S={};
+try{
+  S=JSON.parse(localStorage.getItem('grimsbyState_v141')||localStorage.getItem('grimsbyState')||'{}');
+}catch(e){
+  S={};
+}
+let level=S.level??5;
+let abilities=S.abilities??{str:10,dex:14,con:16,int:8,wis:18,cha:8};
+let maxHp=S.maxHp??43;
+let levelHistory=Array.isArray(S.levelHistory)?S.levelHistory:[];
+let elementalFury=S.elementalFury??null;
+let featChoices=Array.isArray(S.featChoices)?S.featChoices:[];
+let epicBoon=S.epicBoon??null;
+let hp=S.hp??maxHp,temp=S.temp??0,wild=S.wild??2,form=S.form??null,inspiration=S.inspiration??true,concentration=S.concentration??null,conditions=S.conditions??[],shield=S.shield??true,equipment=S.equipment??['Studded Leather','Shield','Quarterstaff','Druidic Focus','Herbalism Kit','Adventuring Gear'],extraLanguage=S.extraLanguage??'Goblin';
+let knownForms=S.knownForms??['Brown Bear','Giant Spider','Giant Toad','Rat','Dire Wolf','Giant Octopus'];
+let preparedSpells=Array.isArray(S.preparedSpells)?S.preparedSpells:[];
+let knownCantrips=Array.isArray(S.knownCantrips)?S.knownCantrips:['Druidcraft','Guidance','Produce Flame','Shillelagh'];
+let slots=S.slots??{1:4,2:3,3:2};
+let familiarFreeCastUsed=S.familiarFreeCastUsed??false;
+let familiarHp=S.familiarHp??12;
+let familiarHelpUses=S.familiarHelpUses??3;
+let hitDice=S.hitDice??5;
+let wildResurgenceSlotUsed=S.wildResurgenceSlotUsed??false;
+let adrenalineUses=S.adrenalineUses??3;
+let relentlessUsed=S.relentlessUsed??false;
+let spellFilter='all';
+let spellSearch='';
+let notes=S.notes??'';
+let initiativeBonus=S.initiativeBonus??2;
+let previewForm=null;
+let pendingReplace=null;
+let backTargets={hp:'home',wild:'home',beast:'home',familiar:'home',rest:'home',attacks:'character'};
+const druidProgression={
+1:{pb:2,wild:0,cantrips:2,prepared:4,slots:[2,0,0,0,0,0,0,0,0]},
+2:{pb:2,wild:2,cantrips:2,prepared:5,slots:[3,0,0,0,0,0,0,0,0]},
+3:{pb:2,wild:2,cantrips:2,prepared:6,slots:[4,2,0,0,0,0,0,0,0]},
+4:{pb:2,wild:2,cantrips:3,prepared:7,slots:[4,3,0,0,0,0,0,0,0]},
+5:{pb:3,wild:2,cantrips:3,prepared:9,slots:[4,3,2,0,0,0,0,0,0]},
+6:{pb:3,wild:3,cantrips:3,prepared:10,slots:[4,3,3,0,0,0,0,0,0]},
+7:{pb:3,wild:3,cantrips:3,prepared:11,slots:[4,3,3,1,0,0,0,0,0]},
+8:{pb:3,wild:3,cantrips:3,prepared:12,slots:[4,3,3,2,0,0,0,0,0]},
+9:{pb:4,wild:3,cantrips:3,prepared:14,slots:[4,3,3,3,1,0,0,0,0]},
+10:{pb:4,wild:3,cantrips:4,prepared:15,slots:[4,3,3,3,2,0,0,0,0]},
+11:{pb:4,wild:3,cantrips:4,prepared:16,slots:[4,3,3,3,2,1,0,0,0]},
+12:{pb:4,wild:3,cantrips:4,prepared:16,slots:[4,3,3,3,2,1,0,0,0]},
+13:{pb:5,wild:3,cantrips:4,prepared:17,slots:[4,3,3,3,2,1,1,0,0]},
+14:{pb:5,wild:3,cantrips:4,prepared:17,slots:[4,3,3,3,2,1,1,0,0]},
+15:{pb:5,wild:3,cantrips:4,prepared:18,slots:[4,3,3,3,2,1,1,1,0]},
+16:{pb:5,wild:3,cantrips:4,prepared:18,slots:[4,3,3,3,2,1,1,1,0]},
+17:{pb:6,wild:4,cantrips:4,prepared:19,slots:[4,3,3,3,2,1,1,1,1]},
+18:{pb:6,wild:4,cantrips:4,prepared:20,slots:[4,3,3,3,3,1,1,1,1]},
+19:{pb:6,wild:4,cantrips:4,prepared:21,slots:[4,3,3,3,3,2,1,1,1]},
+20:{pb:6,wild:4,cantrips:4,prepared:22,slots:[4,3,3,3,3,2,2,1,1]}
+};
+let maxWild=druidProgression[level].wild;
+let pendingHpRoll=null;
+function mod(score){return Math.floor((score-10)/2)}
+function fmt(n){return n>=0?`+${n}`:`−${Math.abs(n)}`}
+function pb(){return druidProgression[level].pb}
+function preparedCap(){return druidProgression[level].prepared}
+function cantripCap(){return druidProgression[level].cantrips+1}
+function slotMax(lvl){return druidProgression[level].slots[lvl-1]||0}
+function maxSpellLevel(){for(let i=9;i>=1;i--)if(slotMax(i)>0)return i;return 0}
+function knownFormCap(){return level>=8?8:(level>=4?6:4)}
+function moonMaxCr(){return Math.max(1,Math.floor(level/3))}
+function moonTempHp(){return 3*level}
+function moonAc(){return 13+mod(abilities.wis)}
+function familiarMaxHp(){return 2+(2*level)}
+function featureAtLevel(lvl){
+ const map={6:'Improved Circle Forms',7:'Elemental Fury',8:'Feat / Ability Score Improvement',10:'Moonlight Step + new Druid cantrip',12:'Feat / Ability Score Improvement',14:'Lunar Form',15:'Improved Elemental Fury',16:'Feat / Ability Score Improvement',18:'Beast Spells',19:'Epic Boon',20:'Archdruid'};
+ return map[lvl]||null;
+}
+for(let i=1;i<=9;i++){
+ if(slots[i]===undefined) slots[i]=druidProgression[level].slots[i-1]||0;
+}
+
+const forms={
+"Brown Bear":{
+ speed:"40 ft • Climb 30 ft",size:"Large",
+ traits:[
+  ["Multiattack","Makes one Bite attack and one Claw attack."],
+  ["Bite","+5 to hit • Reach 5 ft • 1d8 + 3 Piercing (7 avg.)"],
+  ["Claw","+5 to hit • Reach 5 ft • 1d4 + 3 Slashing (5 avg.) • Large or smaller target is knocked Prone."]
+ ]
+},
+"Giant Spider":{
+ speed:"30 ft • Climb 30 ft",size:"Large",
+ traits:[
+  ["Bite","+5 to hit • Reach 5 ft • 1d8 + 3 Piercing + 2d6 Poison (14 avg. total)."],
+  ["Web","Recharge 5–6 • Target within 60 ft • DC 13 Dexterity save • Failure: Restrained until web is destroyed."],
+  ["Spider Climb","Climbs difficult surfaces and ceilings without an ability check."],
+  ["Web Walker","Webs don't restrict its movement; it knows the location of creatures touching the same web."]
+ ]
+},
+"Giant Toad":{
+ speed:"30 ft • Swim 30 ft",size:"Large",
+ traits:[
+  ["Bite","+4 to hit • Reach 5 ft • 1d6 + 2 Piercing + 2d4 Poison (10 avg. total) • Medium or smaller target is Grappled (escape DC 12)."],
+  ["Swallow","Action • Swallow a Medium or smaller creature already Grappled by the toad • Target becomes Blinded and Restrained, has Total Cover, and takes 3d6 Acid (10 avg.) at the end of each toad turn."],
+  ["Amphibious","Can breathe both air and water."],
+  ["Standing Leap","Long Jump up to 20 ft; High Jump up to 10 ft, with or without a running start."]
+ ]
+},
+"Rat":{
+ speed:"20 ft • Climb 20 ft",size:"Tiny",
+ traits:[
+  ["Bite","+2 to hit • Reach 5 ft • 1 Piercing damage."],
+  ["Agile","Doesn't provoke an Opportunity Attack when moving out of an enemy's reach."]
+ ]
+},
+"Dire Wolf":{
+ speed:"50 ft",size:"Large",
+ traits:[
+  ["Bite","+5 to hit • Reach 5 ft • 1d10 + 3 Piercing (8 avg.) • Large or smaller target is knocked Prone."],
+  ["Pack Tactics","Advantage on an attack roll when an ally is within 5 ft of the target and isn't Incapacitated."],
+  ["Darkvision","Darkvision 60 ft • Passive Perception 15."]
+ ]
+},
+"Giant Octopus":{
+ speed:"10 ft • Swim 60 ft",size:"Large",
+ traits:[
+  ["Tentacles","+5 to hit • Reach 10 ft • 2d6 + 3 Bludgeoning (10 avg.) • Medium or smaller target is Grappled (escape DC 13) and Restrained while grappled."],
+  ["Ink Cloud","1/Day • Reaction when damaged underwater • Creates a Heavily Obscured 10-ft Cube and lets the octopus move up to its Swim Speed."],
+  ["Water Breathing","Breathes only underwater, but can hold its breath for 1 hour out of water."],
+  ["Stealth","+5 Stealth • Darkvision 60 ft."]
+ ]
+},
+"Panther":{
+ speed:"50 ft • Climb 40 ft",size:"Medium",
+ traits:[
+  ["Rend","+5 to hit • Reach 5 ft • 1d6 + 3 Slashing (6 avg.)"],
+  ["Nimble Escape","Bonus Action • Take the Disengage or Hide action."],
+  ["Stealth","+7 Stealth • Darkvision 60 ft."]
+ ]
+},
+"Crocodile":{
+ speed:"20 ft • Swim 30 ft",size:"Large",
+ traits:[
+  ["Bite","+4 to hit • Reach 5 ft • 1d8 + 2 Piercing (6 avg.) • Medium or smaller target is Grappled (escape DC 12) and Restrained while Grappled."],
+  ["Hold Breath","Can hold its breath for 1 hour."]
+ ]
+},
+"Giant Badger":{
+ speed:"30 ft • Burrow 10 ft",size:"Medium",
+ traits:[
+  ["Bite","+3 to hit • Reach 5 ft • 2d4 + 1 Piercing (6 avg.)"],
+  ["Poison Resistance","Resistance to Poison damage."],
+  ["Darkvision","Darkvision 60 ft • Passive Perception 13."]
+ ]
+}
+}; 
+
+// This list is intentionally small until the Spells tab owns prepared-spell state.
+// Moon Druid granted concentration spells are available immediately; prepared concentration
+// spells selected later will feed into this same array.
+
+const druidSpells=[
+ // Cantrips
+ {name:"Control Flames",level:0,school:"Transmutation"},
+ {name:"Create Bonfire",level:0,school:"Conjuration",conc:true},
+ {name:"Druidcraft",level:0,school:"Transmutation"},
+ {name:"Frostbite",level:0,school:"Evocation"},
+ {name:"Gust",level:0,school:"Transmutation"},
+ {name:"Infestation",level:0,school:"Conjuration"},
+ {name:"Magic Stone",level:0,school:"Transmutation"},
+ {name:"Mold Earth",level:0,school:"Transmutation"},
+ {name:"Primal Savagery",level:0,school:"Transmutation"},
+ {name:"Shape Water",level:0,school:"Transmutation"},
+ {name:"Elementalism",level:0,school:"Transmutation"},
+ {name:"Guidance",level:0,school:"Divination",conc:true},
+ {name:"Mending",level:0,school:"Transmutation"},
+ {name:"Message",level:0,school:"Transmutation"},
+ {name:"Poison Spray",level:0,school:"Necromancy"},
+ {name:"Produce Flame",level:0,school:"Conjuration"},
+ {name:"Resistance",level:0,school:"Abjuration",conc:true},
+ {name:"Shillelagh",level:0,school:"Transmutation"},
+ {name:"Spare the Dying",level:0,school:"Necromancy"},
+ {name:"Starry Wisp",level:0,school:"Evocation",moon:true,wildcast:true,grantAt:3},
+ {name:"Thorn Whip",level:0,school:"Transmutation"},
+ {name:"Thunderclap",level:0,school:"Evocation"},
+
+ // 1st
+ {name:"Absorb Elements",level:1,school:"Abjuration"},
+ {name:"Animal Friendship",level:1,school:"Enchantment"},
+ {name:"Beast Bond",level:1,school:"Divination",conc:true},
+ {name:"Buzzing Bee",level:1,school:"Conjuration",conc:true},
+ {name:"Earth Tremor",level:1,school:"Evocation"},
+ {name:"Charm Person",level:1,school:"Enchantment"},
+ {name:"Create or Destroy Water",level:1,school:"Transmutation"},
+ {name:"Cure Wounds",level:1,school:"Abjuration",moon:true,wildcast:true,grantAt:3},
+ {name:"Detect Magic",level:1,school:"Divination",conc:true,ritual:true},
+ {name:"Detect Poison and Disease",level:1,school:"Divination",conc:true,ritual:true},
+ {name:"Entangle",level:1,school:"Conjuration",conc:true,conjGranted:true,featOnly:true},
+ {name:"Faerie Fire",level:1,school:"Evocation",conc:true},
+ {name:"Fog Cloud",level:1,school:"Conjuration",conc:true},
+ {name:"Goodberry",level:1,school:"Conjuration"},
+ {name:"Healing Word",level:1,school:"Abjuration"},
+ {name:"Ice Knife",level:1,school:"Conjuration"},
+ {name:"Jump",level:1,school:"Transmutation"},
+ {name:"Longstrider",level:1,school:"Transmutation"},
+ {name:"Protection from Evil and Good",level:1,school:"Abjuration",conc:true},
+ {name:"Purify Food and Drink",level:1,school:"Transmutation",ritual:true},
+ {name:"Snare",level:1,school:"Abjuration"},
+ {name:"Speak with Animals",level:1,school:"Divination",ritual:true,druidic:true},
+ {name:"Thunderwave",level:1,school:"Evocation"},
+
+ // 2nd
+ {name:"Aid",level:2,school:"Abjuration"},
+ {name:"Air Bubble",level:2,school:"Conjuration"},
+ {name:"Animal Messenger",level:2,school:"Enchantment",ritual:true},
+ {name:"Augury",level:2,school:"Divination",ritual:true},
+ {name:"Barkskin",level:2,school:"Transmutation"},
+ {name:"Battle Familiar",level:2,school:"Conjuration",arcana:true,battleFamiliar:true,material:"Diamond worth at least 25 gp (not consumed)"},
+ {name:"Dueling Ground",level:2,school:"Abjuration",arcana:true,ritual:true},
+ {name:"Dust Devil",level:2,school:"Conjuration",conc:true},
+ {name:"Earthbind",level:2,school:"Transmutation",conc:true},
+ {name:"Healing Spirit",level:2,school:"Conjuration",conc:true},
+ {name:"Tortoise Shell",level:2,school:"Abjuration",conc:true,newSpell:true},
+ {name:"Warding Wind",level:2,school:"Evocation",conc:true},
+ {name:"Wither and Bloom",level:2,school:"Necromancy"},
+ {name:"Beast Sense",level:2,school:"Divination",conc:true,ritual:true},
+ {name:"Continual Flame",level:2,school:"Evocation"},
+ {name:"Darkvision",level:2,school:"Transmutation"},
+ {name:"Enhance Ability",level:2,school:"Transmutation",conc:true},
+ {name:"Enlarge/Reduce",level:2,school:"Transmutation",conc:true},
+ {name:"Find Traps",level:2,school:"Divination"},
+ {name:"Flame Blade",level:2,school:"Evocation",conc:true},
+ {name:"Flaming Sphere",level:2,school:"Evocation",conc:true},
+ {name:"Gust of Wind",level:2,school:"Evocation",conc:true},
+ {name:"Heat Metal",level:2,school:"Transmutation",conc:true},
+ {name:"Hold Person",level:2,school:"Enchantment",conc:true},
+ {name:"Lesser Restoration",level:2,school:"Abjuration"},
+ {name:"Locate Animals or Plants",level:2,school:"Divination",ritual:true},
+ {name:"Locate Object",level:2,school:"Divination",conc:true},
+ {name:"Misty Step",level:2,school:"Conjuration",conjGranted:true,featOnly:true},
+ {name:"Moonbeam",level:2,school:"Evocation",conc:true,moon:true,wildcast:true,grantAt:3},
+ {name:"Pass without Trace",level:2,school:"Abjuration",conc:true},
+ {name:"Protection from Poison",level:2,school:"Abjuration"},
+ {name:"Skywrite",level:2,school:"Transmutation",conc:true,ritual:true},
+ {name:"Spike Growth",level:2,school:"Transmutation",conc:true},
+ {name:"Summon Beast",level:2,school:"Conjuration",conc:true},
+
+ // 3rd
+ {name:"Aura of Vitality",level:3,school:"Abjuration",conc:true},
+ {name:"Call Lightning",level:3,school:"Conjuration",conc:true},
+ {name:"Conjure Animals",level:3,school:"Conjuration",conc:true,moon:true,wildcast:true,grantAt:5},
+ {name:"Daylight",level:3,school:"Evocation"},
+ {name:"Dispel Magic",level:3,school:"Abjuration"},
+ {name:"Elemental Weapon",level:3,school:"Transmutation",conc:true},
+ {name:"Erupting Earth",level:3,school:"Transmutation"},
+ {name:"Feign Death",level:3,school:"Necromancy",ritual:true},
+ {name:"Flame Arrows",level:3,school:"Transmutation",conc:true},
+ {name:"Meld into Stone",level:3,school:"Transmutation",ritual:true},
+ {name:"Plant Growth",level:3,school:"Transmutation"},
+ {name:"Protection from Energy",level:3,school:"Abjuration",conc:true},
+ {name:"Revivify",level:3,school:"Necromancy"},
+ {name:"Sleet Storm",level:3,school:"Conjuration",conc:true},
+ {name:"Syluné’s Viper",level:3,school:"Conjuration",newSpell:true},
+ {name:"Tidal Wave",level:3,school:"Conjuration"},
+ {name:"Speak with Plants",level:3,school:"Transmutation"},
+ {name:"Summon Fey",level:3,school:"Conjuration",conc:true},
+ {name:"Wall of Water",level:3,school:"Evocation",conc:true},
+ {name:"Water Breathing",level:3,school:"Transmutation",ritual:true},
+ {name:"Water Walk",level:3,school:"Transmutation",ritual:true},
+ {name:"Wind Wall",level:3,school:"Evocation",conc:true},
+
+ // Origin feat spell
+ {name:"Find Familiar",level:1,school:"Conjuration",ritual:true,familiarFeat:true,featOnly:true},
+ {name:"Blight",level:4,school:"Necromancy"},
+ {name:"Charm Monster",level:4,school:"Enchantment"},
+ {name:"Confusion",level:4,school:"Enchantment",conc:true},
+ {name:"Conjure Minor Elementals",level:4,school:"Conjuration",conc:true},
+ {name:"Conjure Woodland Beings",level:4,school:"Conjuration",conc:true},
+ {name:"Control Water",level:4,school:"Transmutation",conc:true},
+ {name:"Divination",level:4,school:"Divination",ritual:true},
+ {name:"Dominate Beast",level:4,school:"Enchantment",conc:true},
+ {name:"Fire Shield",level:4,school:"Evocation"},
+ {name:"Fount of Moonlight",level:4,school:"Evocation",conc:true,moon:true,wildcast:true,grantAt:7},
+ {name:"Freedom of Movement",level:4,school:"Abjuration"},
+ {name:"Giant Insect",level:4,school:"Conjuration",conc:true},
+ {name:"Grasping Vine",level:4,school:"Conjuration",conc:true},
+ {name:"Hallucinatory Terrain",level:4,school:"Illusion"},
+ {name:"Ice Storm",level:4,school:"Evocation"},
+ {name:"Locate Creature",level:4,school:"Divination",conc:true},
+ {name:"Polymorph",level:4,school:"Transmutation",conc:true},
+ {name:"Stone Shape",level:4,school:"Transmutation"},
+ {name:"Stoneskin",level:4,school:"Transmutation",conc:true},
+ {name:"Summon Elemental",level:4,school:"Conjuration",conc:true},
+ {name:"Wall of Fire",level:4,school:"Evocation",conc:true},
+
+ {name:"Antilife Shell",level:5,school:"Abjuration",conc:true},
+ {name:"Awaken",level:5,school:"Transmutation"},
+ {name:"Commune with Nature",level:5,school:"Divination",ritual:true},
+ {name:"Cone of Cold",level:5,school:"Evocation"},
+ {name:"Conjure Elemental",level:5,school:"Conjuration",conc:true},
+ {name:"Contagion",level:5,school:"Necromancy"},
+ {name:"Geas",level:5,school:"Enchantment"},
+ {name:"Greater Restoration",level:5,school:"Abjuration"},
+ {name:"Insect Plague",level:5,school:"Conjuration",conc:true},
+ {name:"Mass Cure Wounds",level:5,school:"Abjuration",moon:true,wildcast:true,grantAt:9},
+ {name:"Planar Binding",level:5,school:"Abjuration"},
+ {name:"Reincarnate",level:5,school:"Necromancy"},
+ {name:"Scrying",level:5,school:"Divination",conc:true},
+ {name:"Tree Stride",level:5,school:"Conjuration",conc:true},
+ {name:"Wall of Stone",level:5,school:"Evocation",conc:true},
+
+ {name:"Conjure Fey",level:6,school:"Conjuration",conc:true},
+ {name:"Find the Path",level:6,school:"Divination",conc:true},
+ {name:"Flesh to Stone",level:6,school:"Transmutation",conc:true},
+ {name:"Heal",level:6,school:"Abjuration"},
+ {name:"Heroes’ Feast",level:6,school:"Conjuration"},
+ {name:"Move Earth",level:6,school:"Transmutation",conc:true},
+ {name:"Sunbeam",level:6,school:"Evocation",conc:true},
+ {name:"Transport via Plants",level:6,school:"Conjuration"},
+ {name:"Wall of Thorns",level:6,school:"Conjuration",conc:true},
+ {name:"Wind Walk",level:6,school:"Transmutation"},
+
+ {name:"Fire Storm",level:7,school:"Evocation"},
+ {name:"Mirage Arcane",level:7,school:"Illusion"},
+ {name:"Plane Shift",level:7,school:"Conjuration"},
+ {name:"Regenerate",level:7,school:"Transmutation"},
+ {name:"Reverse Gravity",level:7,school:"Transmutation",conc:true},
+ {name:"Symbol",level:7,school:"Abjuration"},
+
+ {name:"Animal Shapes",level:8,school:"Transmutation"},
+ {name:"Antipathy/Sympathy",level:8,school:"Enchantment"},
+ {name:"Befuddlement",level:8,school:"Enchantment"},
+ {name:"Control Weather",level:8,school:"Transmutation",conc:true},
+ {name:"Earthquake",level:8,school:"Transmutation",conc:true},
+ {name:"Incendiary Cloud",level:8,school:"Conjuration",conc:true},
+ {name:"Sunburst",level:8,school:"Evocation"},
+ {name:"Tsunami",level:8,school:"Conjuration",conc:true},
+
+ {name:"Foresight",level:9,school:"Divination"},
+ {name:"Shapechange",level:9,school:"Transmutation",conc:true},
+ {name:"Storm of Vengeance",level:9,school:"Conjuration",conc:true},
+ {name:"True Resurrection",level:9,school:"Necromancy"}
+];
+
+const spellMeta={
+ "Control Flames":{cast:"1 Action",summary:"Control a small nonmagical flame: expand, extinguish, reshape, or change its light."},
+ "Create Bonfire":{cast:"1 Action",summary:"Create a small magical bonfire; creatures in its space can take fire damage while you concentrate."},
+ "Frostbite":{cast:"1 Action",summary:"A creature makes a Constitution save or takes cold damage and has its next weapon attack hindered."},
+ "Gust":{cast:"1 Action",summary:"Create a short burst of wind to push a creature or move a small unsecured object."},
+ "Infestation":{cast:"1 Action",summary:"Summon biting pests around a creature; Constitution save or take poison damage and move unpredictably."},
+ "Magic Stone":{cast:"1 Bonus Action",summary:"Enchant up to three pebbles so they can be thrown or slung using your spellcasting ability."},
+ "Mold Earth":{cast:"1 Action",summary:"Move or alter a small patch of loose earth or dirt."},
+ "Primal Savagery":{cast:"1 Action",summary:"Make a melee spell attack with magically sharpened teeth or nails for acid damage."},
+ "Shape Water":{cast:"1 Action",summary:"Move, reshape, color, freeze, or otherwise manipulate a small volume of water."},
+ "Druidcraft":{cast:"1 Action",summary:"Create a small nature-themed magical effect: minor weather sign, plant growth, sensory effect, or harmless nature trick."},
+ "Elementalism":{cast:"1 Action",summary:"Create a small harmless effect using air, earth, fire, or water."},
+ "Guidance":{cast:"1 Action",summary:"Touch a creature; while concentrating, it can add 1d4 to one ability check before the spell ends."},
+ "Mending":{cast:"1 Minute",summary:"Repair a small break or tear in a nonmagical object."},
+ "Message":{cast:"1 Action",summary:"Send a brief whispered message to a creature at range; it can reply privately."},
+ "Poison Spray":{cast:"1 Action",summary:"Blast a nearby creature with poison; Constitution save or take poison damage."},
+ "Produce Flame":{cast:"1 Bonus Action",summary:"Create a flame that gives light; you can hurl it with a ranged spell attack for fire damage."},
+ "Resistance":{cast:"1 Action",summary:"Touch a creature; while concentrating, it can add 1d4 to one saving throw before the spell ends."},
+ "Shillelagh":{cast:"1 Bonus Action",summary:"Empower a club or quarterstaff so it uses your spellcasting ability and deals improved magical damage."},
+ "Spare the Dying":{cast:"1 Action",summary:"Stabilize a creature at 0 HP so it stops making Death Saving Throws."},
+ "Starry Wisp":{cast:"1 Action",summary:"Ranged spell attack dealing radiant damage and briefly making the target glow, preventing invisibility."},
+ "Thorn Whip":{cast:"1 Action",summary:"Spell attack with a thorny vine; deals piercing damage and can pull the target closer."},
+ "Thunderclap":{cast:"1 Action",summary:"Thunder bursts around you; nearby creatures make Constitution saves or take thunder damage."},
+
+ "Absorb Elements":{cast:"1 Reaction",summary:"React to elemental damage to gain temporary resistance, then empower your next melee hit with that element."},
+ "Beast Bond":{cast:"1 Action",summary:"Create a telepathic link with a willing Beast and improve its attacks while you concentrate."},
+ "Buzzing Bee":{cast:"1 Action",summary:"Conjure a distracting magical bee that hinders a creature while you concentrate."},
+ "Earth Tremor":{cast:"1 Action",summary:"Shake the ground around you; nearby creatures can take bludgeoning damage and fall Prone."},
+ "Animal Friendship":{cast:"1 Action",summary:"Charm a Beast that fails a Wisdom save, making it friendly toward you for the duration."},
+ "Charm Person":{cast:"1 Action",summary:"A Humanoid that fails a Wisdom save is Charmed by you for the duration."},
+ "Create or Destroy Water":{cast:"1 Action",summary:"Create a supply of clean water or destroy an equivalent amount of water in an area."},
+ "Cure Wounds":{cast:"1 Action",summary:"Touch a creature to restore a strong burst of Hit Points."},
+ "Detect Magic":{cast:"1 Action / Ritual",summary:"Sense nearby magic and, with focus, identify the school of magic around visible magical effects."},
+ "Detect Poison and Disease":{cast:"1 Action / Ritual",summary:"Sense nearby poisons, poisonous creatures, and diseases and identify what they are."},
+ "Entangle":{cast:"1 Action",summary:"Plants erupt in an area; creatures can be Restrained on a failed Strength save. Granted by Conjuration Adept."},
+ "Faerie Fire":{cast:"1 Action",summary:"Outline creatures in light; failed Dexterity save makes attacks against them easier and stops invisibility."},
+ "Fog Cloud":{cast:"1 Action",summary:"Create a heavily obscuring cloud of fog that blocks sight."},
+ "Goodberry":{cast:"1 Action",summary:"Create ten magical berries; each feeds a creature and restores 1 HP when eaten."},
+ "Healing Word":{cast:"1 Bonus Action",summary:"Restore Hit Points to a creature you can see at range."},
+ "Ice Knife":{cast:"1 Action",summary:"Ranged spell attack that deals piercing damage, then bursts and can deal cold damage nearby."},
+ "Jump":{cast:"1 Bonus Action",summary:"Touch a creature and greatly improve its jumping distance for 1 minute."},
+ "Longstrider":{cast:"1 Action",summary:"Increase a creature's Speed by 10 feet for 1 hour."},
+ "Protection from Evil and Good":{cast:"1 Action",summary:"Protect a creature from several supernatural creature types, hindering their attacks and mental control."},
+ "Purify Food and Drink":{cast:"1 Action / Ritual",summary:"Remove poison and disease from nonmagical food and drink in a small area."},
+ "Snare":{cast:"1 Minute",summary:"Create a hidden magical trap that can hoist and Restrain a creature that triggers it."},
+ "Speak with Animals":{cast:"1 Action / Ritual",summary:"Understand and verbally communicate with Beasts for 10 minutes."},
+ "Thunderwave":{cast:"1 Action",summary:"Blast creatures in a 15-foot cube; Constitution save or take thunder damage and be pushed away."},
+
+ "Aid":{cast:"1 Action",summary:"Increase the current and maximum HP of up to three creatures for 8 hours."},
+ "Air Bubble":{cast:"1 Action",summary:"Create a breathable bubble of air around a creature's head for 24 hours."},
+ "Animal Messenger":{cast:"1 Action / Ritual",summary:"Send a Tiny Beast to deliver a short spoken message to a named recipient."},
+ "Augury":{cast:"1 Minute / Ritual",summary:"Ask for an omen about a specific plan you intend to carry out within the next 30 minutes."},
+ "Barkskin":{cast:"1 Bonus Action",summary:"Protect a creature with magical bark, improving its defenses for 1 hour."},
+ "Battle Familiar":{cast:"1 Action",summary:"Summon a combat-capable familiar or temporarily empower your existing familiar for 1 hour."},
+ "Dueling Ground":{cast:"10 Minutes / Ritual",summary:"Create a magical 15-foot dueling area that imposes special restrictions on creatures within it."},
+ "Dust Devil":{cast:"1 Action",summary:"Create a whirling dust devil that can damage and push creatures while you concentrate."},
+ "Earthbind":{cast:"1 Action",summary:"A flying creature that fails a Strength save loses its flying capability and descends safely."},
+ "Healing Spirit":{cast:"1 Bonus Action",summary:"Create a healing spirit that can restore HP to creatures that enter its space."},
+ "Tortoise Shell":{cast:"1 Action",summary:"Create a protective shell around a creature, strongly improving defense but limiting what it can do while sheltered."},
+ "Warding Wind":{cast:"1 Action",summary:"A strong wind surrounds you, hindering ranged attacks, gases, sounds, and movement nearby."},
+ "Wither and Bloom":{cast:"1 Action",summary:"Damage creatures in an area with necrotic energy while allowing one creature there to spend a Hit Die to heal."},
+ "Beast Sense":{cast:"1 Action / Ritual",summary:"While concentrating, perceive through a willing Beast's senses instead of your own."},
+ "Continual Flame":{cast:"1 Action",summary:"Create a permanent magical flame that gives light but produces no heat."},
+ "Darkvision":{cast:"1 Action",summary:"Give a creature Darkvision out to 150 feet for 8 hours."},
+ "Enhance Ability":{cast:"1 Action",summary:"Grant a creature Advantage on checks using one chosen ability score while you concentrate."},
+ "Enlarge/Reduce":{cast:"1 Action",summary:"Make a creature or object larger or smaller, changing its size and related combat effects."},
+ "Find Traps":{cast:"1 Action",summary:"Learn whether a trap is present within range and the general nature of its danger."},
+ "Flame Blade":{cast:"1 Bonus Action",summary:"Create a fiery blade that you can use for melee spell attacks while concentrating."},
+ "Flaming Sphere":{cast:"1 Action",summary:"Create a rolling ball of fire that damages nearby creatures; you can move it on later turns."},
+ "Gust of Wind":{cast:"1 Action",summary:"Create a powerful line of wind that pushes creatures and disperses gases while you concentrate."},
+ "Heat Metal":{cast:"1 Action",summary:"Heat a metal object to burn a creature touching or wearing it; can repeat the damage on later turns."},
+ "Hold Person":{cast:"1 Action",summary:"A Humanoid that fails a Wisdom save is Paralyzed while you maintain Concentration."},
+ "Lesser Restoration":{cast:"1 Bonus Action",summary:"End one specified condition or disease affecting a creature."},
+ "Locate Animals or Plants":{cast:"1 Action / Ritual",summary:"Learn the direction and distance to the nearest Beast or plant of a named kind within range."},
+ "Locate Object":{cast:"1 Action",summary:"Sense the direction to a familiar or specifically described object while concentrating."},
+ "Misty Step":{cast:"1 Bonus Action",summary:"Teleport up to 30 feet to an unoccupied space you can see. Granted by Conjuration Adept."},
+ "Moonbeam":{cast:"1 Action",summary:"Create a damaging beam of moonlight; creatures entering or starting there make Constitution saves against radiant damage."},
+ "Pass without Trace":{cast:"1 Action",summary:"Give nearby allies a major bonus to Stealth checks and help conceal their tracks while concentrating."},
+ "Protection from Poison":{cast:"1 Action",summary:"Neutralize one poison affecting a creature and grant resistance to poison damage for 1 hour."},
+ "Skywrite":{cast:"1 Action / Ritual",summary:"Write a short message in clouds that can be seen from far away while you concentrate."},
+ "Spike Growth":{cast:"1 Action",summary:"Hide sharp spikes across an area; moving through them causes piercing damage."},
+ "Summon Beast":{cast:"1 Action",summary:"Summon a Beast spirit with a chosen form and combat stat block while concentrating."},
+
+ "Aura of Vitality":{cast:"1 Action",summary:"Create a healing aura; on later turns you can use a Bonus Action to heal a creature in the aura."},
+ "Call Lightning":{cast:"1 Action",summary:"Create a storm cloud and call lightning onto a point; repeat the strike on later turns while concentrating."},
+ "Conjure Animals":{cast:"1 Action",summary:"Conjure spectral animals around you that repeatedly damage creatures in their area while you concentrate."},
+ "Daylight":{cast:"1 Action",summary:"Create a large sphere of bright magical light for 1 hour."},
+ "Dispel Magic":{cast:"1 Action",summary:"End a spell affecting a creature, object, or magical effect; stronger spells may require an ability check."},
+ "Elemental Weapon":{cast:"1 Action",summary:"Empower a nonmagical weapon with an attack bonus and extra elemental damage while concentrating."},
+ "Erupting Earth":{cast:"1 Action",summary:"Blast an area with rock and earth for bludgeoning damage and leave broken ground behind."},
+ "Feign Death":{cast:"1 Action / Ritual",summary:"Make a willing creature appear dead and give it resistance to most damage for 1 hour."},
+ "Flame Arrows":{cast:"1 Action",summary:"Enchant ammunition so the next several hits deal extra fire damage while you concentrate."},
+ "Meld into Stone":{cast:"1 Action / Ritual",summary:"Step into a stone surface and remain hidden safely inside it for up to 8 hours."},
+ "Plant Growth":{cast:"1 Action",summary:"Either create extremely overgrown difficult terrain or enrich plants in a large area for long-term growth."},
+ "Protection from Energy":{cast:"1 Action",summary:"Give a creature resistance to one chosen elemental damage type while concentrating."},
+ "Revivify":{cast:"1 Action",summary:"Return a creature that died within the last minute to life with 1 HP; requires a costly diamond."},
+ "Sleet Storm":{cast:"1 Action",summary:"Create a large icy storm that obscures vision, creates difficult terrain, knocks creatures Prone, and disrupts Concentration."},
+ "Syluné’s Viper":{cast:"1 Bonus Action",summary:"Gain temporary HP and a magical ranged viper attack that can inflict Poisoned and Incapacitated briefly while the spell remains active."},
+ "Tidal Wave":{cast:"1 Action",summary:"Create a crashing wave; Dexterity save against bludgeoning damage and being knocked Prone."},
+ "Speak with Plants":{cast:"1 Action",summary:"Communicate with plants and influence nearby vegetation for 10 minutes."},
+ "Summon Fey":{cast:"1 Action",summary:"Summon a Fey spirit with a chosen mood and combat stat block while concentrating."},
+ "Wall of Water":{cast:"1 Action",summary:"Create a wall of water that obstructs movement and interferes with attacks and some effects while you concentrate."},
+ "Water Breathing":{cast:"1 Action / Ritual",summary:"Allow up to ten willing creatures to breathe underwater for 24 hours."},
+ "Water Walk":{cast:"1 Action / Ritual",summary:"Allow up to ten willing creatures to move across liquid surfaces as if they were solid ground."},
+ "Wind Wall":{cast:"1 Action",summary:"Create a wall of strong wind that damages creatures when formed and blocks many projectiles and gases."},
+
+ "Find Familiar":{cast:"1 Hour / Ritual",summary:"Summon or change a familiar spirit. Grimsby's Familiar Friend feat also gives one free cast per Long Rest."},
+ "Blight":{cast:"1 Action",summary:"Drain life from one creature for heavy necrotic damage; plant creatures are especially vulnerable."},
+ "Charm Monster":{cast:"1 Action",summary:"Charm a creature that fails a Wisdom save, making it friendly toward you for the duration."},
+ "Confusion":{cast:"1 Action",summary:"Disorient creatures in an area so their actions and movement become unreliable while you concentrate."},
+ "Conjure Minor Elementals":{cast:"1 Action",summary:"Elemental spirits surround you, making the area difficult terrain and adding elemental damage to your attacks."},
+ "Conjure Woodland Beings":{cast:"1 Action",summary:"Fey spirits swirl around you, damaging nearby enemies and moving with you while you concentrate."},
+ "Control Water":{cast:"1 Action",summary:"Control a large body of water: flood, part it, redirect its flow, or create a whirlpool."},
+ "Divination":{cast:"1 Action / Ritual",summary:"Ask a primal or divine power one question about a goal or event within the next seven days."},
+ "Dominate Beast":{cast:"1 Action",summary:"Take magical control of a Beast that fails a Wisdom save while you maintain Concentration."},
+ "Fire Shield":{cast:"1 Action",summary:"Wreathe yourself in protective flame or frost, gaining resistance and damaging nearby attackers."},
+ "Fount of Moonlight":{cast:"1 Action",summary:"Moonlight empowers your melee attacks with extra radiant damage and punishes creatures that strike you."},
+ "Freedom of Movement":{cast:"1 Action",summary:"A creature ignores several movement restraints and can escape nonmagical restraints more easily for 1 hour."},
+ "Giant Insect":{cast:"1 Action",summary:"Conjure a giant insect spirit that fights for you while you concentrate."},
+ "Grasping Vine":{cast:"1 Bonus Action",summary:"Create a magical vine that can lash out and pull creatures toward it while you concentrate."},
+ "Hallucinatory Terrain":{cast:"10 Minutes",summary:"Make natural terrain look, sound, and smell like a different kind of natural terrain."},
+ "Ice Storm":{cast:"1 Action",summary:"Hail and ice hammer an area for bludgeoning and cold damage and leave difficult terrain."},
+ "Locate Creature":{cast:"1 Action",summary:"Sense the direction to a familiar or specifically described creature while you concentrate."},
+ "Polymorph":{cast:"1 Action",summary:"Transform a creature into a Beast form while you concentrate; the spell supplies the form's statistics."},
+ "Stone Shape":{cast:"1 Action",summary:"Reshape a Medium-sized or smaller piece of stone into a form you choose."},
+ "Stoneskin":{cast:"1 Action",summary:"Give a creature resistance to common physical weapon damage while you concentrate."},
+ "Summon Elemental":{cast:"1 Action",summary:"Summon an elemental spirit with a chosen element and combat stat block while you concentrate."},
+ "Wall of Fire":{cast:"1 Action",summary:"Create a blazing wall that damages creatures near or passing through its dangerous side."},
+ "Antilife Shell":{cast:"1 Action",summary:"Create a moving barrier around you that living creatures cannot enter while you concentrate."},
+ "Awaken":{cast:"8 Hours",summary:"Grant lasting intelligence and speech to a Beast or plant, potentially charming it toward you."},
+ "Commune with Nature":{cast:"1 Minute / Ritual",summary:"Learn several facts about the surrounding natural region, such as terrain, creatures, or planar influence."},
+ "Cone of Cold":{cast:"1 Action",summary:"Blast a large cone with intense cold for heavy cold damage."},
+ "Conjure Elemental":{cast:"1 Action",summary:"Create an elemental manifestation that controls space and harms creatures that approach it."},
+ "Contagion":{cast:"1 Action",summary:"Inflict a magical disease-like effect that can leave a creature badly impaired."},
+ "Geas":{cast:"1 Minute",summary:"Magically command a creature to follow a long-term instruction, punishing serious disobedience."},
+ "Greater Restoration":{cast:"1 Action",summary:"End a major debilitating effect such as severe exhaustion, petrification, a curse, or an ability reduction."},
+ "Insect Plague":{cast:"1 Action",summary:"Fill an area with biting insects that obscure the area and repeatedly damage creatures inside."},
+ "Mass Cure Wounds":{cast:"1 Action",summary:"Restore a large amount of HP to several creatures in an area."},
+ "Planar Binding":{cast:"1 Hour",summary:"Bind a celestial, elemental, fey, or fiend to serve you for an extended duration."},
+ "Reincarnate":{cast:"1 Hour",summary:"Return a recently dead Humanoid to life in a newly formed body."},
+ "Scrying":{cast:"10 Minutes",summary:"Magically observe a creature or location at great distance while you concentrate."},
+ "Tree Stride":{cast:"1 Action",summary:"Step into one tree and emerge from another tree at long range while you concentrate."},
+ "Wall of Stone":{cast:"1 Action",summary:"Create solid stone panels as a barrier; maintaining the spell long enough can make the wall permanent."},
+ "Conjure Fey":{cast:"1 Action",summary:"Call fey spirits that strike and hinder enemies while moving around you as you concentrate."},
+ "Find the Path":{cast:"1 Minute",summary:"Sense the most direct route to a familiar fixed destination while you concentrate."},
+ "Flesh to Stone":{cast:"1 Action",summary:"A creature can become Restrained and eventually Petrified after repeated failed Constitution saves."},
+ "Heal":{cast:"1 Action",summary:"Restore a very large amount of HP at range and end certain serious conditions."},
+ "Heroes’ Feast":{cast:"10 Minutes",summary:"Create a magical feast that gives a group powerful defensive and vitality benefits for the day."},
+ "Move Earth":{cast:"1 Action",summary:"Gradually reshape a large area of earth, sand, or clay while you concentrate."},
+ "Sunbeam":{cast:"1 Action",summary:"Fire a line of radiant sunlight that damages and can blind creatures; repeat on later turns."},
+ "Transport via Plants":{cast:"1 Action",summary:"Use a Large or larger plant as a gateway to another plant on the same plane."},
+ "Wall of Thorns":{cast:"1 Action",summary:"Create a thick wall of thorns that blocks movement and tears creatures passing through it."},
+ "Wind Walk":{cast:"1 Minute",summary:"Transform a group into fast-moving cloudlike forms for long-distance travel."},
+ "Fire Storm":{cast:"1 Action",summary:"Create multiple connected zones of roaring fire for heavy fire damage over a large area."},
+ "Mirage Arcane":{cast:"10 Minutes",summary:"Transform the appearance and feel of terrain across a huge area with powerful illusion."},
+ "Plane Shift":{cast:"1 Action",summary:"Transport a group to another plane, or attempt to banish an unwilling creature to one."},
+ "Regenerate":{cast:"1 Minute",summary:"Give powerful ongoing healing and restore severed body parts over time."},
+ "Reverse Gravity":{cast:"1 Action",summary:"Reverse gravity in a large area, causing creatures and objects to fall upward while you concentrate."},
+ "Symbol":{cast:"1 Minute",summary:"Place a magical glyph that triggers a powerful chosen effect when its conditions are met."},
+ "Animal Shapes":{cast:"1 Action",summary:"Transform willing creatures into Beast forms and change those forms again during the spell."},
+ "Antipathy/Sympathy":{cast:"1 Hour",summary:"Make a creature or place magically repel or attract a chosen kind of creature for days."},
+ "Befuddlement":{cast:"1 Action",summary:"Severely disrupt a creature's mental abilities and magical competence."},
+ "Control Weather":{cast:"10 Minutes",summary:"Gradually change the local weather across miles while you maintain Concentration."},
+ "Earthquake":{cast:"1 Action",summary:"Create a devastating earthquake that tears terrain, knocks creatures down, and can damage structures."},
+ "Incendiary Cloud":{cast:"1 Action",summary:"Create a moving cloud of burning smoke that repeatedly deals heavy fire damage."},
+ "Sunburst":{cast:"1 Action",summary:"Detonate brilliant sunlight across a huge area for radiant damage and possible blindness."},
+ "Tsunami":{cast:"1 Minute",summary:"Create an enormous moving wall of water that batters, carries, and crushes creatures."},
+ "Foresight":{cast:"1 Minute",summary:"Give a creature extraordinary supernatural awareness for 8 hours, greatly improving attacks, defenses, and checks."},
+ "Shapechange":{cast:"1 Action",summary:"Transform yourself into powerful creature forms while retaining key parts of your own character."},
+ "Storm of Vengeance":{cast:"1 Action",summary:"Create a massive supernatural storm whose effects escalate over several rounds."},
+ "True Resurrection":{cast:"1 Hour",summary:"Restore a long-dead creature fully to life, even creating a new body if necessary."}
+};
+
+let selectedSpellName=null;
+
+
+function getConcentrationSpells(){
+ return druidSpells.filter(s=>{
+   if(!s.conc)return false;
+   if(s.moon||s.druidic||s.conjGranted||s.familiarFeat)return true;
+   if(s.level===0)return knownCantrips.includes(s.name);
+   return preparedSpells.includes(s.name);
+ });
+}
+
+
+const conditionRules={
+ "Blinded":"You can’t see. Sight-dependent checks fail; attacks against you have Advantage, and your attacks have Disadvantage.",
+ "Charmed":"You can’t attack the charmer or target it with harmful abilities or magical effects; the charmer has Advantage on social checks with you.",
+ "Deafened":"You can’t hear and automatically fail checks that require hearing.",
+ "Frightened":"You have Disadvantage on ability checks and attacks while the source is in line of sight, and you can’t willingly move closer to it.",
+ "Grappled":"Your Speed is 0 and can’t increase. The grappler can drag or carry you, subject to the grapple rules.",
+ "Incapacitated":"You can’t take actions, Bonus Actions, or Reactions; Concentration ends.",
+ "Invisible":"You have Advantage on Initiative; attacks against you have Disadvantage and your attacks have Advantage when the attacker can’t see you.",
+ "Paralyzed":"You are Incapacitated, your Speed is 0, you automatically fail STR/DEX saves, attacks against you have Advantage, and nearby hits are Critical Hits.",
+ "Petrified":"You are transformed into an inanimate substance, Incapacitated, Speed 0, fail STR/DEX saves, attacks against you have Advantage, and you resist all damage.",
+ "Poisoned":"You have Disadvantage on attack rolls and ability checks.",
+ "Prone":"Your movement is restricted to crawling unless you stand. Your attacks have Disadvantage; attacks within 5 ft have Advantage, while farther attacks have Disadvantage.",
+ "Restrained":"Your Speed is 0. Attacks against you have Advantage, your attacks have Disadvantage, and you have Disadvantage on Dexterity saves.",
+ "Stunned":"You are Incapacitated, automatically fail STR/DEX saves, and attacks against you have Advantage.",
+ "Unconscious":"You are Incapacitated and Prone, drop what you’re holding, Speed 0, fail STR/DEX saves, attacks against you have Advantage, and nearby hits are Critical Hits."
+};
+function save(){
+  try{
+    localStorage.setItem('grimsbyState_v141',JSON.stringify({level,abilities,maxHp,levelHistory,elementalFury,featChoices,epicBoon,hp,temp,wild,form,inspiration,concentration,conditions,shield,equipment,extraLanguage,knownForms,preparedSpells,knownCantrips,slots,familiarFreeCastUsed,familiarHp,familiarHelpUses,hitDice,wildResurgenceSlotUsed,adrenalineUses,relentlessUsed,notes,initiativeBonus}));
+  }catch(e){}
+}
+function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id)); window.scrollTo({top:0,behavior:'instant'})}
+
+function renderEquipment(){
+ const list=document.querySelector('#equipmentList');
+ if(list){
+   list.innerHTML='';
+   equipment.forEach((item,i)=>{
+     const row=document.createElement('div');
+     row.className='card row between';
+     row.innerHTML=`<span>${item}</span><button class="btn" style="min-height:38px;padding:7px 11px" data-remove-equipment="${i}">Remove</button>`;
+     list.appendChild(row);
+   });
+   list.querySelectorAll('[data-remove-equipment]').forEach(b=>b.onclick=()=>{
+     equipment.splice(Number(b.dataset.removeEquipment),1); save(); renderEquipment(); sync();
+   });
+ }
+ const s=document.querySelector('#equipmentSummary');
+ if(s) s.textContent=equipment.length?equipment.join(' • '):'No equipment recorded';
+}
+function renderLanguages(){
+ const row=document.querySelector('#extraLanguageRow');
+ const name=document.querySelector('#extraLanguageName');
+ const choice=document.querySelector('#languageChoiceCard');
+ const change=document.querySelector('#changeLanguage');
+ const summary=document.querySelector('#characterLanguageSummary');
+ if(extraLanguage){
+   if(row) row.classList.remove('hidden');
+   if(name) name.textContent=extraLanguage;
+   if(choice) choice.classList.add('hidden');
+   if(change) change.classList.remove('hidden');
+   if(summary) summary.textContent=`Common • Orc • ${extraLanguage} • Druidic`;
+ }else{
+   if(row) row.classList.add('hidden');
+   if(choice) choice.classList.remove('hidden');
+   if(change) change.classList.add('hidden');
+   if(summary) summary.textContent='Common • Orc • Druidic • 1 choice open';
+ }
+}
+
+
+
+function isAlwaysPreparedSpell(s){
+ if(s.grantAt && level<s.grantAt)return false;
+ return !!(s.moon||s.druidic||s.conjGranted||s.familiarFeat);
+}
+function spellLevelLabel(level){
+ if(level===0)return 'Cantrip';
+ const suffix=(level===1?'st':level===2?'nd':level===3?'rd':'th');
+ return `${level}${suffix} Level`;
+}
+function spellSourceBadges(s){
+ const tags=[];
+ const meta=spellMeta[s.name];
+ if(meta?.cast) tags.push(meta.cast.includes('Bonus Action')?'Bonus Action':meta.cast);
+ if(s.moon) tags.push('Moon Druid');
+ if(s.conjGranted) tags.push('Conjuration Adept');
+ if(s.school==='Conjuration'&&s.conc) tags.push('Persistent Conjuration applies');
+ if(s.arcana) tags.push('Arcana Unleashed');
+ if(s.newSpell) tags.push('New 2026 spell');
+ if(s.battleFamiliar) tags.push('Battle Familiar');
+ if(s.familiarFeat) tags.push('Familiar Friend');
+ if(s.druidic) tags.push('Druidic');
+ if(s.wildcast) tags.push('Cast in Wild Shape');
+ if(s.conc) tags.push('Concentration');
+ if(s.ritual) tags.push('Ritual');
+ return tags;
+}
+function renderSlots(){
+ const wrap=document.querySelector('#slotTracker');
+ if(!wrap)return;
+ wrap.innerHTML='';
+ const highest=maxSpellLevel();
+ for(let spellLevel=1;spellLevel<=highest;spellLevel++){
+   const max=slotMax(spellLevel);
+   if(max<=0)continue;
+   if((slots[spellLevel]??0)>max)slots[spellLevel]=max;
+   const row=document.createElement('div');
+   row.className='row between';
+   row.innerHTML=`
+     <div><b>${spellLevelLabel(spellLevel)}</b><div class="sub mt8">${slots[spellLevel]??0} / ${max} remaining</div></div>
+     <div class="row">
+       <button class="btn" data-slot-use="${spellLevel}" style="min-height:40px;padding:8px 12px">Use</button>
+       <button class="btn" data-slot-restore="${spellLevel}" style="min-height:40px;padding:8px 12px">Restore</button>
+     </div>`;
+   wrap.appendChild(row);
+   if(spellLevel<highest){const sep=document.createElement('div');sep.className='sep';wrap.appendChild(sep)}
+ }
+ wrap.querySelectorAll('[data-slot-use]').forEach(b=>b.onclick=()=>{
+   const l=Number(b.dataset.slotUse);
+   if((slots[l]??0)>0){slots[l]--;save();renderSpells();sync()}
+ });
+ wrap.querySelectorAll('[data-slot-restore]').forEach(b=>b.onclick=()=>{
+   const l=Number(b.dataset.slotRestore),max=slotMax(l);
+   if((slots[l]??0)<max){slots[l]=(slots[l]??0)+1;save();renderSpells();sync()}
+ });
+}
+
+function openSpellDetail(name){
+ const s=druidSpells.find(x=>x.name===name);
+ if(!s)return;
+ selectedSpellName=name;
+ const meta=spellMeta[name]||{cast:'1 Action',summary:'Spell details are not yet available.'};
+ document.querySelector('#spellDetailTitle').textContent=s.name;
+ document.querySelector('#spellDetailMeta').textContent=`${spellLevelLabel(s.level)} • ${s.school} • ${meta.cast}`;
+ document.querySelector('#spellDetailSummary').textContent=meta.summary;
+
+ const badges=spellSourceBadges(s).filter((v,i,a)=>a.indexOf(v)===i);
+ document.querySelector('#spellDetailBadges').innerHTML=badges.map(t=>`<span class="chip">${t}</span>`).join('');
+
+ const matCard=document.querySelector('#spellDetailMaterialCard');
+ const mat=document.querySelector('#spellDetailMaterial');
+ if(s.material){
+   matCard.style.display='block';
+   mat.textContent=s.material;
+ }else{
+   matCard.style.display='none';
+   mat.textContent='';
+ }
+
+ document.querySelector('#spellDetailWildCard').style.display=s.wildcast?'block':'none';
+ show('spellDetail');
+ document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Spells'));
+}
+
+function renderSpells(){
+ const list=document.querySelector('#spellList');
+ if(!list)return;
+
+ const preparedCount=document.querySelector('#preparedCount');
+ if(preparedCount) preparedCount.textContent=preparedSpells.length;
+ const cap=preparedCap();
+ const capLabel=document.querySelector('#preparedCapLabel'); if(capLabel) capLabel.textContent=` / ${cap}`;
+ const legendCap=document.querySelector('#legendPreparedCap'); if(legendCap) legendCap.textContent=cap;
+ const stats=document.querySelector('#spellHeaderStats'); if(stats) stats.textContent=`DC ${8+pb()+mod(abilities.wis)} • Spell Attack ${fmt(pb()+mod(abilities.wis))}`;
+ document.querySelectorAll('.highSpellFilter').forEach(b=>b.classList.toggle('hidden',Number(b.dataset.spellFilter)>maxSpellLevel()));
+
+ renderSlots();
+
+ const free=document.querySelector('#freeFamiliarCast');
+ const freeNote=document.querySelector('#familiarCastNote');
+ if(free){
+   free.textContent=familiarFreeCastUsed?'Used Today':'Cast Free';
+   free.disabled=familiarFreeCastUsed;
+   free.classList.toggle('accent',!familiarFreeCastUsed);
+ }
+ if(freeNote) freeNote.textContent=familiarFreeCastUsed
+   ? 'Free Familiar Friend cast used. Resets on a Long Rest.'
+   : "Doesn't spend a spell slot or material components.";
+
+ const q=spellSearch.trim().toLowerCase();
+ let spells=druidSpells.filter(s=>{
+   if(s.level>0 && s.level>maxSpellLevel())return false;
+   if(q&&!s.name.toLowerCase().includes(q))return false;
+   if(spellFilter==='all')return true;
+   if(['0','1','2','3','4','5','6','7','8','9'].includes(spellFilter))return s.level===Number(spellFilter);
+   if(spellFilter==='prepared')return (s.level===0?knownCantrips.includes(s.name):preparedSpells.includes(s.name)||isAlwaysPreparedSpell(s));
+   if(spellFilter==='granted')return isAlwaysPreparedSpell(s);
+   if(spellFilter==='concentration')return !!s.conc;
+   if(spellFilter==='bonus')return (spellMeta[s.name]?.cast||'').includes('Bonus Action');
+   if(spellFilter==='new')return !!(s.arcana||s.newSpell);
+   return true;
+ });
+
+ list.innerHTML='';
+ spells.forEach(s=>{
+   const card=document.createElement('div');
+   card.className='card';
+
+   const always=isAlwaysPreparedSpell(s);
+   const isKnown=s.level===0 ? (knownCantrips.includes(s.name)||always) : (preparedSpells.includes(s.name)||always);
+   const canChoose=s.level===0 ? !always : !always&&!s.featOnly;
+   const tags=spellSourceBadges(s);
+
+   let action='';
+   if(s.level===0){
+     if(always) action='<span class="chip">Granted</span>';
+     else action=`<button class="btn" data-cantrip="${s.name}" style="min-height:40px;padding:8px 12px">${knownCantrips.includes(s.name)?'Known ✓':'Learn'}</button>`;
+   }else if(always){
+     action='<span class="chip">Always Prepared</span>';
+   }else if(canChoose){
+     action=`<button class="btn ${preparedSpells.includes(s.name)?'accent':''}" data-prepare="${s.name}" style="min-height:40px;padding:8px 12px">${preparedSpells.includes(s.name)?'Prepared ✓':'Prepare'}</button>`;
+   }
+
+   card.innerHTML=`
+     <div class="row between">
+       <button type="button" class="spell-open" data-spell-open="${s.name}" style="min-width:0;flex:1;text-align:left;background:none;border:0;padding:0;color:inherit;font:inherit">
+         <b>${s.name}</b>
+         <div class="sub mt8">${spellLevelLabel(s.level)} • ${s.school} • Tap for details</div>
+       </button>
+       ${action}
+     </div>
+     ${tags.length?`<div class="status show mt12">${tags.map(t=>`<span class="chip">${t}</span>`).join('')}</div>`:''}
+     ${s.material?`<div class="notice mt12"><b>Material:</b> ${s.material}${s.battleFamiliar?' • Once Grimsby has this component, this can be prepared like any other level 2 Druid spell.':''}</div>`:''}
+   `;
+   list.appendChild(card);
+ });
+
+ list.querySelectorAll('[data-spell-open]').forEach(b=>b.onclick=()=>{
+   openSpellDetail(b.dataset.spellOpen);
+ });
+
+ list.querySelectorAll('[data-prepare]').forEach(b=>b.onclick=()=>{
+   const name=b.dataset.prepare;
+   const i=preparedSpells.indexOf(name);
+   if(i>=0)preparedSpells.splice(i,1);
+   else if(preparedSpells.length<preparedCap())preparedSpells.push(name);
+   else {alert(`Grimsby can prepare ${preparedCap()} Druid spells at level ${level}. Unprepare one first.`);return}
+   save();renderSpells();renderCombatStatus();sync();
+   const ss=document.querySelector('#spellSaveStatus'); if(ss) ss.textContent='✓ Saved';
+ });
+
+ list.querySelectorAll('[data-cantrip]').forEach(b=>b.onclick=()=>{
+   const name=b.dataset.cantrip;
+   const i=knownCantrips.indexOf(name);
+   if(i>=0)knownCantrips.splice(i,1);
+   else if(knownCantrips.length<cantripCap())knownCantrips.push(name);
+   else {alert(`Grimsby knows ${cantripCap()} selectable Druid cantrips at level ${level} with Magician. Replace one first.`);return}
+   save();renderSpells();renderCombatStatus();sync();
+   const ss=document.querySelector('#spellSaveStatus'); if(ss) ss.textContent='✓ Saved';
+ });
+
+ document.querySelectorAll('[data-spell-filter]').forEach(b=>b.classList.toggle('form-active',b.dataset.spellFilter===spellFilter));
+}
+
+
+function renderFamiliar(){
+ const hpEl=document.querySelector('#familiarHp');
+ const help=document.querySelector('#famHelpCount');
+ const helpBtn=document.querySelector('#famHelpUse');
+ if(hpEl) hpEl.textContent=familiarHp;
+ if(help) help.textContent=`${familiarHelpUses} / ${pb()} uses`;
+ if(helpBtn){
+   helpBtn.disabled=familiarHelpUses<=0;
+   helpBtn.textContent=familiarHelpUses>0?'Use':'Spent';
+   helpBtn.classList.toggle('accent',familiarHelpUses>0);
+ }
+}
+function renderRest(){
+ const hd=document.querySelector('#hitDiceCount');
+ const btn=document.querySelector('#spendHitDie');
+ if(hd) hd.textContent=`${hitDice} / ${level}`;
+ if(btn) btn.disabled=hitDice<=0;
+ const con=document.querySelector('#restConBonus'); if(con) con.textContent=`CON ${fmt(mod(abilities.con))}`;
+}
+function renderMore(){
+ const wildEl=document.querySelector('#moreWild');
+ const famEl=document.querySelector('#moreFamiliarCast');
+ const prepEl=document.querySelector('#morePrepared');
+ const notesEl=document.querySelector('#notesSummary');
+ if(wildEl) wildEl.textContent=`${wild} / ${maxWild}`;
+ if(famEl) famEl.textContent=familiarFreeCastUsed?'Used':'Ready';
+ if(prepEl) prepEl.textContent=`${preparedSpells.length} / ${preparedCap()}`;
+ const adrEl=document.querySelector('#moreAdrenaline'); if(adrEl) adrEl.textContent=`${adrenalineUses} / ${pb()}`;
+ if(notesEl){
+   const cleaned=notes.trim().replace(/\s+/g,' ');
+   notesEl.textContent=cleaned ? (cleaned.length>52?cleaned.slice(0,52)+'…':cleaned) : 'No notes yet';
+ }
+ const input=document.querySelector('#notesInput');
+ if(input && document.activeElement!==input) input.value=notes;
+ const init=document.querySelector('#initiativeInput');
+ if(init && document.activeElement!==init) init.value=initiativeBonus;
+ const lu=document.querySelector('#levelUpSummary'); if(lu) lu.textContent=level<20?`Druid ${level} → ${level+1}`:'Level 20 • complete';
+ const lh=document.querySelector('#levelHistorySummary'); if(lh) lh.textContent=`Current level ${level} • ${levelHistory.length} recorded level-up${levelHistory.length===1?'':'s'}`;
+}
+
+function renderCombat(){
+ const normalAc=14+(shield?2:0);
+ const activeAc=form?moonAc():normalAc;
+ const hpEl=document.querySelector('#combatHp');
+ const tempEl=document.querySelector('#combatTemp');
+ const tempWrap=document.querySelector('#combatTempWrap');
+ const acEl=document.querySelector('#combatAc');
+ if(hpEl) hpEl.textContent=hp;
+ if(tempEl) tempEl.textContent=temp;
+ if(tempWrap) tempWrap.classList.toggle('hidden',temp<=0);
+ if(acEl) acEl.textContent=activeAc;
+ const cShield=document.querySelector('#combatShieldToggle');
+ if(cShield){
+   cShield.textContent=shield?'Shield ✓':'Shield Off';
+   cShield.style.opacity=form?'.55':'1';
+   cShield.title=form?'Shield does not determine beast-form AC':'Toggle shield equipped';
+ }
+
+ const initEl=document.querySelector('#combatInitiative');
+ if(initEl) initEl.textContent=(initiativeBonus>=0?'+':'')+initiativeBonus;
+ const subtitle=document.querySelector('#combatSubtitle');
+ const banner=document.querySelector('#combatShapeBanner');
+ const primaryTitle=document.querySelector('#combatPrimaryTitle');
+ const primarySub=document.querySelector('#combatPrimarySub');
+ const wildTitle=document.querySelector('#combatWildTitle');
+ const wildSub=document.querySelector('#combatWildSub');
+ if(form){
+   if(subtitle) subtitle.textContent=`Grimsby • ${form}`;
+   if(banner){banner.textContent=`Wild Shaped: ${form} • ${temp} Temp HP • AC ${activeAc}`;banner.classList.remove('hidden')}
+   if(primaryTitle) primaryTitle.textContent=form;
+   if(primarySub) primarySub.textContent='View beast actions & traits';
+   if(wildTitle) wildTitle.textContent='End / View Form';
+   if(wildSub) wildSub.textContent=`${wild} / ${maxWild} uses remaining`;
+ }else{
+   if(subtitle) subtitle.textContent='Grimsby • Normal Form';
+   if(banner) banner.classList.add('hidden');
+   if(primaryTitle) primaryTitle.textContent='Quarterstaff';
+   if(primarySub) primarySub.textContent=`${fmt(mod(abilities.str)+pb())} to hit • View attack`;
+   if(wildTitle) wildTitle.textContent='Transform';
+   if(wildSub) wildSub.textContent=`${wild} / ${maxWild} uses`;
+ }
+ const wu=document.querySelector('#combatWildUses'); if(wu) wu.textContent=`${wild}/${maxWild}`;
+ const wr=document.querySelector('#wildResurgenceSummary');
+ const gainWild=document.querySelector('#resurgenceGainWild');
+ const gainSlot=document.querySelector('#resurgenceGainSlot');
+ if(wr){
+   const availableSlots=Object.values(slots).reduce((a,b)=>a+(b||0),0);
+   wr.textContent=`Spell slots available: ${availableSlots} • 1st-level slots: ${slots[1]}/4 • Wild→slot ${wildResurgenceSlotUsed?'used':'ready'}`;
+ }
+ if(gainWild) gainWild.disabled=wild!==0 || Object.values(slots).reduce((a,b)=>a+(b||0),0)===0;
+ if(gainSlot) gainSlot.disabled=wild<1 || slots[1]>=slotMax(1) || wildResurgenceSlotUsed;
+
+ const adr=document.querySelector('#adrenalineCount');
+ const adrBtn=document.querySelector('#useAdrenaline');
+ if(adr) adr.textContent=`${adrenalineUses} / ${pb()} uses`;
+ if(adrBtn){adrBtn.disabled=adrenalineUses<=0;adrBtn.textContent=adrenalineUses>0?'Use':'Spent'}
+
+ const rel=document.querySelector('#relentlessStatus');
+ const relBtn=document.querySelector('#useRelentless');
+ if(rel) rel.textContent=relentlessUsed?'Used • restores on Long Rest':'Ready';
+ if(relBtn){relBtn.disabled=relentlessUsed;relBtn.textContent=relentlessUsed?'Used':'Use'}
+
+ const status=document.querySelector('#combatStatusSummary');
+ if(status){
+   const bits=[];
+   if(concentration) bits.push(`Concentrating: ${concentration}`);
+   if(conditions.length) bits.push(conditions.join(', '));
+   status.textContent=bits.length?bits.join(' • '):'No concentration or conditions';
+ }
+ const effects=document.querySelector('#combatStatusEffects');
+ if(effects){
+   effects.innerHTML='';
+   const entries=[];
+   if(concentration){
+     const spell=getConcentrationSpells().find(s=>s.name===concentration);
+     const isConj=spell?.school==='Conjuration';
+     entries.push([
+       `Concentrating: ${concentration}`,
+       isConj
+         ? `Concentration save: CON ${fmt(mod(abilities.con))}, plus WIS ${fmt(mod(abilities.wis))} from Conjuration Adept → ${fmt(mod(abilities.con)+mod(abilities.wis))} total.`
+         : `Concentration save: CON ${fmt(mod(abilities.con))}. Conjuration Adept does not apply because this isn't a Conjuration spell.`
+     ]);
+   }
+   conditions.forEach(c=>entries.push([c,conditionRules[c]||'Condition is active.']));
+   entries.forEach(([name,desc])=>{
+     const d=document.createElement('div');
+     d.className='notice';
+     d.innerHTML=`<b>${name}</b><div class="small mt8">${desc}</div>`;
+     effects.appendChild(d);
+   });
+   effects.classList.toggle('hidden',entries.length===0);
+ }
+}
+function renderCombatStatus(){
+ const ca=document.querySelector('#concentrationActive');
+ const sel=document.querySelector('#concentrationSelect');
+ const hint=document.querySelector('#concentrationSaveHint');
+ if(sel){
+   const oldValue=sel.value;
+   sel.innerHTML='<option value="">Choose a concentration spell…</option>';
+   getConcentrationSpells().forEach(s=>{
+     const o=document.createElement('option');
+     o.value=s.name;o.textContent=`${s.name} • ${s.school}${isAlwaysPreparedSpell(s)?' • Always Prepared':' • Prepared'}`;
+     sel.appendChild(o);
+   });
+   sel.value=concentration||oldValue||'';
+ }
+ if(ca){
+   if(concentration){ca.textContent=`Concentrating on ${concentration}`;ca.classList.remove('hidden')}
+   else ca.classList.add('hidden');
+ }
+ if(hint){
+   const chosen=getConcentrationSpells().find(s=>s.name===(sel?.value||concentration));
+   if(chosen){
+     const conj=chosen.school==='Conjuration';
+     hint.innerHTML=conj
+       ? `<b>Conjuration Adept applies.</b><div class="small mt8">CON ${fmt(mod(abilities.con))} + WIS ${fmt(mod(abilities.wis))} → <b>${fmt(mod(abilities.con)+mod(abilities.wis))} total</b>.</div>`
+       : `<b>Concentration save: ${fmt(mod(abilities.con))} CON.</b><div class="small mt8">Persistent Conjuration only applies to Conjuration spells.</div>`;
+     hint.classList.remove('hidden');
+   }else hint.classList.add('hidden');
+ }
+ const box=document.querySelector('#conditionChips');
+ if(box){
+   box.innerHTML='';
+   if(!conditions.length){
+     const s=document.createElement('span');s.className='sub';s.textContent='No active conditions';box.appendChild(s);
+   }else{
+     conditions.forEach((c,i)=>{
+       const b=document.createElement('button');
+       b.className='chip';b.textContent=`${c} ×`;
+       b.onclick=()=>{conditions.splice(i,1);save();renderCombatStatus();sync()};
+       box.appendChild(b);
+     });
+   }
+ }
+}
+
+
+function renderCharacterDynamic(){
+ const w=mod(abilities.wis),p=pb();
+ const set=(id,val)=>{const e=document.querySelector(id);if(e)e.textContent=val};
+ set('#homeIdentity',`Level ${level} Orc • Circle of the Moon Druid`);
+ set('#characterSubtitle',`Grimsby • Level ${level} Druid`);
+ set('#characterPb',fmt(p)); set('#detailClass',`Druid ${level}`);
+ set('#knownFormsSummary',`${knownForms.length} / ${knownFormCap()} known forms • Moon max CR ${moonMaxCr()}${level<8?' • no Fly Speed':''}`);
+ [['str','Str'],['dex','Dex'],['con','Con'],['int','Int'],['wis','Wis'],['cha','Cha']].forEach(([k,label])=>{set(`#ability${label}`,abilities[k]);set(`#mod${label}`,fmt(mod(abilities[k])))});
+ set('#abilitySpellDc',8+p+w);set('#abilitySpellAttack',fmt(p+w));
+ set('#saveStr',fmt(mod(abilities.str)));set('#saveDex',fmt(mod(abilities.dex)));set('#saveCon',fmt(mod(abilities.con)));
+ set('#saveInt',fmt(mod(abilities.int)+p));set('#saveWis',fmt(w+p));set('#saveCha',fmt(mod(abilities.cha)));
+ set('#skillMedicine',fmt(w+p));set('#skillNature',fmt(mod(abilities.int)+p+w));set('#skillReligion',fmt(mod(abilities.int)+p));set('#skillSurvival',fmt(w+p));
+ set('#quarterstaffToHit',fmt(mod(abilities.str)+p));
+ const dyn=document.querySelector('#dynamicLevelFeatures');
+ if(dyn){
+   const cards=[];
+   if(level>=6)cards.push(['Improved Circle Forms',`Wild Shape attacks can deal Radiant damage instead; add WIS ${fmt(w)} to Constitution saves while transformed.`]);
+   if(level>=7&&elementalFury)cards.push(['Elemental Fury',elementalFury==='Primal Strike'?`Primal Strike: extra ${level>=15?'2d8':'1d8'} elemental damage once per turn on a weapon or Beast attack.`:`Potent Spellcasting: add WIS ${fmt(w)} to Druid cantrip damage${level>=15?'; cantrips with 10+ ft range gain +300 ft range':''}.`]);
+   if(level>=10)cards.push(['Moonlight Step','Bonus Action teleport up to 30 ft; gain Advantage on your next attack before the end of the turn.']);
+   if(level>=14)cards.push(['Lunar Form','Once per turn, a Wild Shape attack can deal an extra 2d10 Radiant damage; Moonlight Step can take one nearby willing creature with you.']);
+   if(level>=18)cards.push(['Beast Spells','While Wild Shaped, cast spells except those with a costly or consumed Material component.']);
+   if(level>=20)cards.push(['Archdruid','Evergreen Wild Shape, Nature Magician spell-slot conversion, and greatly slowed aging.']);
+   dyn.innerHTML=cards.map(([a,b])=>`<div class="card"><b>${a}</b><div class="sub mt8">${b}</div></div>`).join('');
+ }
+}
+
+function sync(){
+ document.querySelector('#homeHp').textContent=hp;document.querySelector('#hpCurrent').textContent=hp;document.querySelector('#beastHp').textContent=hp;
+ const homeHpMax=document.querySelector('#homeHpMax'); if(homeHpMax) homeHpMax.textContent=` / ${maxHp}`;
+ const combatHpMax=document.querySelector('#combatHpMax'); if(combatHpMax) combatHpMax.textContent=` / ${maxHp}`;
+ document.querySelector('#homeTemp').textContent=temp;document.querySelector('#hpTemp').textContent=temp;document.querySelector('#beastTemp').textContent=temp;
+ document.querySelector('#homeTempWrap').classList.toggle('hidden',temp<=0);
+ document.querySelector('#wildUses').textContent=`${wild} / ${maxWild} uses available`;
+ document.querySelector('#inspirationBtn').textContent=inspiration?'★':'☆';
+ const normalAc=14+(shield?2:0);
+ document.querySelector('#homeAc').textContent=form?moonAc():normalAc;
+ const shieldBtn=document.querySelector('#shieldToggle');
+ shieldBtn.textContent=shield?'Shield ✓':'Shield Off';
+ shieldBtn.style.opacity=form?'.55':'1';
+ shieldBtn.title=form?'Shield does not set beast-form AC while Wild Shaped':'Toggle shield equipped';
+ if(form){document.querySelector('#wildCardTitle').textContent=form;document.querySelector('#wildCardSub').textContent=`Wild Shaped • ${temp} Temp HP`;document.querySelector('#wildCard').classList.add('form-active')}
+ else{document.querySelector('#wildCardTitle').textContent='Transform';document.querySelector('#wildCardSub').textContent=`${wild} / ${maxWild} uses`;document.querySelector('#wildCard').classList.remove('form-active')}
+ const st=document.querySelector('#dynamicStatus');st.innerHTML='';
+ const chips=[];
+ if(form)chips.push(`Wild Shaped: ${form}`); if(concentration)chips.push(`Concentrating: ${concentration}`); conditions.forEach(c=>chips.push(c)); if(temp>0)chips.push(`${temp} Temp HP`);
+ chips.forEach(t=>{let c=document.createElement('span');c.className='chip';c.textContent=t;st.appendChild(c)}); st.classList.toggle('show',chips.length>0);
+ document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav==='home'));
+ const homeFam=document.querySelector('#homeFamiliarHp');
+ if(homeFam) homeFam.textContent=`${familiarHp} / ${familiarMaxHp()} HP`;
+ renderCharacterDynamic(); renderEquipment(); renderLanguages(); renderCombat(); renderCombatStatus(); renderWildForms(); renderSpells(); renderMore(); renderFamiliar(); renderRest();
+ save();
+}
+function renderBeast(name){
+ previewForm=name;
+ const f=forms[name];
+ if(!f)return;
+ document.querySelector('#beastName').textContent=name;
+ document.querySelector('#beastSpeed').textContent=f.speed;
+ document.querySelector('#beastSize').textContent=f.size;
+ const box=document.querySelector('#beastTraits');box.innerHTML='';
+ f.traits.forEach(t=>{
+   let d=document.createElement('div');
+   d.className='btn';d.style.textAlign='left';
+   d.innerHTML=`<b>${t[0]}</b><div class="sub mt8">${t[1]}</div>`;
+   box.appendChild(d);
+ });
+ const action=document.querySelector('#beastActionBtn');
+ const notice=document.querySelector('#beastPreviewNotice');
+ if(form===name){
+   action.textContent='End Wild Shape';
+   action.classList.remove('accent');
+   notice.textContent='This is Grimsby’s current active Wild Shape.';
+   notice.classList.remove('hidden');
+ }else{
+   action.textContent=`Transform into ${name}`;
+   action.classList.add('accent');
+   action.disabled=wild<1;
+   notice.textContent=`Previewing ${name}. No Wild Shape use has been spent.`;
+   notice.classList.remove('hidden');
+ }
+ document.querySelector('#beastHp').textContent=hp;
+ document.querySelector('#beastTemp').textContent=temp;
+}
+function openBeast(name=null,from=null){
+ if(from) backTargets.beast=from;
+ const target=name||form;
+ if(!target){backTargets.wild=from||'home';return show('wild')}
+ renderBeast(target);show('beast');
+}
+function renderWildForms(){
+ const list=document.querySelector('#forms');
+ if(!list)return;
+ list.innerHTML='';
+ knownForms.forEach(name=>{
+   const f=forms[name];
+   if(!f)return;
+   const b=document.createElement('button');
+   b.className='btn full';
+   b.style.textAlign='left';
+   const active=form===name;
+   b.innerHTML=`<div class="row between"><div><b>${name}${active?' • Active':''}</b><div class="sub mt8">${f.speed} • ${f.size}</div></div><span>›</span></div>`;
+   b.onclick=()=>{backTargets.beast='wild';openBeast(name,'wild')};
+   list.appendChild(b);
+ });
+ const count=document.querySelector('#knownFormCount');
+ if(count) count.textContent=`(${knownForms.length} / ${knownFormCap()} known)`;
+}
+function renderManageForms(){
+ const known=document.querySelector('#knownFormsManage');
+ const avail=document.querySelector('#availableFormsManage');
+ if(!known||!avail)return;
+ known.innerHTML='';avail.innerHTML='';
+ const cap=knownFormCap();
+ knownForms.forEach(name=>{
+   const b=document.createElement('button'); b.className='btn full'; b.style.textAlign='left';
+   if(pendingReplace===name)b.classList.add('form-active');
+   b.innerHTML=`<div class="row between"><div><b>${name}</b><div class="sub mt8">${pendingReplace===name?'Selected for replacement':'Tap to replace'}</div></div><span>${pendingReplace===name?'✓':'›'}</span></div>`;
+   b.onclick=()=>{pendingReplace=(pendingReplace===name?null:name);renderManageForms()};
+   known.appendChild(b);
+ });
+ if(knownForms.length<cap){
+   const d=document.createElement('div');d.className='notice';d.innerHTML=`<b>${cap-knownForms.length} open form slot${cap-knownForms.length===1?'':'s'}</b><div class="small mt8">Choose an available form below to learn it.</div>`;known.appendChild(d);
+ }
+ Object.keys(forms).filter(name=>!knownForms.includes(name)).forEach(name=>{
+   const f=forms[name],canAdd=knownForms.length<cap;
+   const b=document.createElement('button');b.className='btn full';b.style.textAlign='left';
+   b.innerHTML=`<div class="row between"><div><b>${name}</b><div class="sub mt8">${f.speed} • ${f.size}</div></div><span>${canAdd?'Learn':(pendingReplace?'Replace':'Select a known form first')}</span></div>`;
+   b.disabled=!canAdd&&!pendingReplace;
+   b.onclick=()=>{
+     if(canAdd) knownForms.push(name);
+     else{
+       if(!pendingReplace)return;
+       const idx=knownForms.indexOf(pendingReplace); if(idx<0)return;
+       knownForms[idx]=name;if(form===pendingReplace)form=null;
+     }
+     pendingReplace=null;save();renderManageForms();renderWildForms();sync();
+   };
+   avail.appendChild(b);
+ });
+}
+
+document.querySelector('#hpCard').onclick=(e)=>{
+ if(e.target.closest('#shieldToggle')) return;
+ backTargets.hp='home'; show('hp');
+};
+document.querySelector('#wildCard').onclick=()=>{backTargets.wild='home'; if(form)openBeast(form,'home');else{renderWildForms();show('wild')}};
+document.querySelector('#famCard').onclick=()=>{backTargets.familiar='home';show('familiar')};
+document.querySelector('#restCard').onclick=()=>{backTargets.rest='home';show('rest')};
+document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{
+ let dest=b.dataset.back;
+ const current=b.closest('.screen')?.id;
+ if(current && backTargets[current]) dest=backTargets[current];
+ show(dest);
+ if(dest==='character') document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Character'));
+ if(dest==='combat') document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Combat'));
+ if(dest==='more') document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='More'));
+ if(dest==='home') document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='home'));
+});
+document.querySelector('#inspirationBtn').onclick=()=>{inspiration=!inspiration;sync()};
+function amt(){return Math.max(0,Number(document.querySelector('#hpAmount').value)||0)}
+document.querySelector('#minusOne').onclick=()=>{let x=document.querySelector('#hpAmount');x.value=Math.max(0,(Number(x.value)||0)-1)}
+document.querySelector('#plusOne').onclick=()=>{let x=document.querySelector('#hpAmount');x.value=(Number(x.value)||0)+1}
+document.querySelector('#clearAmount').onclick=()=>document.querySelector('#hpAmount').value='';
+document.querySelector('#damageBtn').onclick=()=>{let n=amt(),a=Math.min(temp,n);temp-=a;n-=a;hp=Math.max(0,hp-n);sync()}
+document.querySelector('#healBtn').onclick=()=>{hp=Math.min(maxHp,hp+amt());sync()}
+document.querySelector('#tempBtn').onclick=()=>{temp=amt();sync()}
+document.querySelector('#shortRest').onclick=()=>{wild=Math.min(maxWild,wild+1);adrenalineUses=pb();sync();document.querySelector('#restMsg').textContent='Short Rest complete: 1 Wild Shape use and all Adrenaline Rush uses restored.'}
+document.querySelector('#longRest').onclick=()=>{hp=maxHp;temp=0;wild=maxWild;form=null;for(let i=1;i<=9;i++)slots[i]=slotMax(i);familiarFreeCastUsed=false;familiarHp=familiarMaxHp();familiarHelpUses=pb();hitDice=level;wildResurgenceSlotUsed=false;adrenalineUses=pb();relentlessUsed=false;sync();document.querySelector('#restMsg').textContent='Long Rest complete: HP, Hit Dice, spell slots, Wild Shape, Familiar Friend, Wild Resurgence and Orc resources restored.'}
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{const p=b.dataset.nav;
+ if(p==='home'){show('home');sync();document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='home'));return}
+ if(p==='Character'){show('character');document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Character'));return}
+ if(p==='Combat'){show('combat');sync();document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Combat'));return}
+ if(p==='Spells'){renderSpells();show('spells');document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Spells'));return}
+ if(p==='More'){renderMore();show('more');document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='More'));return}
+ document.querySelector('#placeholderTitle').textContent=p;document.querySelector('#placeholderBody').textContent=`${p} will be built as its own dedicated tab.`;
+ const ban=document.querySelector('#shapeBanner');if(form){ban.textContent=`Currently Wild Shaped: ${form}. Your transformed state remains active while using this tab.`;ban.classList.remove('hidden')}else ban.classList.add('hidden');
+ show('placeholder');document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x===b))
+})
+
+
+
+
+document.querySelector('#famDamage').onclick=()=>{familiarHp=Math.max(0,familiarHp-1);save();renderFamiliar()};
+document.querySelector('#famHeal').onclick=()=>{familiarHp=Math.min(familiarMaxHp(),familiarHp+1);save();renderFamiliar()};
+document.querySelector('#famFull').onclick=()=>{familiarHp=familiarMaxHp();save();renderFamiliar()};
+document.querySelector('#famHelpUse').onclick=()=>{if(familiarHelpUses>0){familiarHelpUses--;save();renderFamiliar();renderMore()}};
+
+document.querySelector('#spendHitDie').onclick=()=>{
+ const result=document.querySelector('#hitDieResult');
+ if(hitDice<=0){result.textContent='No Hit Dice remaining.';return}
+ if(hp>=maxHp){result.textContent='Grimsby is already at full HP, so there is no HP to recover with a Hit Die.';return}
+ const roll=1+Math.floor(Math.random()*8);
+ const heal=Math.max(1,roll+mod(abilities.con));
+ hitDice--;
+ hp=Math.min(maxHp,hp+heal);
+ save();sync();
+ document.querySelector('#hitDieResult').textContent=`Rolled ${roll} ${fmt(mod(abilities.con))} CON = ${heal} HP restored.`;
+};
+
+document.querySelector('#resurgenceGainWild').onclick=()=>{
+ if(wild!==0)return;
+ let level=[1,2,3,4,5,6,7,8,9].find(l=>(slots[l]||0)>0);
+ if(!level)return;
+ slots[level]--;
+ wild=1;
+ save();sync();
+};
+document.querySelector('#resurgenceGainSlot').onclick=()=>{
+ if(wild<1||slots[1]>=slotMax(1)||wildResurgenceSlotUsed)return;
+ wild--;
+ slots[1]=(slots[1]||0)+1;
+ wildResurgenceSlotUsed=true;
+ save();sync();
+};
+document.querySelector('#useAdrenaline').onclick=()=>{
+ if(adrenalineUses<=0)return;
+ adrenalineUses--;
+ temp=Math.max(temp,pb());
+ save();sync();
+};
+document.querySelector('#useRelentless').onclick=()=>{
+ if(relentlessUsed)return;
+ relentlessUsed=true;
+ if(hp===0)hp=1;
+ save();sync();
+};
+
+document.querySelector('#learnForm').onclick=()=>{pendingReplace=null;renderManageForms();show('manageforms')};
+document.querySelector('#beastActionBtn').onclick=()=>{
+ if(!previewForm)return;
+ if(form===previewForm){
+   form=null;previewForm=null;sync();
+   const dest=backTargets.beast||'home';show(dest);
+   return;
+ }
+ if(wild<1)return;
+ wild--;
+ form=previewForm;
+ temp=Math.max(temp,moonTempHp());
+ backTargets.beast=backTargets.wild||backTargets.beast||'home';
+ sync();
+ renderBeast(form);
+};
+
+document.querySelector('#combatShieldToggle').onclick=(e)=>{
+ e.stopPropagation();
+ if(form)return;
+ shield=!shield;save();sync();
+};
+document.querySelector('#combatHpBtn').onclick=()=>{backTargets.hp='combat';show('hp')};
+document.querySelector('#combatPrimaryAction').onclick=()=>{
+ if(form){openBeast(form,'combat');return}
+ // Attacks screen is reused, but return to Combat for this path.
+ backTargets.attacks='combat';show('attacks');
+};
+document.querySelector('#combatWildBtn').onclick=()=>{
+ if(form){openBeast(form,'combat');return}
+ backTargets.wild='combat';renderWildForms();show('wild');
+};
+document.querySelector('#combatStatusBtn').onclick=()=>{renderCombatStatus();show('combatstatus')};
+
+document.querySelector('#concentrationSelect').onchange=()=>renderCombatStatus();
+document.querySelector('#startConcentration').onclick=()=>{
+ const sel=document.querySelector('#concentrationSelect');
+ const v=sel.value;
+ if(!v)return;
+ concentration=v;save();renderCombatStatus();sync();
+};
+document.querySelector('#clearConcentration').onclick=()=>{
+ concentration=null;save();renderCombatStatus();sync();
+};
+document.querySelector('#addCondition').onclick=()=>{
+ const sel=document.querySelector('#conditionSelect');
+ const v=sel.value;
+ if(!v)return;
+ if(!conditions.includes(v)) conditions.push(v);
+ if(['Incapacitated','Paralyzed','Petrified','Stunned','Unconscious'].includes(v)) concentration=null;
+ sel.value='';save();renderCombatStatus();sync();
+};
+
+document.querySelector('#openEquipment').onclick=()=>{renderEquipment();show('equipment')};
+document.querySelector('#addEquipment').onclick=()=>{
+ const input=document.querySelector('#equipmentInput');
+ const item=input.value.trim();
+ if(!item)return;
+ equipment.push(item);input.value='';save();renderEquipment();sync();
+};
+document.querySelector('#saveLanguage').onclick=()=>{
+ const sel=document.querySelector('#languageSelect');
+ if(!sel.value)return;
+ extraLanguage=sel.value; save(); renderLanguages(); sync();
+};
+document.querySelector('#changeLanguage').onclick=()=>{
+ extraLanguage=null;
+ document.querySelector('#languageSelect').value='';
+ save();renderLanguages();sync();
+};
+
+document.querySelectorAll('[data-character-screen]').forEach(b=>b.onclick=()=>{
+ const target=b.dataset.characterScreen;
+ if(target==='wild'){backTargets.wild='character';renderWildForms();show('wild');return}
+ if(target==='familiar'){backTargets.familiar='character';show('familiar');return}
+ if(target==='attacks'){backTargets.attacks='character';show('attacks');return}
+ show(target);
+});
+
+
+
+document.querySelector('#moreRest').onclick=()=>{backTargets.rest='more';show('rest')};
+
+function levelSnapshot(){
+ return {level,abilities:{...abilities},maxHp,hp,slots:{...slots},wild,hitDice,familiarHp,familiarHelpUses,adrenalineUses,elementalFury,featChoices:JSON.parse(JSON.stringify(featChoices)),epicBoon,preparedSpells:[...preparedSpells],knownCantrips:[...knownCantrips],knownForms:[...knownForms]};
+}
+function restoreLevelSnapshot(s){
+ level=s.level;abilities={...s.abilities};maxHp=s.maxHp;hp=Math.min(s.hp,maxHp);slots={...s.slots};wild=s.wild;maxWild=druidProgression[level].wild;hitDice=s.hitDice;
+ familiarHp=s.familiarHp;familiarHelpUses=s.familiarHelpUses;adrenalineUses=s.adrenalineUses;elementalFury=s.elementalFury;featChoices=JSON.parse(JSON.stringify(s.featChoices||[]));epicBoon=s.epicBoon||null;
+ preparedSpells=[...(s.preparedSpells||[])];knownCantrips=[...(s.knownCantrips||[])];knownForms=[...(s.knownForms||[])];
+}
+function renderLevelUp(){
+ const next=level+1,body=document.querySelector('#levelUpBody'),max=document.querySelector('#levelMaxNotice');
+ document.querySelector('#levelUpSubtitle').textContent=level<20?`Grimsby • Druid ${level} → ${next}`:`Grimsby • Druid 20`;
+ if(level>=20){body.classList.add('hidden');max.classList.remove('hidden');return}
+ body.classList.remove('hidden');max.classList.add('hidden');
+ const oldP=druidProgression[level],np=druidProgression[next],changes=[];
+ changes.push(`Prepared-spell limit: ${oldP.prepared} → ${np.prepared}`);
+ const oldHighest=Math.max(...oldP.slots.map((x,i)=>x?i+1:0)),newHighest=Math.max(...np.slots.map((x,i)=>x?i+1:0));
+ if(newHighest>oldHighest)changes.push(`Unlock level ${newHighest} Druid spells`);
+ for(let i=0;i<9;i++)if(np.slots[i]!==oldP.slots[i])changes.push(`${spellLevelLabel(i+1)} slots: ${oldP.slots[i]} → ${np.slots[i]}`);
+ if(np.pb!==oldP.pb)changes.push(`Proficiency Bonus: ${fmt(oldP.pb)} → ${fmt(np.pb)}; Adrenaline Rush and Familiar Friend also increase`);
+ if(np.wild!==oldP.wild)changes.push(`Wild Shape uses: ${oldP.wild} → ${np.wild}`);
+ if(next===8)changes.push(`Known Wild Shape forms: 6 → 8; Fly Speed forms become eligible; Moon max CR becomes 2`);
+ else if(Math.floor(next/3)!==Math.floor(level/3))changes.push(`Moon Wild Shape maximum CR: ${Math.floor(level/3)} → ${Math.floor(next/3)}`);
+ changes.push(`Moon Wild Shape Temp HP: ${3*level} → ${3*next}`);
+ const feat=featureAtLevel(next);if(feat)changes.push(`New feature: ${feat}`);
+ document.querySelector('#levelAutomaticChanges').innerHTML=changes.map(x=>`<div class="notice"><div class="small">${x}</div></div>`).join('');
+ pendingHpRoll=null;document.querySelector('#levelHpMode').value='fixed';document.querySelector('#rollLevelHp').classList.add('hidden');
+ const con=mod(abilities.con);document.querySelector('#levelHpHelp').textContent=`Fixed HP is 5 + CON ${fmt(con)}. Constitution increases adjust previous levels automatically too.`;
+ document.querySelector('#levelHpResult').textContent=`Fixed HP gain before any Constitution change: ${Math.max(1,5+con)}.`;
+ document.querySelector('#elementalChoiceCard').classList.toggle('hidden',next!==7);if(next===7)document.querySelector('#elementalChoice').value=elementalFury||'';
+ const needsFeat=[8,12,16,19].includes(next),featCard=document.querySelector('#featChoiceCard');featCard.classList.toggle('hidden',!needsFeat);
+ if(needsFeat){document.querySelector('#featChoiceTitle').textContent=next===19?'Level 19 • Epic Boon / Feat':'Feat / Ability Score Improvement';document.querySelector('#levelFeatName').value='';document.querySelector('#levelAbility1').value='';document.querySelector('#levelAbility2').value='';document.querySelector('#abilityChoiceNote').textContent=next===19?'Record the Epic Boon or other qualifying feat you choose.':'For the ASI feat: same ability twice = +2, or two different abilities = +1 each.'}
+ document.querySelector('#levelUpMessage').textContent='';
+}
+function renderLevelHistory(){
+ const list=document.querySelector('#levelHistoryList');if(!list)return;
+ list.innerHTML=levelHistory.length?levelHistory.slice().reverse().map(h=>`<div class="card"><b>Druid ${h.from} → ${h.to}</b><div class="sub mt8">${h.hpText}${h.choiceText?` • ${h.choiceText}`:''}</div></div>`).join(''):'<div class="notice">No level-ups committed in the app yet. Grimsby starts here at Druid 5.</div>';
+ document.querySelector('#undoLastLevel').disabled=!levelHistory.length;
+}
+document.querySelector('#levelHpMode').onchange=e=>{document.querySelector('#rollLevelHp').classList.toggle('hidden',e.target.value!=='roll');pendingHpRoll=null;const con=mod(abilities.con);document.querySelector('#levelHpResult').textContent=e.target.value==='fixed'?`Fixed HP gain before any Constitution change: ${Math.max(1,5+con)}.`:'Roll the d8 before confirming.'};
+document.querySelector('#rollLevelHp').onclick=()=>{pendingHpRoll=1+Math.floor(Math.random()*8);document.querySelector('#levelHpResult').textContent=`Rolled ${pendingHpRoll} on the d8.`};
+document.querySelector('#sameAbilityTwice').onclick=()=>{const a=document.querySelector('#levelAbility1').value;if(!a){document.querySelector('#abilityChoiceNote').textContent='Choose the first ability first.';return}document.querySelector('#levelAbility2').value=a;document.querySelector('#abilityChoiceNote').textContent=`${a.toUpperCase()} will increase by 2.`};
+document.querySelector('#confirmLevelUp').onclick=()=>{
+ if(level>=20)return;const next=level+1,hpMode=document.querySelector('#levelHpMode').value;
+ if(hpMode==='roll'&&!pendingHpRoll){document.querySelector('#levelUpMessage').textContent='Roll the d8 first.';return}
+ if(next===7&&!document.querySelector('#elementalChoice').value){document.querySelector('#levelUpMessage').textContent='Choose Elemental Fury first.';return}
+ const needsFeat=[8,12,16,19].includes(next),featName=needsFeat?document.querySelector('#levelFeatName').value.trim():'';
+ if(needsFeat&&!featName){document.querySelector('#levelUpMessage').textContent=next===19?'Enter the Epic Boon or feat name first.':'Enter the feat / ASI name first.';return}
+ const before=levelSnapshot(),oldPb=druidProgression[level].pb,oldWild=druidProgression[level].wild,oldConMod=mod(abilities.con);let choiceText='';
+ if(next===7){elementalFury=document.querySelector('#elementalChoice').value;choiceText=elementalFury}
+ if(needsFeat){
+   const a1=document.querySelector('#levelAbility1').value,a2=document.querySelector('#levelAbility2').value;
+   [a1,a2].filter(Boolean).forEach(a=>{const cap=next===19?30:20;abilities[a]=Math.min(cap,abilities[a]+1)});
+   featChoices.push({level:next,name:featName,ability1:a1||null,ability2:a2||null});if(next===19)epicBoon=featName;choiceText=featName;
+ }
+ const newConMod=mod(abilities.con),baseDie=hpMode==='roll'?pendingHpRoll:5,retroCon=(newConMod-oldConMod)*level,hpGain=Math.max(1,baseDie+newConMod)+retroCon;
+ maxHp=Math.max(1,maxHp+hpGain);hp=Math.min(maxHp,hp+hpGain);
+ const oldProg=druidProgression[level],newProg=druidProgression[next];
+ for(let i=1;i<=9;i++){const oldMax=oldProg.slots[i-1]||0,newMax=newProg.slots[i-1]||0;slots[i]=Math.min(newMax,(slots[i]||0)+Math.max(0,newMax-oldMax))}
+ level=next;maxWild=druidProgression[level].wild;wild=Math.min(maxWild,wild+Math.max(0,maxWild-oldWild));hitDice=Math.min(level,hitDice+1);
+ const pbGain=pb()-oldPb;if(pbGain>0){adrenalineUses=Math.min(pb(),adrenalineUses+pbGain);familiarHelpUses=Math.min(pb(),familiarHelpUses+pbGain)}
+ familiarHp=Math.min(familiarHp,familiarMaxHp());
+ levelHistory.push({from:before.level,to:level,hpText:`HP +${hpGain} → ${maxHp} max`,choiceText,before});save();sync();renderLevelUp();renderLevelHistory();document.querySelector('#levelUpMessage').textContent=`Level ${level} committed and saved.`;
+};
+document.querySelector('#undoLastLevel').onclick=()=>{if(!levelHistory.length)return;const last=levelHistory.pop();restoreLevelSnapshot(last.before);save();sync();renderLevelHistory();document.querySelector('#undoLevelMessage').textContent=`Undid Druid ${last.from} → ${last.to}.`};
+document.querySelector('#moreLevelUp').onclick=()=>{renderLevelUp();show('levelup')};
+document.querySelector('#moreLevelHistory').onclick=()=>{renderLevelHistory();show('levelhistory')};
+
+document.querySelector('#moreNotes').onclick=()=>{renderMore();show('notes')};
+document.querySelector('#moreQuickRef').onclick=()=>show('quickref');
+document.querySelector('#moreSettings').onclick=()=>{renderMore();show('settings')};
+
+document.querySelector('#saveNotes').onclick=()=>{
+ notes=document.querySelector('#notesInput').value;
+ save();renderMore();
+ const msg=document.querySelector('#notesSaved');
+ msg.textContent='Saved';
+ setTimeout(()=>{if(msg)msg.textContent=''},1200);
+};
+
+document.querySelector('#saveInitiative').onclick=()=>{
+ const input=document.querySelector('#initiativeInput');
+ let v=Number(input.value);
+ if(!Number.isFinite(v))v=2;
+ v=Math.max(-20,Math.min(20,Math.trunc(v)));
+ initiativeBonus=v;
+ save();sync();
+};
+
+document.querySelector('#spellDetailBack').onclick=()=>{renderSpells();show('spells');document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Spells'))};
+
+document.querySelector('#spellSearch').addEventListener('input',e=>{spellSearch=e.target.value;renderSpells()});
+document.querySelectorAll('[data-spell-filter]').forEach(b=>b.onclick=()=>{spellFilter=b.dataset.spellFilter;renderSpells()});
+document.querySelector('#freeFamiliarCast').onclick=()=>{
+ if(familiarFreeCastUsed)return;
+ familiarFreeCastUsed=true;save();renderSpells();sync();
+};
+
+maxWild=druidProgression[level].wild;
+wild=Math.min(wild,maxWild);familiarHp=Math.min(familiarHp,familiarMaxHp());familiarHelpUses=Math.min(familiarHelpUses,pb());adrenalineUses=Math.min(adrenalineUses,pb());
+preparedSpells=preparedSpells.filter(n=>druidSpells.some(s=>s.name===n));knownCantrips=knownCantrips.filter(n=>druidSpells.some(s=>s.name===n&&s.level===0));
+
+const installPwaCard=document.querySelector('#installPwaCard');
+if(installPwaCard){
+ const standalone=window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
+ installPwaCard.classList.toggle('hidden',standalone);
+}
+
+sync();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker registration failed:', err));
+  });
+}
+</script>
+
+</body>
+</html>
