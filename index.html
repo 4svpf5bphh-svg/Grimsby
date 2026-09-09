@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Grimsby Companion v2.6.3 Level Up Fix</title>
+<title>Grimsby Companion v2.7 Audit & Home</title>
 <style>
 :root{
   --bg:#f6f7f8; --card:#fff; --text:#14171a; --muted:#6b7280; --line:#e5e7eb;
@@ -11,15 +11,7 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-.app{
-  max-width:480px;
-  margin:0 auto;
-  min-height:100vh;
-  padding-top:calc(16px + env(safe-area-inset-top));
-  padding-right:calc(16px + env(safe-area-inset-right));
-  padding-bottom:calc(90px + env(safe-area-inset-bottom));
-  padding-left:calc(16px + env(safe-area-inset-left));
-}
+.app{max-width:480px;margin:0 auto;min-height:100vh;padding-top:calc(16px + env(safe-area-inset-top));padding-right:calc(16px + env(safe-area-inset-right));padding-bottom:calc(90px + env(safe-area-inset-bottom));padding-left:calc(16px + env(safe-area-inset-left))}
 .screen{display:none}.screen.active{display:block}
 .row{display:flex;align-items:center;gap:12px}.between{justify-content:space-between}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
@@ -48,10 +40,17 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 .form-active{border-color:var(--accent-line);background:var(--accent)}
 .notice{padding:12px 14px;border-radius:14px;background:#eef5f3;border:1px solid #cfe1dc;font-size:14px}
 .small{font-size:13px}
+.home-summary{display:grid;grid-template-columns:minmax(112px,38%) 1fr;gap:12px;align-items:stretch;margin-top:12px}
+.home-portrait{width:100%;height:100%;min-height:218px;object-fit:cover;object-position:56% 24%;border-radius:18px;border:1px solid var(--line);background:#17201d}
+.home-overview{padding:13px}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:8px}
+.overview-item{display:flex;justify-content:space-between;gap:6px;border-bottom:1px solid #eef0f2;padding:3px 0;font-size:12px}
+.overview-label{font-weight:750}.overview-value{white-space:nowrap}
+.overview-skills{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;margin-top:7px;font-size:11px;color:var(--muted)}
+@media(max-width:370px){.home-summary{grid-template-columns:105px 1fr}.home-portrait{min-height:230px}.home-overview{padding:11px}.overview-item{font-size:11px}.overview-skills{font-size:10px}}
 </style>
-
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#101412">
+<meta name="theme-color" content="#f6f7f8">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Grimsby">
@@ -108,6 +107,33 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
     <button id="restCard" class="btn full mt12" style="text-align:left">
       <div class="row between"><div><b>Rest</b><div class="sub mt8">Short or Long Rest</div></div><span>›</span></div>
     </button>
+
+    <div class="home-summary">
+      <img class="home-portrait" src="grimsby-profile.jpeg" alt="Grimsby portrait">
+      <div class="card home-overview">
+        <div class="kicker">At a Glance</div>
+        <div id="homeOverviewIdentity" class="small mt8" style="font-weight:750">Druid 5 • Moon</div>
+        <div class="overview-grid">
+          <div class="overview-item"><span class="overview-label">STR</span><span id="homeStr" class="overview-value">10 +0</span></div>
+          <div class="overview-item"><span class="overview-label">INT</span><span id="homeInt" class="overview-value">8 −1</span></div>
+          <div class="overview-item"><span class="overview-label">DEX</span><span id="homeDex" class="overview-value">14 +2</span></div>
+          <div class="overview-item"><span class="overview-label">WIS</span><span id="homeWis" class="overview-value">18 +4</span></div>
+          <div class="overview-item"><span class="overview-label">CON</span><span id="homeCon" class="overview-value">16 +3</span></div>
+          <div class="overview-item"><span class="overview-label">CHA</span><span id="homeCha" class="overview-value">8 −1</span></div>
+        </div>
+        <div class="overview-grid" style="margin-top:9px">
+          <div class="overview-item"><span class="overview-label">PB</span><span id="homePb" class="overview-value">+3</span></div>
+          <div class="overview-item"><span class="overview-label">INIT</span><span id="homeInit" class="overview-value">+2</span></div>
+          <div class="overview-item"><span class="overview-label">DC</span><span id="homeDc" class="overview-value">15</span></div>
+          <div class="overview-item"><span class="overview-label">SPELL</span><span id="homeSpell" class="overview-value">+7</span></div>
+        </div>
+        <div class="kicker" style="margin-top:10px">Skills</div>
+        <div class="overview-skills">
+          <span id="homeMedicine">Medicine +7</span><span id="homeNature">Nature +6</span>
+          <span id="homeSurvival">Survival +7</span><span id="homeReligion">Religion +2</span>
+        </div>
+      </div>
+    </div>
   </section>
 
   <section id="hp" class="screen">
@@ -134,7 +160,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 
   <section id="wild" class="screen">
     <div class="row"><button class="back" data-back="home">‹</button><div><div class="title" style="font-size:22px">Wild Shape</div><div id="wildUses" class="sub">2 / 2 uses available</div></div></div>
-    <div class="notice mt16">Choose a known form. Grimsby keeps his own HP and gains 15 Temp HP when he transforms.</div>
+    <div id="wildShapeNotice" class="notice mt16">Choose a known form. Grimsby keeps his own HP and gains 15 Temp HP when he transforms.</div>
     <div id="forms" class="list mt16"></div>
     <button id="learnForm" class="btn full mt12">Manage Known Forms <span id="knownFormCount" class="sub">(6 / 6 known)</span></button>
   </section>
@@ -147,7 +173,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
     <div class="grid3 mt16">
       <div class="stat"><div class="kicker">HP</div><div id="beastHp" class="mid">43</div></div>
       <div class="stat"><div class="kicker">Temp</div><div id="beastTemp" class="mid">15</div></div>
-      <div class="stat"><div class="kicker">AC</div><div class="mid">17</div></div>
+      <div class="stat"><div class="kicker">AC</div><div id="beastAc" class="mid">17</div></div>
     </div>
     <div id="beastPreviewNotice" class="notice mt12 hidden"></div>
     <div class="card mt16">
@@ -304,10 +330,10 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       <div class="card"><b>Wild Shape</b><div class="sub mt8">Bonus Action transformation. Grimsby keeps his own HP. Moon forms gain 3 × Druid level Temp HP and use the Moon Druid AC rule.</div></div>
       <div class="card"><b>Wild Resurgence</b><div class="sub mt8">When Wild Shape is empty, spend a spell slot to regain one use. Once per Long Rest, spend one Wild Shape use to regain a level 1 spell slot. Interactive controls are in Combat → Resources.</div></div>
       <div class="card"><b>Primal Order: Magician</b><div class="sub mt8">Extra Druid cantrip and Wisdom-based bonus to the selected Intelligence skill check.</div></div>
-      <div class="card"><b>Familiar Friend</b><div class="sub mt8">Find Familiar is always prepared with one free cast per Long Rest; the Raven gains +10 max HP and Helpful Friend uses are tracked on its companion sheet.</div></div>
+      <div class="card"><b>Familiar Friend</b><div id="familiarFriendFeatureText" class="sub mt8">Find Familiar is always prepared with one free cast per Long Rest; Raven HP and Helpful Friend uses scale automatically.</div></div>
       <div class="card"><b>Conjuration Adept</b><div class="sub mt8">Wisdom increase already included. Conjuration spell access and concentration benefit are tracked by the rules engine.</div></div>
       <div class="card"><b>Circle of the Moon</b><div class="sub mt8">Improved Wild Shape forms, Moon-specific transformed defenses, and subclass spellcasting while transformed where allowed.</div></div>
-      <div class="card"><b>Orc: Adrenaline Rush</b><div class="sub mt8">Bonus Action Dash; gain 3 Temp HP. 3 uses, restored on a Short or Long Rest. Tracked in Combat.</div></div>
+      <div class="card"><b>Orc: Adrenaline Rush</b><div id="adrenalineFeatureText" class="sub mt8">Bonus Action Dash; Temp HP and uses scale with proficiency bonus.</div></div>
       <div class="card"><b>Orc: Relentless Endurance</b><div class="sub mt8">When reduced to 0 HP without being killed outright, drop to 1 HP instead. Once per Long Rest. Tracked in Combat.</div></div>
       <div class="card"><b>Orc: Darkvision</b><div class="sub mt8">Darkvision 120 ft.</div></div>
       <div id="dynamicLevelFeatures"></div>
@@ -446,7 +472,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 
       <div class="sep"></div>
       <div class="row between">
-        <div><b>Adrenaline Rush</b><div class="sub mt8">Bonus Action Dash + 3 Temp HP</div></div>
+        <div><b>Adrenaline Rush</b><div id="adrenalineCombatText" class="sub mt8">Bonus Action Dash + 3 Temp HP</div></div>
         <button id="useAdrenaline" class="btn accent" style="min-width:84px">Use</button>
       </div>
       <div id="adrenalineCount" class="sub mt8">3 / 3 uses</div>
@@ -586,12 +612,6 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       </div>
     </button>
 
-
-    <div id="installPwaCard" class="card mt12 hidden">
-      <b>Install Grimsby on iPhone</b>
-      <div class="sub mt8">In Safari, tap Share → Add to Home Screen. After that, Grimsby opens like an app.</div>
-    </div>
-
     <button id="moreLevelUp" class="btn accent full mt12" style="text-align:left">
       <div class="row between"><div><b>Level Up</b><div id="levelUpSummary" class="sub mt8">Druid 5 → 6</div></div><span>›</span></div>
     </button>
@@ -668,7 +688,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
         <b id="featChoiceTitle">Feat / Ability Score Improvement</b>
         <div class="sub mt8">Record the feat and any ability increase it grants. For a normal ASI, use +2 to one score or +1 to two.</div>
         <input id="levelFeatName" placeholder="Feat name, e.g. Ability Score Improvement" style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);font-size:16px;background:#fff;margin-top:12px">
-        <div class="grid2 mt12">
+        <div id="abilityChoiceGrid" class="grid2 mt12">
           <select id="levelAbility1" style="width:100%;padding:12px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:15px">
             <option value="">No ability increase</option><option value="str">STR +1</option><option value="dex">DEX +1</option><option value="con">CON +1</option><option value="int">INT +1</option><option value="wis">WIS +1</option><option value="cha">CHA +1</option>
           </select>
@@ -688,7 +708,8 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
   <section id="levelhistory" class="screen">
     <div class="row"><button class="back" data-back="more">‹</button><div><div class="title" style="font-size:22px">Level History</div><div class="sub">Review committed level-ups</div></div></div>
     <div id="levelHistoryList" class="list mt16"></div>
-    <button id="undoLastLevel" class="btn full mt12">Undo Most Recent Level Up</button>
+    <button id="undoLastLevel" class="btn full mt12">Revert Most Recent Level Up</button>
+    <div class="notice mt12"><b>Safe revert:</b><div class="small mt8">This reverses level-derived changes only. It does not restore old prepared spells, spent spell slots, current HP, notes, or other gameplay state.</div></div>
     <div id="undoLevelMessage" class="sub mt8"></div>
   </section>
 
@@ -731,7 +752,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
     <div class="card mt12">
       <b>Bonus Action</b>
       <div class="sep"></div>
-      <div><b>Wild Shape</b><div class="sub mt8">Transform using one Wild Shape use.</div></div><div class="sep"></div><div><b>Adrenaline Rush</b><div class="sub mt8">Bonus Action Dash and gain 3 Temp HP; 3 uses per Short or Long Rest.</div></div>
+      <div><b>Wild Shape</b><div class="sub mt8">Transform using one Wild Shape use.</div></div><div class="sep"></div><div><b>Adrenaline Rush</b><div id="adrenalineQuickText" class="sub mt8">Bonus Action Dash and gain Temp HP equal to PB; uses equal PB per Short or Long Rest.</div></div>
       <div class="sep"></div>
       <div><b>Misty Step</b><div class="sub mt8">Granted through Conjuration Adept when available.</div></div>
     </div>
@@ -758,11 +779,16 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
     </div>
 
     <div class="card mt16">
-      <label for="initiativeInput"><b>Initiative Bonus</b></label>
-      <div class="sub mt8">Current Grimsby default is +2 from Dexterity.</div>
+      <label for="initiativeInput"><b>Initiative Misc Bonus</b></label>
+      <div id="initiativeHelp" class="sub mt8">Dexterity is added automatically. Enter only an extra bonus or penalty from another feature.</div>
       <input id="initiativeInput" type="number" inputmode="numeric"
         style="width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);font-size:16px;background:#fff;margin-top:12px">
-      <button id="saveInitiative" class="btn accent full mt12">Save Initiative</button>
+      <button id="saveInitiative" class="btn accent full mt12">Save Misc Bonus</button>
+    </div>
+
+    <div class="card mt12">
+      <div class="row between"><b>App Version</b><span class="sub">v2.7</span></div>
+      <div class="sub mt8">Level & scaling audit fixes + Home character overview.</div>
     </div>
 
     <div class="card mt12">
@@ -816,7 +842,7 @@ let relentlessUsed=S.relentlessUsed??false;
 let spellFilter='all';
 let spellSearch='';
 let notes=S.notes??'';
-let initiativeBonus=S.initiativeBonus??2;
+let initiativeMisc=S.initiativeMisc??((S.initiativeBonus??mod(abilities.dex))-mod(abilities.dex));
 let previewForm=null;
 let pendingReplace=null;
 let backTargets={hp:'home',wild:'home',beast:'home',familiar:'home',rest:'home',attacks:'character'};
@@ -855,7 +881,10 @@ function knownFormCap(){return level>=8?8:(level>=4?6:4)}
 function moonMaxCr(){return Math.max(1,Math.floor(level/3))}
 function moonTempHp(){return 3*level}
 function moonAc(){return 13+mod(abilities.wis)}
+function normalAc(){return 12+mod(abilities.dex)+(shield?2:0)}
+function initiativeTotal(){return mod(abilities.dex)+initiativeMisc}
 function familiarMaxHp(){return 2+(2*level)}
+function activeKnownForms(){return knownForms.slice(0,knownFormCap())}
 function featureAtLevel(lvl){
  const map={6:'Improved Circle Forms',7:'Elemental Fury',8:'Feat / Ability Score Improvement',10:'Moonlight Step + new Druid cantrip',12:'Feat / Ability Score Improvement',14:'Lunar Form',15:'Improved Elemental Fury',16:'Feat / Ability Score Improvement',18:'Beast Spells',19:'Epic Boon',20:'Archdruid'};
  return map[lvl]||null;
@@ -980,7 +1009,7 @@ const druidSpells=[
  {name:"Cure Wounds",level:1,school:"Abjuration",moon:true,wildcast:true,grantAt:3},
  {name:"Detect Magic",level:1,school:"Divination",conc:true,ritual:true},
  {name:"Detect Poison and Disease",level:1,school:"Divination",conc:true,ritual:true},
- {name:"Entangle",level:1,school:"Conjuration",conc:true,conjGranted:true,featOnly:true},
+ {name:"Entangle",level:1,school:"Conjuration",conc:true,conjGranted:true,featOnly:true,grantAt:4},
  {name:"Faerie Fire",level:1,school:"Evocation",conc:true},
  {name:"Fog Cloud",level:1,school:"Conjuration",conc:true},
  {name:"Goodberry",level:1,school:"Conjuration"},
@@ -1022,7 +1051,7 @@ const druidSpells=[
  {name:"Lesser Restoration",level:2,school:"Abjuration"},
  {name:"Locate Animals or Plants",level:2,school:"Divination",ritual:true},
  {name:"Locate Object",level:2,school:"Divination",conc:true},
- {name:"Misty Step",level:2,school:"Conjuration",conjGranted:true,featOnly:true},
+ {name:"Misty Step",level:2,school:"Conjuration",conjGranted:true,featOnly:true,grantAt:4},
  {name:"Moonbeam",level:2,school:"Evocation",conc:true,moon:true,wildcast:true,grantAt:3},
  {name:"Pass without Trace",level:2,school:"Abjuration",conc:true},
  {name:"Protection from Poison",level:2,school:"Abjuration"},
@@ -1033,7 +1062,7 @@ const druidSpells=[
  // 3rd
  {name:"Aura of Vitality",level:3,school:"Abjuration",conc:true},
  {name:"Call Lightning",level:3,school:"Conjuration",conc:true},
- {name:"Conjure Animals",level:3,school:"Conjuration",conc:true,moon:true,wildcast:true,grantAt:5},
+ {name:"Conjure Animals",level:3,school:"Conjuration",conc:true,moon:true,wildcast:true,conjGranted:true,grantAt:5},
  {name:"Daylight",level:3,school:"Evocation"},
  {name:"Dispel Magic",level:3,school:"Abjuration"},
  {name:"Elemental Weapon",level:3,school:"Transmutation",conc:true},
@@ -1056,6 +1085,7 @@ const druidSpells=[
 
  // Origin feat spell
  {name:"Find Familiar",level:1,school:"Conjuration",ritual:true,familiarFeat:true,featOnly:true},
+ {name:"Dimension Door",level:4,school:"Conjuration",conjGranted:true,featOnly:true,grantAt:7},
  {name:"Blight",level:4,school:"Necromancy"},
  {name:"Charm Monster",level:4,school:"Enchantment"},
  {name:"Confusion",level:4,school:"Enchantment",conc:true},
@@ -1203,6 +1233,7 @@ const spellMeta={
  "Locate Animals or Plants":{cast:"1 Action / Ritual",summary:"Learn the direction and distance to the nearest Beast or plant of a named kind within range."},
  "Locate Object":{cast:"1 Action",summary:"Sense the direction to a familiar or specifically described object while concentrating."},
  "Misty Step":{cast:"1 Bonus Action",summary:"Teleport up to 30 feet to an unoccupied space you can see. Granted by Conjuration Adept."},
+ "Dimension Door":{cast:"1 Action",summary:"Teleport yourself, and optionally one willing creature, to a destination within range. Granted by Conjuration Adept once 4th-level spells are available."},
  "Moonbeam":{cast:"1 Action",summary:"Create a damaging beam of moonlight; creatures entering or starting there make Constitution saves against radiant damage."},
  "Pass without Trace":{cast:"1 Action",summary:"Give nearby allies a major bonus to Stealth checks and help conceal their tracks while concentrating."},
  "Protection from Poison":{cast:"1 Action",summary:"Neutralize one poison affecting a creature and grant resistance to poison damage for 1 hour."},
@@ -1331,7 +1362,7 @@ const conditionRules={
 };
 function save(){
   try{
-    localStorage.setItem('grimsbyState_v141',JSON.stringify({level,abilities,maxHp,levelHistory,elementalFury,featChoices,epicBoon,hp,temp,wild,form,inspiration,concentration,conditions,shield,equipment,extraLanguage,knownForms,preparedSpells,knownCantrips,slots,familiarFreeCastUsed,familiarHp,familiarHelpUses,hitDice,wildResurgenceSlotUsed,adrenalineUses,relentlessUsed,notes,initiativeBonus}));
+    localStorage.setItem('grimsbyState_v141',JSON.stringify({level,abilities,maxHp,levelHistory,elementalFury,featChoices,epicBoon,hp,temp,wild,form,inspiration,concentration,conditions,shield,equipment,extraLanguage,knownForms,preparedSpells,knownCantrips,slots,familiarFreeCastUsed,familiarHp,familiarHelpUses,hitDice,wildResurgenceSlotUsed,adrenalineUses,relentlessUsed,notes,initiativeMisc,initiativeBonus:initiativeTotal()}));
   }catch(e){}
 }
 function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id)); window.scrollTo({top:0,behavior:'instant'})}
@@ -1563,7 +1594,8 @@ function renderFamiliar(){
  const hpEl=document.querySelector('#familiarHp');
  const help=document.querySelector('#famHelpCount');
  const helpBtn=document.querySelector('#famHelpUse');
- if(hpEl) hpEl.textContent=familiarHp;
+ if(hpEl) hpEl.textContent=Math.min(familiarHp,familiarMaxHp());
+ const hpMaxEl=document.querySelector('#familiarHpMax'); if(hpMaxEl) hpMaxEl.textContent=` / ${familiarMaxHp()}`;
  if(help) help.textContent=`${familiarHelpUses} / ${pb()} uses`;
  if(helpBtn){
    helpBtn.disabled=familiarHelpUses<=0;
@@ -1594,14 +1626,14 @@ function renderMore(){
  const input=document.querySelector('#notesInput');
  if(input && document.activeElement!==input) input.value=notes;
  const init=document.querySelector('#initiativeInput');
- if(init && document.activeElement!==init) init.value=initiativeBonus;
+ if(init && document.activeElement!==init) init.value=initiativeMisc;
+ const initHelp=document.querySelector('#initiativeHelp'); if(initHelp) initHelp.textContent=`DEX ${fmt(mod(abilities.dex))} + misc ${fmt(initiativeMisc)} = initiative ${fmt(initiativeTotal())}.`;
  const lu=document.querySelector('#levelUpSummary'); if(lu) lu.textContent=level<20?`Druid ${level} → ${level+1}`:'Level 20 • complete';
  const lh=document.querySelector('#levelHistorySummary'); if(lh) lh.textContent=`Current level ${level} • ${levelHistory.length} recorded level-up${levelHistory.length===1?'':'s'}`;
 }
 
 function renderCombat(){
- const normalAc=14+(shield?2:0);
- const activeAc=form?moonAc():normalAc;
+ const activeAc=form?moonAc():normalAc();
  const hpEl=document.querySelector('#combatHp');
  const tempEl=document.querySelector('#combatTemp');
  const tempWrap=document.querySelector('#combatTempWrap');
@@ -1618,7 +1650,7 @@ function renderCombat(){
  }
 
  const initEl=document.querySelector('#combatInitiative');
- if(initEl) initEl.textContent=(initiativeBonus>=0?'+':'')+initiativeBonus;
+ if(initEl) initEl.textContent=fmt(initiativeTotal());
  const subtitle=document.querySelector('#combatSubtitle');
  const banner=document.querySelector('#combatShapeBanner');
  const primaryTitle=document.querySelector('#combatPrimaryTitle');
@@ -1743,13 +1775,21 @@ function renderCharacterDynamic(){
  set('#homeIdentity',`Level ${level} Orc • Circle of the Moon Druid`);
  set('#characterSubtitle',`Grimsby • Level ${level} Druid`);
  set('#characterPb',fmt(p)); set('#detailClass',`Druid ${level}`);
- set('#knownFormsSummary',`${knownForms.length} / ${knownFormCap()} known forms • Moon max CR ${moonMaxCr()}${level<8?' • no Fly Speed':''}`);
+ set('#knownFormsSummary',`${activeKnownForms().length} / ${knownFormCap()} known forms • Moon max CR ${moonMaxCr()}${level<8?' • no Fly Speed':''}`);
  [['str','Str'],['dex','Dex'],['con','Con'],['int','Int'],['wis','Wis'],['cha','Cha']].forEach(([k,label])=>{set(`#ability${label}`,abilities[k]);set(`#mod${label}`,fmt(mod(abilities[k])))});
  set('#abilitySpellDc',8+p+w);set('#abilitySpellAttack',fmt(p+w));
  set('#saveStr',fmt(mod(abilities.str)));set('#saveDex',fmt(mod(abilities.dex)));set('#saveCon',fmt(mod(abilities.con)));
  set('#saveInt',fmt(mod(abilities.int)+p));set('#saveWis',fmt(w+p));set('#saveCha',fmt(mod(abilities.cha)));
  set('#skillMedicine',fmt(w+p));set('#skillNature',fmt(mod(abilities.int)+p+w));set('#skillReligion',fmt(mod(abilities.int)+p));set('#skillSurvival',fmt(w+p));
  set('#quarterstaffToHit',fmt(mod(abilities.str)+p));
+ set('#homeOverviewIdentity',`Druid ${level} • Moon`);
+ [['Str','str'],['Dex','dex'],['Con','con'],['Int','int'],['Wis','wis'],['Cha','cha']].forEach(([label,k])=>set(`#home${label}`,`${abilities[k]} ${fmt(mod(abilities[k]))}`));
+ set('#homePb',fmt(p));set('#homeInit',fmt(initiativeTotal()));set('#homeDc',8+p+w);set('#homeSpell',fmt(p+w));
+ set('#homeMedicine',`Medicine ${fmt(w+p)}`);set('#homeNature',`Nature ${fmt(mod(abilities.int)+p+w)}`);set('#homeSurvival',`Survival ${fmt(w+p)}`);set('#homeReligion',`Religion ${fmt(mod(abilities.int)+p)}`);
+ set('#familiarFriendFeatureText',`Find Familiar is always prepared with one free cast per Long Rest; the Raven gains +${2*level} max HP (${familiarMaxHp()} total) and Helpful Friend has ${p} use${p===1?'':'s'} per Long Rest.`);
+ set('#adrenalineFeatureText',`Bonus Action Dash; gain ${p} Temp HP. ${p} use${p===1?'':'s'}, restored on a Short or Long Rest. Tracked in Combat.`);
+ set('#adrenalineCombatText',`Bonus Action Dash + ${p} Temp HP`);
+ set('#adrenalineQuickText',`Bonus Action Dash and gain ${p} Temp HP; ${p} use${p===1?'':'s'} per Short or Long Rest.`);
  const dyn=document.querySelector('#dynamicLevelFeatures');
  if(dyn){
    const cards=[];
@@ -1771,8 +1811,8 @@ function sync(){
  document.querySelector('#homeTempWrap').classList.toggle('hidden',temp<=0);
  document.querySelector('#wildUses').textContent=`${wild} / ${maxWild} uses available`;
  document.querySelector('#inspirationBtn').textContent=inspiration?'★':'☆';
- const normalAc=14+(shield?2:0);
- document.querySelector('#homeAc').textContent=form?moonAc():normalAc;
+ document.querySelector('#homeAc').textContent=form?moonAc():normalAc();
+ const wildNotice=document.querySelector('#wildShapeNotice'); if(wildNotice) wildNotice.textContent=`Choose a known form. Grimsby keeps his own HP and gains ${moonTempHp()} Temp HP when he transforms.`;
  const shieldBtn=document.querySelector('#shieldToggle');
  shieldBtn.textContent=shield?'Shield ✓':'Shield Off';
  shieldBtn.style.opacity=form?'.55':'1';
@@ -1818,7 +1858,8 @@ function renderBeast(name){
    notice.classList.remove('hidden');
  }
  document.querySelector('#beastHp').textContent=hp;
- document.querySelector('#beastTemp').textContent=temp;
+ document.querySelector('#beastTemp').textContent=form===name?temp:moonTempHp();
+ const beastAc=document.querySelector('#beastAc'); if(beastAc) beastAc.textContent=moonAc();
 }
 function openBeast(name=null,from=null){
  if(from) backTargets.beast=from;
@@ -1830,7 +1871,7 @@ function renderWildForms(){
  const list=document.querySelector('#forms');
  if(!list)return;
  list.innerHTML='';
- knownForms.forEach(name=>{
+ activeKnownForms().forEach(name=>{
    const f=forms[name];
    if(!f)return;
    const b=document.createElement('button');
@@ -1842,7 +1883,7 @@ function renderWildForms(){
    list.appendChild(b);
  });
  const count=document.querySelector('#knownFormCount');
- if(count) count.textContent=`(${knownForms.length} / ${knownFormCap()} known)`;
+ if(count) count.textContent=`(${activeKnownForms().length} / ${knownFormCap()} known)`;
 }
 function renderManageForms(){
  const known=document.querySelector('#knownFormsManage');
@@ -1850,18 +1891,18 @@ function renderManageForms(){
  if(!known||!avail)return;
  known.innerHTML='';avail.innerHTML='';
  const cap=knownFormCap();
- knownForms.forEach(name=>{
+ activeKnownForms().forEach(name=>{
    const b=document.createElement('button'); b.className='btn full'; b.style.textAlign='left';
    if(pendingReplace===name)b.classList.add('form-active');
    b.innerHTML=`<div class="row between"><div><b>${name}</b><div class="sub mt8">${pendingReplace===name?'Selected for replacement':'Tap to replace'}</div></div><span>${pendingReplace===name?'✓':'›'}</span></div>`;
    b.onclick=()=>{pendingReplace=(pendingReplace===name?null:name);renderManageForms()};
    known.appendChild(b);
  });
- if(knownForms.length<cap){
-   const d=document.createElement('div');d.className='notice';d.innerHTML=`<b>${cap-knownForms.length} open form slot${cap-knownForms.length===1?'':'s'}</b><div class="small mt8">Choose an available form below to learn it.</div>`;known.appendChild(d);
+ if(activeKnownForms().length<cap){
+   const d=document.createElement('div');d.className='notice';d.innerHTML=`<b>${cap-activeKnownForms().length} open form slot${cap-activeKnownForms().length===1?'':'s'}</b><div class="small mt8">Choose an available form below to learn it.</div>`;known.appendChild(d);
  }
  Object.keys(forms).filter(name=>!knownForms.includes(name)).forEach(name=>{
-   const f=forms[name],canAdd=knownForms.length<cap;
+   const f=forms[name],canAdd=activeKnownForms().length<cap;
    const b=document.createElement('button');b.className='btn full';b.style.textAlign='left';
    b.innerHTML=`<div class="row between"><div><b>${name}</b><div class="sub mt8">${f.speed} • ${f.size}</div></div><span>${canAdd?'Learn':(pendingReplace?'Replace':'Select a known form first')}</span></div>`;
    b.disabled=!canAdd&&!pendingReplace;
@@ -2048,12 +2089,16 @@ document.querySelectorAll('[data-character-screen]').forEach(b=>b.onclick=()=>{
 document.querySelector('#moreRest').onclick=()=>{backTargets.rest='more';show('rest')};
 
 function levelSnapshot(){
- return {level,abilities:{...abilities},maxHp,hp,slots:{...slots},wild,hitDice,familiarHp,familiarHelpUses,adrenalineUses,elementalFury,featChoices:JSON.parse(JSON.stringify(featChoices)),epicBoon,preparedSpells:[...preparedSpells],knownCantrips:[...knownCantrips],knownForms:[...knownForms]};
+ return {level,abilities:{...abilities},maxHp,elementalFury,featChoices:JSON.parse(JSON.stringify(featChoices)),epicBoon};
 }
 function restoreLevelSnapshot(s){
- level=s.level;abilities={...s.abilities};maxHp=s.maxHp;hp=Math.min(s.hp,maxHp);slots={...s.slots};wild=s.wild;maxWild=druidProgression[level].wild;hitDice=s.hitDice;
- familiarHp=s.familiarHp;familiarHelpUses=s.familiarHelpUses;adrenalineUses=s.adrenalineUses;elementalFury=s.elementalFury;featChoices=JSON.parse(JSON.stringify(s.featChoices||[]));epicBoon=s.epicBoon||null;
- preparedSpells=[...(s.preparedSpells||[])];knownCantrips=[...(s.knownCantrips||[])];knownForms=[...(s.knownForms||[])];
+ level=s.level;abilities={...s.abilities};maxHp=s.maxHp;elementalFury=s.elementalFury;featChoices=JSON.parse(JSON.stringify(s.featChoices||[]));epicBoon=s.epicBoon||null;
+ maxWild=druidProgression[level].wild;
+ hp=Math.min(hp,maxHp);
+ for(let i=1;i<=9;i++)slots[i]=Math.min(slots[i]||0,slotMax(i));
+ wild=Math.min(wild,maxWild);hitDice=Math.min(hitDice,level);
+ familiarHp=Math.min(familiarHp,familiarMaxHp());familiarHelpUses=Math.min(familiarHelpUses,pb());adrenalineUses=Math.min(adrenalineUses,pb());
+ if(form && !activeKnownForms().includes(form))form=null;
 }
 function renderLevelUp(){
  const next=level+1,body=document.querySelector('#levelUpBody'),max=document.querySelector('#levelMaxNotice');
@@ -2077,7 +2122,15 @@ function renderLevelUp(){
  document.querySelector('#levelHpResult').textContent=`Fixed HP gain before any Constitution change: ${Math.max(1,5+con)}.`;
  document.querySelector('#elementalChoiceCard').classList.toggle('hidden',next!==7);if(next===7)document.querySelector('#elementalChoice').value=elementalFury||'';
  const needsFeat=[8,12,16,19].includes(next),featCard=document.querySelector('#featChoiceCard');featCard.classList.toggle('hidden',!needsFeat);
- if(needsFeat){document.querySelector('#featChoiceTitle').textContent=next===19?'Level 19 • Epic Boon / Feat':'Feat / Ability Score Improvement';document.querySelector('#levelFeatName').value='';document.querySelector('#levelAbility1').value='';document.querySelector('#levelAbility2').value='';document.querySelector('#abilityChoiceNote').textContent=next===19?'Record the Epic Boon or other qualifying feat you choose.':'For the ASI feat: same ability twice = +2, or two different abilities = +1 each.'}
+ if(needsFeat){
+   const isEpic=next===19;
+   document.querySelector('#featChoiceTitle').textContent=isEpic?'Level 19 • Epic Boon / Feat':'Feat / Ability Score Improvement';
+   document.querySelector('#levelFeatName').value='';document.querySelector('#levelAbility1').value='';document.querySelector('#levelAbility2').value='';
+   document.querySelector('#levelAbility2').classList.toggle('hidden',isEpic);
+   document.querySelector('#sameAbilityTwice').classList.toggle('hidden',isEpic);
+   document.querySelector('#abilityChoiceGrid').style.gridTemplateColumns=isEpic?'1fr':'1fr 1fr';
+   document.querySelector('#abilityChoiceNote').textContent=isEpic?'For an Epic Boon, record only the single +1 ability permitted by that boon (maximum 30). If you choose another qualifying feat, record only the increase that feat actually grants.':'For the ASI feat: same ability twice = +2, or two different abilities = +1 each.';
+ }
  document.querySelector('#levelUpMessage').textContent='';
 }
 function renderLevelHistory(){
@@ -2097,8 +2150,9 @@ document.querySelector('#confirmLevelUp').onclick=()=>{
  const before=levelSnapshot(),oldPb=druidProgression[level].pb,oldWild=druidProgression[level].wild,oldConMod=mod(abilities.con);let choiceText='';
  if(next===7){elementalFury=document.querySelector('#elementalChoice').value;choiceText=elementalFury}
  if(needsFeat){
-   const a1=document.querySelector('#levelAbility1').value,a2=document.querySelector('#levelAbility2').value;
-   [a1,a2].filter(Boolean).forEach(a=>{const cap=next===19?30:20;abilities[a]=Math.min(cap,abilities[a]+1)});
+   const a1=document.querySelector('#levelAbility1').value,a2=next===19?'':document.querySelector('#levelAbility2').value;
+   if(a1)abilities[a1]=Math.min(next===19?30:20,abilities[a1]+1);
+   if(a2)abilities[a2]=Math.min(20,abilities[a2]+1);
    featChoices.push({level:next,name:featName,ability1:a1||null,ability2:a2||null});if(next===19)epicBoon=featName;choiceText=featName;
  }
  const newConMod=mod(abilities.con),baseDie=hpMode==='roll'?pendingHpRoll:5,retroCon=(newConMod-oldConMod)*level,hpGain=Math.max(1,baseDie+newConMod)+retroCon;
@@ -2129,9 +2183,8 @@ document.querySelector('#saveNotes').onclick=()=>{
 document.querySelector('#saveInitiative').onclick=()=>{
  const input=document.querySelector('#initiativeInput');
  let v=Number(input.value);
- if(!Number.isFinite(v))v=2;
- v=Math.max(-20,Math.min(20,Math.trunc(v)));
- initiativeBonus=v;
+ if(!Number.isFinite(v))v=0;
+ initiativeMisc=Math.max(-20,Math.min(20,Math.trunc(v)));
  save();sync();
 };
 
@@ -2147,24 +2200,14 @@ document.querySelector('#freeFamiliarCast').onclick=()=>{
 maxWild=druidProgression[level].wild;
 wild=Math.min(wild,maxWild);familiarHp=Math.min(familiarHp,familiarMaxHp());familiarHelpUses=Math.min(familiarHelpUses,pb());adrenalineUses=Math.min(adrenalineUses,pb());
 preparedSpells=preparedSpells.filter(n=>druidSpells.some(s=>s.name===n));knownCantrips=knownCantrips.filter(n=>druidSpells.some(s=>s.name===n&&s.level===0));
-
-const installPwaCard=document.querySelector('#installPwaCard');
-if(installPwaCard){
- const standalone=window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
- installPwaCard.classList.toggle('hidden',standalone);
-}
-
 sync();
 })();
 </script>
 
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker registration failed:', err));
-  });
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(console.warn));
 }
 </script>
-
 </body>
 </html>
