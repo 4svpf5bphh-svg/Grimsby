@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Grimsby Companion v2.7 Audit & Home</title>
+<title>Grimsby Companion v2.7.1</title>
 <style>
 :root{
   --bg:#f6f7f8; --card:#fff; --text:#14171a; --muted:#6b7280; --line:#e5e7eb;
@@ -300,7 +300,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       <div class="sep"></div>
       <div class="row between"><span>Strength</span><b id="saveStr">+0</b></div><div class="sep"></div>
       <div class="row between"><span>Dexterity</span><b id="saveDex">+2</b></div><div class="sep"></div>
-      <div class="row between"><span>Constitution</span><b id="saveCon">+3</b></div><div class="sep"></div>
+      <div class="row between"><span>Constitution <span id="saveConContext" class="sub"></span></span><b id="saveCon">+3</b></div><div class="sep"></div>
       <div class="row between"><span>Intelligence <span class="sub">• proficient</span></span><b id="saveInt">+2</b></div><div class="sep"></div>
       <div class="row between"><span>Wisdom <span class="sub">• proficient</span></span><b id="saveWis">+7</b></div><div class="sep"></div>
       <div class="row between"><span>Charisma</span><b id="saveCha">−1</b></div>
@@ -882,6 +882,21 @@ function moonMaxCr(){return Math.max(1,Math.floor(level/3))}
 function moonTempHp(){return 3*level}
 function moonAc(){return 13+mod(abilities.wis)}
 function normalAc(){return 12+mod(abilities.dex)+(shield?2:0)}
+function conSaveInfo(spell=null){
+ const base=mod(abilities.con);
+ const wis=mod(abilities.wis);
+ let total=base;
+ const sources=[];
+ if(level>=6 && form){
+   total+=wis;
+   sources.push('Increased Toughness');
+ }
+ if(spell && spell.school==='Conjuration'){
+   total+=wis;
+   sources.push('Conjuration Adept');
+ }
+ return {base,wis,total,sources};
+}
 function initiativeTotal(){return mod(abilities.dex)+initiativeMisc}
 function familiarMaxHp(){return 2+(2*level)}
 function activeKnownForms(){return knownForms.slice(0,knownFormCap())}
@@ -1706,12 +1721,13 @@ function renderCombat(){
    const entries=[];
    if(concentration){
      const spell=getConcentrationSpells().find(s=>s.name===concentration);
-     const isConj=spell?.school==='Conjuration';
+     const info=conSaveInfo(spell);
+     const detail=info.sources.length
+       ? `Concentration save: CON ${fmt(info.base)}${info.sources.map(s=>` + WIS ${fmt(info.wis)} (${s})`).join('')} → ${fmt(info.total)} total.`
+       : `Concentration save: CON ${fmt(info.total)}.`;
      entries.push([
        `Concentrating: ${concentration}`,
-       isConj
-         ? `Concentration save: CON ${fmt(mod(abilities.con))}, plus WIS ${fmt(mod(abilities.wis))} from Conjuration Adept → ${fmt(mod(abilities.con)+mod(abilities.wis))} total.`
-         : `Concentration save: CON ${fmt(mod(abilities.con))}. Conjuration Adept does not apply because this isn't a Conjuration spell.`
+       detail
      ]);
    }
    conditions.forEach(c=>entries.push([c,conditionRules[c]||'Condition is active.']));
@@ -1745,10 +1761,11 @@ function renderCombatStatus(){
  if(hint){
    const chosen=getConcentrationSpells().find(s=>s.name===(sel?.value||concentration));
    if(chosen){
-     const conj=chosen.school==='Conjuration';
-     hint.innerHTML=conj
-       ? `<b>Conjuration Adept applies.</b><div class="small mt8">CON ${fmt(mod(abilities.con))} + WIS ${fmt(mod(abilities.wis))} → <b>${fmt(mod(abilities.con)+mod(abilities.wis))} total</b>.</div>`
-       : `<b>Concentration save: ${fmt(mod(abilities.con))} CON.</b><div class="small mt8">Persistent Conjuration only applies to Conjuration spells.</div>`;
+     const info=conSaveInfo(chosen);
+     const sourceText=info.sources.length
+       ? info.sources.map(s=>`WIS ${fmt(info.wis)} from ${s}`).join(' + ')
+       : 'No additional feature bonus applies';
+     hint.innerHTML=`<b>Concentration save: ${fmt(info.total)} CON.</b><div class="small mt8">Base CON ${fmt(info.base)}${info.sources.length?` + ${sourceText}`:''}.${level>=6&&!form?' Increased Toughness will also add WIS while Wild Shaped.':''}</div>`;
      hint.classList.remove('hidden');
    }else hint.classList.add('hidden');
  }
@@ -1778,7 +1795,10 @@ function renderCharacterDynamic(){
  set('#knownFormsSummary',`${activeKnownForms().length} / ${knownFormCap()} known forms • Moon max CR ${moonMaxCr()}${level<8?' • no Fly Speed':''}`);
  [['str','Str'],['dex','Dex'],['con','Con'],['int','Int'],['wis','Wis'],['cha','Cha']].forEach(([k,label])=>{set(`#ability${label}`,abilities[k]);set(`#mod${label}`,fmt(mod(abilities[k])))});
  set('#abilitySpellDc',8+p+w);set('#abilitySpellAttack',fmt(p+w));
- set('#saveStr',fmt(mod(abilities.str)));set('#saveDex',fmt(mod(abilities.dex)));set('#saveCon',fmt(mod(abilities.con)));
+ set('#saveStr',fmt(mod(abilities.str)));set('#saveDex',fmt(mod(abilities.dex)));
+ const conBase=mod(abilities.con),conWild=conBase+(level>=6?w:0);
+ set('#saveCon',fmt(form&&level>=6?conWild:conBase));
+ set('#saveConContext',level>=6?(form?`• ${fmt(conBase)} normal`:`• ${fmt(conWild)} Wild Shape`):'');
  set('#saveInt',fmt(mod(abilities.int)+p));set('#saveWis',fmt(w+p));set('#saveCha',fmt(mod(abilities.cha)));
  set('#skillMedicine',fmt(w+p));set('#skillNature',fmt(mod(abilities.int)+p+w));set('#skillReligion',fmt(mod(abilities.int)+p));set('#skillSurvival',fmt(w+p));
  set('#quarterstaffToHit',fmt(mod(abilities.str)+p));
@@ -1793,7 +1813,7 @@ function renderCharacterDynamic(){
  const dyn=document.querySelector('#dynamicLevelFeatures');
  if(dyn){
    const cards=[];
-   if(level>=6)cards.push(['Improved Circle Forms',`Wild Shape attacks can deal Radiant damage instead; add WIS ${fmt(w)} to Constitution saves while transformed.`]);
+   if(level>=6)cards.push(['Improved Circle Forms',`Wild Shape attacks can deal Radiant damage instead; Increased Toughness adds WIS ${fmt(w)} to every Constitution save while transformed. This stacks with Conjuration Adept on Concentration saves for Conjuration spells.`]);
    if(level>=7&&elementalFury)cards.push(['Elemental Fury',elementalFury==='Primal Strike'?`Primal Strike: extra ${level>=15?'2d8':'1d8'} elemental damage once per turn on a weapon or Beast attack.`:`Potent Spellcasting: add WIS ${fmt(w)} to Druid cantrip damage${level>=15?'; cantrips with 10+ ft range gain +300 ft range':''}.`]);
    if(level>=10)cards.push(['Moonlight Step','Bonus Action teleport up to 30 ft; gain Advantage on your next attack before the end of the turn.']);
    if(level>=14)cards.push(['Lunar Form','Once per turn, a Wild Shape attack can deal an extra 2d10 Radiant damage; Moonlight Step can take one nearby willing creature with you.']);
@@ -1922,6 +1942,13 @@ function renderManageForms(){
 document.querySelector('#hpCard').onclick=(e)=>{
  if(e.target.closest('#shieldToggle')) return;
  backTargets.hp='home'; show('hp');
+};
+document.querySelector('#shieldToggle').onclick=(e)=>{
+ e.stopPropagation();
+ if(form)return;
+ shield=!shield;
+ save();
+ sync();
 };
 document.querySelector('#wildCard').onclick=()=>{backTargets.wild='home'; if(form)openBeast(form,'home');else{renderWildForms();show('wild')}};
 document.querySelector('#famCard').onclick=()=>{backTargets.familiar='home';show('familiar')};
