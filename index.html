@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Grimsby Companion v2.7.2</title>
+<title>Grimsby Companion v2.7.3</title>
 <style>
 :root{
   --bg:#f6f7f8; --card:#fff; --text:#14171a; --muted:#6b7280; --line:#e5e7eb;
@@ -40,14 +40,19 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 .form-active{border-color:var(--accent-line);background:var(--accent)}
 .notice{padding:12px 14px;border-radius:14px;background:#eef5f3;border:1px solid #cfe1dc;font-size:14px}
 .small{font-size:13px}
-.home-summary{display:grid;grid-template-columns:minmax(112px,38%) 1fr;gap:12px;align-items:stretch;margin-top:12px}
-.home-portrait{width:100%;height:100%;min-height:218px;object-fit:cover;object-position:56% 24%;border-radius:18px;border:1px solid var(--line);background:#17201d}
-.home-overview{padding:13px}
-.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;margin-top:8px}
-.overview-item{display:flex;justify-content:space-between;gap:6px;border-bottom:1px solid #eef0f2;padding:3px 0;font-size:12px}
-.overview-label{font-weight:750}.overview-value{white-space:nowrap}
-.overview-skills{display:grid;grid-template-columns:1fr 1fr;gap:4px 8px;margin-top:7px;font-size:11px;color:var(--muted)}
-@media(max-width:370px){.home-summary{grid-template-columns:105px 1fr}.home-portrait{min-height:230px}.home-overview{padding:11px}.overview-item{font-size:11px}.overview-skills{font-size:10px}}
+.home-summary{display:grid;grid-template-columns:minmax(126px,40%) 1fr;gap:12px;align-items:stretch;margin-top:14px}
+.home-portrait{width:100%;height:100%;min-height:278px;object-fit:cover;object-position:56% 24%;border-radius:18px;border:1px solid var(--line);background:#17201d}
+.home-overview{padding:15px 14px;min-height:278px}
+.overview-section{margin-top:15px}
+.overview-section:first-of-type{margin-top:12px}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.overview-item{display:flex;justify-content:space-between;gap:7px;border-bottom:1px solid #eef0f2;padding:4px 0;font-size:12.5px}
+.overview-label{font-weight:750}.overview-value{white-space:nowrap;font-weight:650}
+.overview-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:8px}
+.overview-meta .overview-item{padding:5px 0}
+.overview-skills{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px;margin-top:8px;font-size:11.5px;color:var(--muted);line-height:1.35}
+.overview-section-title{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:6px}
+@media(max-width:370px){.home-summary{grid-template-columns:116px 1fr;gap:10px}.home-portrait{min-height:292px}.home-overview{padding:13px 11px;min-height:292px}.overview-item{font-size:11.5px}.overview-skills{font-size:10.5px;gap:6px 7px}.overview-meta{gap:7px 8px}}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#f6f7f8">
@@ -112,25 +117,35 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       <img class="home-portrait" src="grimsby-profile.jpeg" alt="Grimsby portrait">
       <div class="card home-overview">
         <div class="kicker">At a Glance</div>
-        <div id="homeOverviewIdentity" class="small mt8" style="font-weight:750">Druid 5 • Moon</div>
-        <div class="overview-grid">
-          <div class="overview-item"><span class="overview-label">STR</span><span id="homeStr" class="overview-value">10 +0</span></div>
-          <div class="overview-item"><span class="overview-label">INT</span><span id="homeInt" class="overview-value">8 −1</span></div>
-          <div class="overview-item"><span class="overview-label">DEX</span><span id="homeDex" class="overview-value">14 +2</span></div>
-          <div class="overview-item"><span class="overview-label">WIS</span><span id="homeWis" class="overview-value">18 +4</span></div>
-          <div class="overview-item"><span class="overview-label">CON</span><span id="homeCon" class="overview-value">16 +3</span></div>
-          <div class="overview-item"><span class="overview-label">CHA</span><span id="homeCha" class="overview-value">8 −1</span></div>
+
+        <div class="overview-section">
+          <div class="overview-section-title">Abilities</div>
+          <div class="overview-grid">
+            <div class="overview-item"><span class="overview-label">STR</span><span id="homeStr" class="overview-value">10 +0</span></div>
+            <div class="overview-item"><span class="overview-label">INT</span><span id="homeInt" class="overview-value">8 −1</span></div>
+            <div class="overview-item"><span class="overview-label">DEX</span><span id="homeDex" class="overview-value">14 +2</span></div>
+            <div class="overview-item"><span class="overview-label">WIS</span><span id="homeWis" class="overview-value">18 +4</span></div>
+            <div class="overview-item"><span class="overview-label">CON</span><span id="homeCon" class="overview-value">16 +3</span></div>
+            <div class="overview-item"><span class="overview-label">CHA</span><span id="homeCha" class="overview-value">8 −1</span></div>
+          </div>
         </div>
-        <div class="overview-grid" style="margin-top:9px">
-          <div class="overview-item"><span class="overview-label">PB</span><span id="homePb" class="overview-value">+3</span></div>
-          <div class="overview-item"><span class="overview-label">INIT</span><span id="homeInit" class="overview-value">+2</span></div>
-          <div class="overview-item"><span class="overview-label">DC</span><span id="homeDc" class="overview-value">15</span></div>
-          <div class="overview-item"><span class="overview-label">SPELL</span><span id="homeSpell" class="overview-value">+7</span></div>
+
+        <div class="overview-section">
+          <div class="overview-section-title">Combat & Magic</div>
+          <div class="overview-meta">
+            <div class="overview-item"><span class="overview-label">PB</span><span id="homePb" class="overview-value">+3</span></div>
+            <div class="overview-item"><span class="overview-label">INIT</span><span id="homeInit" class="overview-value">+2</span></div>
+            <div class="overview-item"><span class="overview-label">DC</span><span id="homeDc" class="overview-value">15</span></div>
+            <div class="overview-item"><span class="overview-label">SPELL</span><span id="homeSpell" class="overview-value">+7</span></div>
+          </div>
         </div>
-        <div class="kicker" style="margin-top:10px">Skills</div>
-        <div class="overview-skills">
-          <span id="homeMedicine">Medicine +7</span><span id="homeNature">Nature +6</span>
-          <span id="homeSurvival">Survival +7</span><span id="homeReligion">Religion +2</span>
+
+        <div class="overview-section">
+          <div class="overview-section-title">Proficient Skills</div>
+          <div class="overview-skills">
+            <span id="homeMedicine">Medicine +7</span><span id="homeNature">Nature +6</span>
+            <span id="homeSurvival">Survival +7</span><span id="homeReligion">Religion +2</span>
+          </div>
         </div>
       </div>
     </div>
@@ -1814,7 +1829,6 @@ function renderCharacterDynamic(){
  set('#saveInt',fmt(mod(abilities.int)+p));set('#saveWis',fmt(w+p));set('#saveCha',fmt(mod(abilities.cha)));
  set('#skillMedicine',fmt(w+p));set('#skillNature',fmt(mod(abilities.int)+p+w));set('#skillReligion',fmt(mod(abilities.int)+p));set('#skillSurvival',fmt(w+p));
  set('#quarterstaffToHit',fmt(mod(abilities.str)+p));
- set('#homeOverviewIdentity',`Druid ${level} • Moon`);
  [['Str','str'],['Dex','dex'],['Con','con'],['Int','int'],['Wis','wis'],['Cha','cha']].forEach(([label,k])=>set(`#home${label}`,`${abilities[k]} ${fmt(mod(abilities[k]))}`));
  set('#homePb',fmt(p));set('#homeInit',fmt(initiativeTotal()));set('#homeDc',8+p+w);set('#homeSpell',fmt(p+w));
  set('#homeMedicine',`Medicine ${fmt(w+p)}`);set('#homeNature',`Nature ${fmt(mod(abilities.int)+p+w)}`);set('#homeSurvival',`Survival ${fmt(w+p)}`);set('#homeReligion',`Religion ${fmt(mod(abilities.int)+p)}`);

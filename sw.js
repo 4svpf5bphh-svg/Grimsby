@@ -1,4 +1,4 @@
-const CACHE = 'grimsby-pwa-v5';
+const CACHE = 'grimsby-pwa-v6';
 const ASSETS = [
   './',
   './index.html',
