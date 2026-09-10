@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Grimsby Companion v2.7.1</title>
+<title>Grimsby Companion v2.7.2</title>
 <style>
 :root{
   --bg:#f6f7f8; --card:#fff; --text:#14171a; --muted:#6b7280; --line:#e5e7eb;
@@ -447,6 +447,16 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
         <div id="combatWildTitle" class="mid mt8">Transform</div>
         <div id="combatWildSub" class="sub mt8">2 / 2 uses</div>
       </button>
+    </div>
+
+    <div id="combatConSaveCard" class="card mt12">
+      <div class="row between">
+        <div style="min-width:0">
+          <div class="kicker">Constitution Save</div>
+          <div id="combatConSaveSummary" class="sub mt8"></div>
+        </div>
+        <div id="combatConSaveTotal" class="big">+3</div>
+      </div>
     </div>
 
     <button id="combatStatusBtn" class="btn full mt12" style="text-align:left">
@@ -1606,6 +1616,8 @@ function renderSpells(){
 
 
 function renderFamiliar(){
+ const homeFam=document.querySelector('#homeFamiliarHp');
+ if(homeFam) homeFam.textContent=`${familiarHp} / ${familiarMaxHp()} HP`;
  const hpEl=document.querySelector('#familiarHp');
  const help=document.querySelector('#famHelpCount');
  const helpBtn=document.querySelector('#famHelpUse');
@@ -1723,8 +1735,8 @@ function renderCombat(){
      const spell=getConcentrationSpells().find(s=>s.name===concentration);
      const info=conSaveInfo(spell);
      const detail=info.sources.length
-       ? `Concentration save: CON ${fmt(info.base)}${info.sources.map(s=>` + WIS ${fmt(info.wis)} (${s})`).join('')} → ${fmt(info.total)} total.`
-       : `Concentration save: CON ${fmt(info.total)}.`;
+       ? `Concentration save: Base CON ${fmt(info.base)}${info.sources.map(s=>` + WIS modifier ${fmt(info.wis)} (${s})`).join('')} = ${fmt(info.total)} total.`
+       : `Concentration save: ${fmt(info.total)}.`;
      entries.push([
        `Concentrating: ${concentration}`,
        detail
@@ -1762,10 +1774,10 @@ function renderCombatStatus(){
    const chosen=getConcentrationSpells().find(s=>s.name===(sel?.value||concentration));
    if(chosen){
      const info=conSaveInfo(chosen);
-     const sourceText=info.sources.length
-       ? info.sources.map(s=>`WIS ${fmt(info.wis)} from ${s}`).join(' + ')
-       : 'No additional feature bonus applies';
-     hint.innerHTML=`<b>Concentration save: ${fmt(info.total)} CON.</b><div class="small mt8">Base CON ${fmt(info.base)}${info.sources.length?` + ${sourceText}`:''}.${level>=6&&!form?' Increased Toughness will also add WIS while Wild Shaped.':''}</div>`;
+     const parts=[`Base CON ${fmt(info.base)}`];
+     if(level>=6 && form) parts.push(`WIS modifier ${fmt(info.wis)} from Increased Toughness`);
+     if(chosen.school==='Conjuration') parts.push(`WIS modifier ${fmt(info.wis)} from Conjuration Adept`);
+     hint.innerHTML=`<b>Concentration save: ${fmt(info.total)}.</b><div class="small mt8">${parts.join(' + ')} = <b>${fmt(info.total)}</b>.${level>=6&&!form?` In Wild Shape, Increased Toughness also adds WIS ${fmt(info.wis)}.`:''}</div>`;
      hint.classList.remove('hidden');
    }else hint.classList.add('hidden');
  }
@@ -1813,7 +1825,7 @@ function renderCharacterDynamic(){
  const dyn=document.querySelector('#dynamicLevelFeatures');
  if(dyn){
    const cards=[];
-   if(level>=6)cards.push(['Improved Circle Forms',`Wild Shape attacks can deal Radiant damage instead; Increased Toughness adds WIS ${fmt(w)} to every Constitution save while transformed. This stacks with Conjuration Adept on Concentration saves for Conjuration spells.`]);
+   if(level>=6)cards.push(['Improved Circle Forms',`Wild Shape attacks can deal Radiant damage instead; Increased Toughness adds your Wisdom modifier (${fmt(w)}) to every Constitution save while transformed. This stacks with Conjuration Adept on Concentration saves for Conjuration spells.`]);
    if(level>=7&&elementalFury)cards.push(['Elemental Fury',elementalFury==='Primal Strike'?`Primal Strike: extra ${level>=15?'2d8':'1d8'} elemental damage once per turn on a weapon or Beast attack.`:`Potent Spellcasting: add WIS ${fmt(w)} to Druid cantrip damage${level>=15?'; cantrips with 10+ ft range gain +300 ft range':''}.`]);
    if(level>=10)cards.push(['Moonlight Step','Bonus Action teleport up to 30 ft; gain Advantage on your next attack before the end of the turn.']);
    if(level>=14)cards.push(['Lunar Form','Once per turn, a Wild Shape attack can deal an extra 2d10 Radiant damage; Moonlight Step can take one nearby willing creature with you.']);
@@ -1846,6 +1858,23 @@ function sync(){
  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav==='home'));
  const homeFam=document.querySelector('#homeFamiliarHp');
  if(homeFam) homeFam.textContent=`${familiarHp} / ${familiarMaxHp()} HP`;
+
+ const combatConTotal=document.querySelector('#combatConSaveTotal');
+ const combatConSummary=document.querySelector('#combatConSaveSummary');
+ if(combatConTotal && combatConSummary){
+   const base=mod(abilities.con);
+   const wis=mod(abilities.wis);
+   const wildBonus=(level>=6 && form)?wis:0;
+   const total=base+wildBonus;
+   combatConTotal.textContent=fmt(total);
+   if(level>=6){
+     combatConSummary.innerHTML=form
+       ? `Base CON ${fmt(base)} + WIS modifier ${fmt(wis)} from Increased Toughness = <b>${fmt(total)}</b>.<br>Conjuration concentration saves add WIS ${fmt(wis)} again from Conjuration Adept.`
+       : `Base CON ${fmt(base)}. In Wild Shape, Increased Toughness adds WIS modifier ${fmt(wis)} → <b>${fmt(base+wis)}</b>.`;
+   }else{
+     combatConSummary.textContent=`Base CON ${fmt(base)}. Increased Toughness unlocks at Druid 6.`;
+   }
+ }
  renderCharacterDynamic(); renderEquipment(); renderLanguages(); renderCombat(); renderCombatStatus(); renderWildForms(); renderSpells(); renderMore(); renderFamiliar(); renderRest();
  save();
 }
@@ -1987,9 +2016,9 @@ document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{const p=b.dat
 
 
 
-document.querySelector('#famDamage').onclick=()=>{familiarHp=Math.max(0,familiarHp-1);save();renderFamiliar()};
-document.querySelector('#famHeal').onclick=()=>{familiarHp=Math.min(familiarMaxHp(),familiarHp+1);save();renderFamiliar()};
-document.querySelector('#famFull').onclick=()=>{familiarHp=familiarMaxHp();save();renderFamiliar()};
+document.querySelector('#famDamage').onclick=()=>{familiarHp=Math.max(0,familiarHp-1);save();sync()};
+document.querySelector('#famHeal').onclick=()=>{familiarHp=Math.min(familiarMaxHp(),familiarHp+1);save();sync()};
+document.querySelector('#famFull').onclick=()=>{familiarHp=familiarMaxHp();save();sync()};
 document.querySelector('#famHelpUse').onclick=()=>{if(familiarHelpUses>0){familiarHelpUses--;save();renderFamiliar();renderMore()}};
 
 document.querySelector('#spendHitDie').onclick=()=>{
