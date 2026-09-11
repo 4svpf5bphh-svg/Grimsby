@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Grimsby Companion v2.7.3</title>
+<title>Grimsby Companion</title>
 <style>
 :root{
   --bg:#f6f7f8; --card:#fff; --text:#14171a; --muted:#6b7280; --line:#e5e7eb;
@@ -53,6 +53,33 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 .overview-skills{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px;margin-top:8px;font-size:11.5px;color:var(--muted);line-height:1.35}
 .overview-section-title{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:6px}
 @media(max-width:370px){.home-summary{grid-template-columns:116px 1fr;gap:10px}.home-portrait{min-height:292px}.home-overview{padding:13px 11px;min-height:292px}.overview-item{font-size:11.5px}.overview-skills{font-size:10.5px;gap:6px 7px}.overview-meta{gap:7px 8px}}
+
+/* ===== v2.8 TEST gameplay layer ===== */
+.v28-test-badge{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;background:#fff}
+.v28-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v28-action-card{border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#fff}
+.v28-action-card b{display:block;margin-bottom:4px}
+.v28-spell-option{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:#fff;color:inherit;font:inherit}
+.v28-spell-option+.v28-spell-option{margin-top:7px}
+.v28-spell-option .right{font-size:18px;opacity:.55}
+.v28-spell-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.v28-mini-chip{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 6px;font-size:10px;font-weight:750;background:#fff}
+.v28-action-group{border:1px solid var(--line);border-radius:16px;background:#fff;margin-top:10px;overflow:hidden}
+.v28-action-group summary{list-style:none;cursor:pointer;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:850}
+.v28-action-group summary::-webkit-details-marker{display:none}
+.v28-action-group summary:after{content:'›';font-size:21px;opacity:.55;transform:rotate(0deg);transition:transform .15s ease}
+.v28-action-group[open] summary:after{transform:rotate(90deg)}
+.v28-action-group-body{padding:0 12px 12px}
+.v28-action-summary{font-size:11px;font-weight:650;opacity:.62;margin-top:3px}
+.v28-inline-option{border:1px solid var(--line);border-radius:14px;padding:10px 11px;background:#fff;margin-top:8px}
+
+
+.v28-log{max-height:390px;overflow:auto}
+.v28-log-row{padding:10px 0;border-bottom:1px solid #eef0f2;font-size:12px;line-height:1.4}
+.v28-conc-check{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fff}
+.v28-cast-grid{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.v28-cast-grid select{width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:15px}
+
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#f6f7f8">
@@ -149,6 +176,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
         </div>
       </div>
     </div>
+
   </section>
 
   <section id="hp" class="screen">
@@ -170,6 +198,18 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
         <button id="healBtn" class="btn">Heal</button>
         <button id="tempBtn" class="btn">Temp HP</button>
       </div>
+    </div>
+
+    <div id="damageConcentrationCard" class="v28-conc-check mt12 hidden">
+      <div class="kicker">Concentration Check</div>
+      <div id="damageConcentrationTitle" class="mid mt8"></div>
+      <div id="damageConcentrationBreakdown" class="sub mt8"></div>
+      <div class="notice mt12">Roll your physical d20, add the save bonus above, then record the result.</div>
+      <div class="grid2 mt12">
+        <button id="concentrationPassed" class="btn accent">Passed</button>
+        <button id="concentrationFailed" class="btn danger">Failed</button>
+      </div>
+      <button id="dismissConcentrationSave" class="btn full mt8">Resolve Later</button>
     </div>
   </section>
 
@@ -203,22 +243,57 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 
   <section id="familiar" class="screen">
     <div class="row"><button class="back" data-back="home">‹</button><div><div class="title" style="font-size:22px">Raven</div><div class="sub">Familiar • Familiar Friend</div></div></div>
-    <div class="grid3 mt16">
-      <div class="stat"><div class="kicker">HP</div><div><span id="familiarHp">12</span><span id="familiarHpMax" class="sub"> / 12</span></div></div>
-      <div class="stat"><div class="kicker">AC</div><div class="mid">12</div></div>
-      <div class="stat"><div class="kicker">Fly</div><div class="mid">50 ft</div></div>
+    <div class="grid2 mt16">
+      <div class="stat"><div class="kicker">HP</div><div class="mid"><span id="familiarHp">12</span><span id="familiarHpMax" class="sub"> / 12</span></div></div>
+      <div class="stat"><div class="kicker">AC</div><div id="familiarAc" class="mid">12</div></div>
+    </div>
+    <div class="card mt12">
+      <div class="kicker">Movement</div>
+      <div id="familiarMovementChips" class="status show mt8"></div>
+    </div>
+
+    <div id="familiarLiveCard" class="notice mt12">
+      <div class="row between">
+        <div>
+          <b id="familiarLiveTitle">Raven Not Summoned</b>
+          <div id="familiarLiveText" class="sub mt8">Cast Find Familiar to bring Raven into play.</div>
+        </div>
+        <span id="familiarLiveBadge" class="v28-test-badge">Inactive</span>
+      </div>
+    </div>
+    <div id="battleFamiliarCard" class="card mt12 hidden">
+      <div class="row between"><div><div class="kicker">Battle Familiar Active</div><div id="battleFamiliarTitle" class="mid mt8"></div></div><span class="v28-test-badge">Battle</span></div>
+      <div id="battleFamiliarTempWrap" class="notice mt12"><b>Battle Temp HP</b><div id="battleFamiliarTempText" class="sub mt4"></div></div>
+      <div id="battleFamiliarStats" class="sub mt12"></div>
+      <div id="battleFamiliarFeature" class="notice mt12"></div>
+      <button id="endBattleFamiliar" class="btn full mt12">Mark Battle Familiar Ended</button>
+      <div class="sub mt8">Battle Familiar lasts 1 hour. Use this when its duration/effect has actually ended.</div>
+    </div>
+    <button id="familiarPocketToggle" class="btn full mt8" style="text-align:left">
+      <b id="familiarPocketToggleTitle">Send to Pocket Dimension</b>
+      <div id="familiarPocketToggleText" class="sub mt4">Magic Action</div>
+    </button>
+
+    <div id="wildCompanionCard" class="card mt12">
+      <b>Wild Companion</b>
+      <div class="sub mt8">Magic Action • spend a Wild Shape use or spell slot to cast Find Familiar without Material components. The familiar is Fey and disappears at your next Long Rest.</div>
+      <div class="grid2 mt12">
+        <button id="wildCompanionWild" class="btn">Use Wild Shape</button>
+        <div>
+          <select id="wildCompanionSlot" style="width:100%;padding:13px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:14px"></select>
+          <button id="wildCompanionSlotBtn" class="btn full mt8">Use Slot</button>
+        </div>
+      </div>
+      <div id="wildCompanionStatus" class="sub mt8"></div>
     </div>
 
     <div class="card mt12">
       <div class="row between"><b>Manage HP</b><span class="sub">Fortified Familiar included</span></div>
-      <div class="grid3 mt12">
-        <button id="famDamage" class="btn">−1 HP</button>
-        <button id="famHeal" class="btn">+1 HP</button>
-        <button id="famFull" class="btn">Full</button>
-      </div>
+      <input id="famHpAmount" type="number" min="0" inputmode="numeric" value="1" style="width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);font-size:18px;background:#fff;margin-top:12px">
+      <div class="grid3 mt12"><button id="famDamage" class="btn">Damage</button><button id="famHeal" class="btn">Heal</button><button id="famFull" class="btn">Full</button></div>
     </div>
 
-    <div class="card mt12">
+    <div id="familiarNormalStats" class="card mt12">
       <b>Stats & Senses</b>
       <div class="sep"></div>
       <div class="sub">STR −4 • DEX +2 • CON +0 • INT −3 • WIS +1 • CHA −2</div>
@@ -226,20 +301,23 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       <div class="sub">Perception +3 • Passive Perception 13 • Walk 10 ft • Fly 50 ft</div>
     </div>
 
-    <div class="card mt12">
+    <div id="familiarNormalActions" class="card mt12">
       <b>Actions & Traits</b>
+      <div class="sep"></div>
+      <div><b>Own Turn</b><div class="sub mt8">Raven rolls its own Initiative and acts on its own turn. It can take normal actions such as Help, Dodge, Dash, Disengage, Hide, Search, Ready and Utilize.</div></div>
       <div class="sep"></div>
       <div><b>Mimicry</b><div class="sub mt8">Can imitate simple sounds it has heard; a listener can identify the imitation with a DC 10 Wisdom (Insight) check.</div></div>
       <div class="sep"></div>
-      <div><b>Beak</b><div class="sub mt8">+4 to hit • Reach 5 ft • 1 Piercing damage.</div></div>
+      <div><b>Beak</b><div class="sub mt8">The Raven stat block has a Beak attack, but a familiar summoned by Find Familiar can't attack unless another feature specifically allows it.</div></div>
     </div>
 
-    <div class="card mt12">
+    <div id="familiarHelpfulCard" class="card mt12">
       <div class="row between">
         <div><b>Helpful Friend</b><div class="sub mt8">Advantage on a proficient skill check while your familiar is close enough • PB uses per Long Rest.</div></div>
-        <button id="famHelpUse" class="btn accent" style="min-width:92px">Use</button>
+        <button id="famHelpUse" class="btn accent" style="min-width:72px">Use</button>
       </div>
       <div id="famHelpCount" class="sub mt8">3 / 3 uses</div>
+      <div id="famHelpStatus" class="sub mt4"></div>
     </div>
   </section>
 
@@ -347,7 +425,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       <div class="card"><b>Primal Order: Magician</b><div class="sub mt8">Extra Druid cantrip and Wisdom-based bonus to the selected Intelligence skill check.</div></div>
       <div class="card"><b>Familiar Friend</b><div id="familiarFriendFeatureText" class="sub mt8">Find Familiar is always prepared with one free cast per Long Rest; Raven HP and Helpful Friend uses scale automatically.</div></div>
       <div class="card"><b>Conjuration Adept</b><div class="sub mt8">Wisdom increase already included. Conjuration spell access and concentration benefit are tracked by the rules engine.</div></div>
-      <div class="card"><b>Circle of the Moon</b><div class="sub mt8">Improved Wild Shape forms, Moon-specific transformed defenses, and subclass spellcasting while transformed where allowed.</div></div>
+      <div class="card"><b>Circle of the Moon</b><div class="sub mt8">Improved Wild Shape forms, Moon-specific transformed defenses, Moonlight Step, and subclass spellcasting while transformed where allowed.</div></div>
       <div class="card"><b>Orc: Adrenaline Rush</b><div id="adrenalineFeatureText" class="sub mt8">Bonus Action Dash; Temp HP and uses scale with proficiency bonus.</div></div>
       <div class="card"><b>Orc: Relentless Endurance</b><div class="sub mt8">When reduced to 0 HP without being killed outright, drop to 1 HP instead. Once per Long Rest. Tracked in Combat.</div></div>
       <div class="card"><b>Orc: Darkvision</b><div class="sub mt8">Darkvision 120 ft.</div></div>
@@ -413,7 +491,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 
   <section id="manageforms" class="screen">
     <div class="row"><button class="back" data-back="wild">‹</button><div><div class="title" style="font-size:22px">Manage Known Forms</div><div class="sub">Manage Grimsby's known forms</div></div></div>
-    <div class="notice mt16">Tap one of Grimsby's known forms to mark it for replacement, then tap an available form. This changes the known-form list only — it never uses Wild Shape. New form slots unlock automatically as Grimsby levels.</div>
+    <div class="notice mt16">Fill new form slots when they unlock. Once all slots are full, Grimsby can replace one known form after each Long Rest. Only currently eligible forms are shown.</div>
     <div class="card mt16">
       <b>Known Forms</b>
       <div id="knownFormsManage" class="list mt12"></div>
@@ -464,14 +542,12 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       </button>
     </div>
 
-    <div id="combatConSaveCard" class="card mt12">
-      <div class="row between">
-        <div style="min-width:0">
-          <div class="kicker">Constitution Save</div>
-          <div id="combatConSaveSummary" class="sub mt8"></div>
-        </div>
-        <div id="combatConSaveTotal" class="big">+3</div>
-      </div>
+
+    <div class="mt12">
+      <button id="whatCanIDoBtn" class="btn full" style="text-align:left">
+        <div class="kicker">Turn Helper</div>
+        <div class="mid mt8">What Can I Do?</div>
+      </button>
     </div>
 
     <button id="combatStatusBtn" class="btn full mt12" style="text-align:left">
@@ -495,6 +571,22 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
         <button id="resurgenceGainSlot" class="btn">Wild Shape → 1st Slot</button>
       </div>
 
+      <div id="moonlightStepResource" class="hidden">
+        <div class="sep"></div>
+        <div class="row between">
+          <div><b>Moonlight Step</b><div class="sub mt8">Bonus Action teleport up to 30 ft; Advantage on your next attack before the end of the turn.</div></div>
+          <button id="useMoonlightStep" class="btn accent" style="min-width:84px">Use</button>
+        </div>
+        <div class="row between mt8"><div id="moonlightStepCount" class="sub"></div><button id="restoreMoonlightStep" class="btn" style="min-height:38px;padding:7px 10px">2+ Slot → 1 Use</button></div>
+      </div>
+      <div id="archdruidResource" class="hidden">
+        <div class="sep"></div><b>Archdruid</b>
+        <div class="sub mt8">Evergreen Wild Shape restores one use when Initiative is rolled with none left. Nature Magician converts Wild Shape uses into one created spell slot once per Long Rest.</div>
+        <div class="grid2 mt12">
+          <button id="evergreenWildShape" class="btn">Begin Combat • Evergreen</button>
+          <div><select id="natureMagicianSlot" style="width:100%;padding:11px;border-radius:12px;border:1px solid var(--line);background:#fff;font-size:13px"></select><button id="useNatureMagician" class="btn full mt8">Nature Magician</button></div>
+        </div><div id="natureMagicianStatus" class="sub mt8"></div>
+      </div>
       <div class="sep"></div>
       <div class="row between">
         <div><b>Adrenaline Rush</b><div id="adrenalineCombatText" class="sub mt8">Bonus Action Dash + 3 Temp HP</div></div>
@@ -619,6 +711,30 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       <b>Wild Shape</b>
       <div class="small mt8">Grimsby can cast this spell while transformed through Circle of the Moon.</div>
     </div>
+
+    <div id="spellCastCard" class="card mt12">
+      <div class="row between">
+        <div>
+          <b>Cast Spell</b>
+          <div id="spellCastNote" class="sub mt8"></div>
+        </div>
+        <span class="v28-test-badge">v2.8 Test</span>
+      </div>
+      <div id="battleFamiliarChoiceWrap" class="notice mt12 hidden">
+        <b>Battle Familiar Form</b>
+        <select id="battleFamiliarChoice" style="width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:15px;margin-top:8px"><option value="Brute">Brute</option><option value="Flyer">Flyer</option><option value="Stalker">Stalker</option></select>
+        <div id="battleFamiliarPreview" class="sub mt8"></div>
+      </div>
+      <div id="spellCastControls" class="v28-cast-grid mt12">
+        <div>
+          <div class="kicker">Slot</div>
+          <select id="spellCastSlot"></select>
+        </div>
+        <button id="castSpellBtn" class="btn accent">Cast</button>
+      </div>
+      <div id="spellCastResult" class="sub mt8"></div>
+      <button id="castRitualBtn" class="btn full mt8 hidden">Cast as Ritual • no slot</button>
+    </div>
   </section>
 
   <section id="more" class="screen">
@@ -665,6 +781,20 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       </div>
     </button>
 
+    <button id="moreSessionLog" class="btn full mt12" style="text-align:left">
+      <div class="row between">
+        <div><b>Session Log</b><div class="sub mt8">Wild Shape, spells, damage, rests & concentration checks</div></div>
+        <span>›</span>
+      </div>
+    </button>
+
+    <button id="moreBackup" class="btn full mt12" style="text-align:left">
+      <div class="row between">
+        <div><b>Backup & Restore</b><div class="sub mt8">Export or restore Grimsby's saved character state</div></div>
+        <span>›</span>
+      </div>
+    </button>
+
     <button id="moreSettings" class="btn full mt12" style="text-align:left">
       <div class="row between">
         <div>
@@ -686,6 +816,49 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
     </div>
   </section>
 
+
+
+  <section id="whatcando" class="screen">
+    <div class="row">
+      <button class="back" data-back="combat">‹</button>
+      <div><div class="title" style="font-size:22px">What Can I Do?</div><div class="sub">Context-aware turn helper</div></div>
+    </div>
+    <div id="whatCanIDoBody" class="mt16"></div>
+  </section>
+
+  <section id="sessionlog" class="screen">
+    <div class="row between">
+      <div class="row">
+        <button class="back" data-back="more">‹</button>
+        <div><div class="title" style="font-size:22px">Session Log</div><div class="sub">Recent gameplay events</div></div>
+      </div>
+      <button id="clearSessionLog" class="btn">Clear</button>
+    </div>
+    <div class="card mt16">
+      <div id="sessionLogBody" class="v28-log"></div>
+    </div>
+  </section>
+
+  <section id="backuprestore" class="screen">
+    <div class="row">
+      <button class="back" data-back="more">‹</button>
+      <div><div class="title" style="font-size:22px">Backup & Restore</div><div class="sub">Protect Grimsby's saved state</div></div>
+    </div>
+    <div class="card mt16">
+      <b>Export Backup</b>
+      <div class="sub mt8">Creates a JSON backup containing the complete character state and session log. On iPhone, this opens the Share sheet so you can Save to Files; other browsers fall back to a normal download.</div>
+      <button id="exportBackupBtn" class="btn accent full mt12">Share / Save Grimsby Backup</button>
+    </div>
+    <div class="card mt12">
+      <b>Restore Backup</b>
+      <div class="sub mt8">Restoring replaces the current character state. The file is validated before anything is changed.</div>
+      <label class="btn full mt12" style="display:block;text-align:center">
+        Choose Backup File
+        <input id="importBackupInput" type="file" accept=".json,application/json" style="display:none">
+      </label>
+      <div id="backupRestoreStatus" class="sub mt8"></div>
+    </div>
+  </section>
 
   <section id="levelup" class="screen">
     <div class="row"><button class="back" data-back="more">‹</button><div><div class="title" style="font-size:22px">Level Up</div><div id="levelUpSubtitle" class="sub">Grimsby • Druid 5 → 6</div></div></div>
@@ -812,8 +985,8 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
     </div>
 
     <div class="card mt12">
-      <div class="row between"><b>App Version</b><span class="sub">v2.7</span></div>
-      <div class="sub mt8">Level & scaling audit fixes + Home character overview.</div>
+      <div class="row between"><b>App Version</b><span class="sub">v2.8</span></div>
+      <div class="sub mt8">Rules-audit fixes, familiar casting, Moonlight Step and high-level mechanics.</div>
     </div>
 
     <div class="card mt12">
@@ -860,17 +1033,32 @@ let slots=S.slots??{1:4,2:3,3:2};
 let familiarFreeCastUsed=S.familiarFreeCastUsed??false;
 let familiarHp=S.familiarHp??12;
 let familiarHelpUses=S.familiarHelpUses??3;
+let familiarPocket=S.familiarPocket??false;
+let familiarActive=(S.familiarActive??(familiarFreeCastUsed&&familiarHp>0))&&!familiarPocket;
 let hitDice=S.hitDice??5;
 let wildResurgenceSlotUsed=S.wildResurgenceSlotUsed??false;
+const moonlightStepStateSaved=Object.prototype.hasOwnProperty.call(S,'moonlightStepUses');
+let moonlightStepUses=S.moonlightStepUses??0;
+let natureMagicianUsed=S.natureMagicianUsed??false;
+let bonusSlots=(S.bonusSlots&&typeof S.bonusSlots==='object')?S.bonusSlots:{};
+let formSwapAvailable=S.formSwapAvailable??true;
+let familiarExpiresOnLongRest=S.familiarExpiresOnLongRest??false;
+let battleFamiliarActive=!!S.battleFamiliarActive;
+let battleFamiliarForm=S.battleFamiliarForm??null;
+let battleFamiliarSpellLevel=Math.max(0,Number(S.battleFamiliarSpellLevel||0));
+let battleFamiliarTempHp=Math.max(0,Number(S.battleFamiliarTempHp||0));
+let battleFamiliarStandalone=!!S.battleFamiliarStandalone;
 let adrenalineUses=S.adrenalineUses??3;
 let relentlessUsed=S.relentlessUsed??false;
 let spellFilter='all';
 let spellSearch='';
 let notes=S.notes??'';
+let sessionLog=Array.isArray(S.sessionLog)?S.sessionLog:[];
+let pendingConcentrationCheck=null;
 let initiativeMisc=S.initiativeMisc??((S.initiativeBonus??mod(abilities.dex))-mod(abilities.dex));
 let previewForm=null;
 let pendingReplace=null;
-let backTargets={hp:'home',wild:'home',beast:'home',familiar:'home',rest:'home',attacks:'character'};
+let backTargets={hp:'home',wild:'home',beast:'home',familiar:'home',rest:'home',attacks:'character',sessionlog:'more'};
 const druidProgression={
 1:{pb:2,wild:0,cantrips:2,prepared:4,slots:[2,0,0,0,0,0,0,0,0]},
 2:{pb:2,wild:2,cantrips:2,prepared:5,slots:[3,0,0,0,0,0,0,0,0]},
@@ -901,11 +1089,17 @@ function pb(){return druidProgression[level].pb}
 function preparedCap(){return druidProgression[level].prepared}
 function cantripCap(){return druidProgression[level].cantrips+1}
 function slotMax(lvl){return druidProgression[level].slots[lvl-1]||0}
+function bonusSlotCount(lvl){return Math.max(0,Number(bonusSlots[lvl]||0))}
+function slotAvailable(lvl){return Math.max(0,Number(slots[lvl]||0))+bonusSlotCount(lvl)}
+function spendSlot(lvl){if(bonusSlotCount(lvl)>0){bonusSlots[lvl]=bonusSlotCount(lvl)-1;return true}if((slots[lvl]||0)>0){slots[lvl]--;return true}return false}
+function totalSlotsAvailable(){let n=0;for(let i=1;i<=9;i++)n+=slotAvailable(i);return n}
 function maxSpellLevel(){for(let i=9;i>=1;i--)if(slotMax(i)>0)return i;return 0}
 function knownFormCap(){return level>=8?8:(level>=4?6:4)}
 function moonMaxCr(){return Math.max(1,Math.floor(level/3))}
 function moonTempHp(){return 3*level}
-function moonAc(){return 13+mod(abilities.wis)}
+function moonAc(name=form){const circleAc=13+mod(abilities.wis),beastAc=Number(forms?.[name]?.ac||0);return Math.max(circleAc,beastAc)}
+function moonlightStepMax(){return level>=10?Math.max(1,mod(abilities.wis)):0}
+function formEligible(name){const f=forms[name];if(!f)return false;if(Number(f.cr||0)>moonMaxCr())return false;if(level<8&&String(f.speed||'').includes('Fly'))return false;return true}
 function normalAc(){return 12+mod(abilities.dex)+(shield?2:0)}
 function conSaveInfo(spell=null){
  const base=mod(abilities.con);
@@ -924,6 +1118,16 @@ function conSaveInfo(spell=null){
 }
 function initiativeTotal(){return mod(abilities.dex)+initiativeMisc}
 function familiarMaxHp(){return 2+(2*level)}
+function battleFamiliarHpMax(spellLevel=battleFamiliarSpellLevel,kind=battleFamiliarForm){const l=Math.max(2,Number(spellLevel||2));return (kind==='Brute'?30:20)+(5*Math.max(0,l-2))}
+function battleFamiliarAc(spellLevel=battleFamiliarSpellLevel,kind=battleFamiliarForm){const l=Math.max(2,Number(spellLevel||2));return 11+l+(kind==='Brute'?2:0)}
+function battleFamiliarAttackCount(spellLevel=battleFamiliarSpellLevel){return Math.max(1,Math.floor(Math.max(2,Number(spellLevel||2))/2))}
+function battleFamiliarDamageBonus(spellLevel=battleFamiliarSpellLevel){return 3+Math.max(2,Number(spellLevel||2))}
+function battleFamiliarTalent(spellLevel=battleFamiliarSpellLevel){return Math.floor(Math.max(2,Number(spellLevel||2))/2)}
+function battleFamiliarSpeed(kind=battleFamiliarForm){return kind==='Flyer'?'Walk 40 ft • Swim 30 ft • Fly 30 ft (Hover)':'Walk 40 ft • Swim 30 ft'}
+function familiarCurrentMaxHp(){return battleFamiliarActive&&battleFamiliarStandalone?battleFamiliarHpMax():familiarMaxHp()}
+function clearBattleFamiliarState(){battleFamiliarActive=false;battleFamiliarForm=null;battleFamiliarSpellLevel=0;battleFamiliarTempHp=0;battleFamiliarStandalone=false}
+function endBattleFamiliar(reason='Spell ended'){if(!battleFamiliarActive)return;const standalone=battleFamiliarStandalone;clearBattleFamiliarState();if(standalone){familiarActive=false;familiarPocket=false;familiarHp=0}logSession(`Battle Familiar • ${reason}${standalone?' • familiar disappeared':' • Raven returned to normal'}`)}
+function activateBattleFamiliar(spellLevel,kind){const l=Math.max(2,Number(spellLevel||2)),existingRaven=familiarActive&&!battleFamiliarStandalone;battleFamiliarActive=true;battleFamiliarForm=kind;battleFamiliarSpellLevel=l;if(existingRaven){battleFamiliarStandalone=false;battleFamiliarTempHp=battleFamiliarHpMax(l,kind)}else{battleFamiliarStandalone=true;battleFamiliarTempHp=0;familiarActive=true;familiarPocket=false;familiarExpiresOnLongRest=false;familiarHp=battleFamiliarHpMax(l,kind)}return existingRaven}
 function activeKnownForms(){return knownForms.slice(0,knownFormCap())}
 function featureAtLevel(lvl){
  const map={6:'Improved Circle Forms',7:'Elemental Fury',8:'Feat / Ability Score Improvement',10:'Moonlight Step + new Druid cantrip',12:'Feat / Ability Score Improvement',14:'Lunar Form',15:'Improved Elemental Fury',16:'Feat / Ability Score Improvement',18:'Beast Spells',19:'Epic Boon',20:'Archdruid'};
@@ -934,80 +1138,35 @@ for(let i=1;i<=9;i++){
 }
 
 const forms={
-"Brown Bear":{
- speed:"40 ft • Climb 30 ft",size:"Large",
- traits:[
-  ["Multiattack","Makes one Bite attack and one Claw attack."],
-  ["Bite","+5 to hit • Reach 5 ft • 1d8 + 3 Piercing (7 avg.)"],
-  ["Claw","+5 to hit • Reach 5 ft • 1d4 + 3 Slashing (5 avg.) • Large or smaller target is knocked Prone."]
- ]
-},
-"Giant Spider":{
- speed:"30 ft • Climb 30 ft",size:"Large",
- traits:[
-  ["Bite","+5 to hit • Reach 5 ft • 1d8 + 3 Piercing + 2d6 Poison (14 avg. total)."],
-  ["Web","Recharge 5–6 • Target within 60 ft • DC 13 Dexterity save • Failure: Restrained until web is destroyed."],
-  ["Spider Climb","Climbs difficult surfaces and ceilings without an ability check."],
-  ["Web Walker","Webs don't restrict its movement; it knows the location of creatures touching the same web."]
- ]
-},
-"Giant Toad":{
- speed:"30 ft • Swim 30 ft",size:"Large",
- traits:[
-  ["Bite","+4 to hit • Reach 5 ft • 1d6 + 2 Piercing + 2d4 Poison (10 avg. total) • Medium or smaller target is Grappled (escape DC 12)."],
-  ["Swallow","Action • Swallow a Medium or smaller creature already Grappled by the toad • Target becomes Blinded and Restrained, has Total Cover, and takes 3d6 Acid (10 avg.) at the end of each toad turn."],
-  ["Amphibious","Can breathe both air and water."],
-  ["Standing Leap","Long Jump up to 20 ft; High Jump up to 10 ft, with or without a running start."]
- ]
-},
-"Rat":{
- speed:"20 ft • Climb 20 ft",size:"Tiny",
- traits:[
-  ["Bite","+2 to hit • Reach 5 ft • 1 Piercing damage."],
-  ["Agile","Doesn't provoke an Opportunity Attack when moving out of an enemy's reach."]
- ]
-},
-"Dire Wolf":{
- speed:"50 ft",size:"Large",
- traits:[
-  ["Bite","+5 to hit • Reach 5 ft • 1d10 + 3 Piercing (8 avg.) • Large or smaller target is knocked Prone."],
-  ["Pack Tactics","Advantage on an attack roll when an ally is within 5 ft of the target and isn't Incapacitated."],
-  ["Darkvision","Darkvision 60 ft • Passive Perception 15."]
- ]
-},
-"Giant Octopus":{
- speed:"10 ft • Swim 60 ft",size:"Large",
- traits:[
-  ["Tentacles","+5 to hit • Reach 10 ft • 2d6 + 3 Bludgeoning (10 avg.) • Medium or smaller target is Grappled (escape DC 13) and Restrained while grappled."],
-  ["Ink Cloud","1/Day • Reaction when damaged underwater • Creates a Heavily Obscured 10-ft Cube and lets the octopus move up to its Swim Speed."],
-  ["Water Breathing","Breathes only underwater, but can hold its breath for 1 hour out of water."],
-  ["Stealth","+5 Stealth • Darkvision 60 ft."]
- ]
-},
-"Panther":{
- speed:"50 ft • Climb 40 ft",size:"Medium",
- traits:[
-  ["Rend","+5 to hit • Reach 5 ft • 1d6 + 3 Slashing (6 avg.)"],
-  ["Nimble Escape","Bonus Action • Take the Disengage or Hide action."],
-  ["Stealth","+7 Stealth • Darkvision 60 ft."]
- ]
-},
-"Crocodile":{
- speed:"20 ft • Swim 30 ft",size:"Large",
- traits:[
-  ["Bite","+4 to hit • Reach 5 ft • 1d8 + 2 Piercing (6 avg.) • Medium or smaller target is Grappled (escape DC 12) and Restrained while Grappled."],
-  ["Hold Breath","Can hold its breath for 1 hour."]
- ]
-},
-"Giant Badger":{
- speed:"30 ft • Burrow 10 ft",size:"Medium",
- traits:[
-  ["Bite","+3 to hit • Reach 5 ft • 2d4 + 1 Piercing (6 avg.)"],
-  ["Poison Resistance","Resistance to Poison damage."],
-  ["Darkvision","Darkvision 60 ft • Passive Perception 13."]
- ]
-}
-}; 
+"Brown Bear":{cr:1,ac:11,speed:"40 ft • Climb 30 ft",size:"Large",pick:"Combat",traits:[["Multiattack","Makes one Bite attack and one Claw attack."],["Bite","+5 to hit • Reach 5 ft • 1d8 + 3 Piercing (7 avg.)"],["Claw","+5 to hit • Reach 5 ft • 1d4 + 3 Slashing (5 avg.) • Large or smaller target is knocked Prone."]]},
+"Giant Spider":{cr:1,ac:14,speed:"30 ft • Climb 30 ft",size:"Large",pick:"Control • Climb",traits:[["Bite","+5 to hit • Reach 5 ft • 1d8 + 3 Piercing + 2d6 Poison (14 avg. total)."],["Web","Recharge 5–6 • Target within 60 ft • DC 13 Dexterity save • Failure: Restrained until web is destroyed."],["Spider Climb","Climbs difficult surfaces and ceilings without an ability check."],["Web Walker","Webs don't restrict its movement; it knows the location of creatures touching the same web."]]},
+"Giant Toad":{cr:1,ac:11,speed:"30 ft • Swim 30 ft",size:"Large",traits:[["Bite","+4 to hit • Reach 5 ft • 1d6 + 2 Piercing + 2d4 Poison (10 avg. total) • Medium or smaller target is Grappled (escape DC 12)."],["Swallow","Action • Swallow a Medium or smaller creature already Grappled by the toad • Target becomes Blinded and Restrained, has Total Cover, and takes 3d6 Acid (10 avg.) at the end of each toad turn."],["Amphibious","Can breathe both air and water."],["Standing Leap","Long Jump up to 20 ft; High Jump up to 10 ft, with or without a running start."]]},
+"Rat":{cr:0,ac:10,speed:"20 ft • Climb 20 ft",size:"Tiny",traits:[["Bite","+2 to hit • Reach 5 ft • 1 Piercing damage."],["Agile","Doesn't provoke an Opportunity Attack when moving out of an enemy's reach."]]},
+"Dire Wolf":{cr:1,ac:14,speed:"50 ft",size:"Large",pick:"Control • Pack",traits:[["Bite","+5 to hit • Reach 5 ft • 1d10 + 3 Piercing (8 avg.) • Large or smaller target is knocked Prone."],["Pack Tactics","Advantage on an attack roll when an ally is within 5 ft of the target and isn't Incapacitated."],["Darkvision","Darkvision 60 ft • Passive Perception 15."]]},
+"Giant Octopus":{cr:1,ac:12,speed:"10 ft • Swim 60 ft",size:"Large",pick:"Aquatic Control",traits:[["Tentacles","+5 to hit • Reach 10 ft • 2d6 + 3 Bludgeoning (10 avg.) • Medium or smaller target is Grappled (escape DC 13) and Restrained while grappled."],["Ink Cloud","1/Day • Reaction when damaged underwater • Creates a Heavily Obscured 10-ft Cube and lets the octopus move up to its Swim Speed."],["Water Breathing","Breathes only underwater, but can hold its breath for 1 hour out of water."],["Stealth","+5 Stealth • Darkvision 60 ft."]]},
+"Panther":{cr:0.25,ac:12,speed:"50 ft • Climb 40 ft",size:"Medium",traits:[["Rend","+5 to hit • Reach 5 ft • 1d6 + 3 Slashing (6 avg.)"],["Nimble Escape","Bonus Action • Take the Disengage or Hide action."],["Stealth","+7 Stealth • Darkvision 60 ft."]]},
+"Crocodile":{cr:0.5,ac:12,speed:"20 ft • Swim 30 ft",size:"Large",traits:[["Bite","+4 to hit • Reach 5 ft • 1d8 + 2 Piercing (6 avg.) • Medium or smaller target is Grappled (escape DC 12) and Restrained while Grappled."],["Hold Breath","Can hold its breath for 1 hour."]]},
+"Giant Badger":{cr:0.25,ac:10,speed:"30 ft • Burrow 10 ft",size:"Medium",traits:[["Bite","+3 to hit • Reach 5 ft • 2d4 + 1 Piercing (6 avg.)"],["Poison Resistance","Resistance to Poison damage."],["Darkvision","Darkvision 60 ft • Passive Perception 13."]]},
+"Eagle":{cr:0,ac:12,speed:"10 ft • Fly 60 ft",size:"Small",traits:[["Talons","+4 to hit • Reach 5 ft • 1d4 + 2 Slashing (4 avg.)"],["Perception","Perception +6 • Passive Perception 16."]]},
+"Giant Bat":{cr:0.25,ac:13,speed:"10 ft • Fly 60 ft",size:"Large",pick:"Scout • Blindsight",traits:[["Bite","+5 to hit • Reach 5 ft • 1d6 + 3 Piercing (6 avg.)"],["Blindsight","Blindsight 120 ft. • Passive Perception 11."]]},
+"Tiger":{cr:1,ac:13,speed:"40 ft",size:"Large",pick:"Stealth • Mobility",traits:[["Rend","+5 to hit • Reach 5 ft • 2d6 + 3 Slashing (10 avg.) • Large or smaller target is knocked Prone."],["Nimble Escape","Bonus Action • Take the Disengage or Hide action."],["Stealth","+7 Stealth • Darkvision 60 ft."]]},
+"Saber-Toothed Tiger":{cr:2,ac:13,speed:"40 ft",size:"Large",pick:"Combat • Mobility",traits:[["Multiattack","Makes two Rend attacks."],["Rend","+6 to hit • Reach 5 ft • 2d6 + 4 Slashing (11 avg.)"],["Nimble Escape","Bonus Action • Take the Disengage or Hide action."],["Running Leap","With a 10-ft running start, Long Jump up to 25 ft."],["Stealth","+7 Stealth • Perception +5 • Darkvision 60 ft."]]},
+"Giant Constrictor Snake":{cr:2,ac:12,speed:"30 ft • Swim 30 ft",size:"Huge",pick:"Grapple • Reach",traits:[["Multiattack","Makes one Bite attack and uses Constrict."],["Bite","+6 to hit • Reach 10 ft • 2d6 + 4 Piercing (11 avg.)"],["Constrict","STR save DC 14 • Reach 10 ft • 2d8 + 4 Bludgeoning (13 avg.) • Large or smaller target is Grappled (escape DC 14)."],["Blindsight","Blindsight 10 ft. • Passive Perception 12."]]},
+"Hunter Shark":{cr:2,ac:12,speed:"5 ft • Swim 40 ft",size:"Large",pick:"Aquatic Damage",traits:[["Bite","+6 to hit with Advantage if the target is missing any HP • Reach 5 ft • 3d6 + 4 Piercing (14 avg.)"],["Water Breathing","Breathes only underwater • Blindsight 60 ft."]]},
+"Rhinoceros":{cr:2,ac:13,speed:"40 ft",size:"Large",pick:"Charge • Burst",traits:[["Gore","+7 to hit • Reach 5 ft • 2d8 + 5 Piercing (14 avg.) • If it moved 20+ ft straight first, deal +2d8 Piercing and knock a Large or smaller target Prone."]]},
+"Ankylosaurus":{cr:3,ac:15,speed:"30 ft",size:"Huge",pick:"Control • Reach",traits:[["Multiattack","Makes two Tail attacks."],["Tail","+6 to hit • Reach 10 ft • 1d10 + 4 Bludgeoning (9 avg.) • Huge or smaller target is knocked Prone."]]},
+"Killer Whale":{cr:3,ac:12,speed:"5 ft • Swim 60 ft",size:"Huge",pick:"Aquatic • Blindsight",traits:[["Bite","+6 to hit • Reach 5 ft • 5d6 + 4 Piercing (21 avg.)"],["Blindsight","Blindsight 120 ft. • Perception +3 • Stealth +4."]]},
+"Archelon":{cr:4,ac:17,speed:"20 ft • Swim 80 ft",size:"Huge",pick:"Aquatic • High AC",traits:[["Multiattack","Makes two Bite attacks."],["Bite","+6 to hit • Reach 5 ft • 3d6 + 4 Piercing (14 avg.)"],["Amphibious","Can breathe air and water • Stealth +5."]]},
+"Hippopotamus":{cr:4,ac:14,speed:"30 ft • Swim 30 ft",size:"Large",pick:"Combat • Aquatic",traits:[["Multiattack","Makes two Bite attacks."],["Bite","+7 to hit • Reach 5 ft • 2d10 + 5 Piercing (16 avg.)"],["Hold Breath","Can hold its breath for 10 minutes."]]},
+"Giant Crocodile":{cr:5,ac:14,speed:"30 ft • Swim 50 ft",size:"Huge",pick:"Control • Grapple",traits:[["Multiattack","Makes one Bite attack and one Tail attack."],["Bite","+8 to hit • Reach 5 ft • 3d10 + 5 Piercing (21 avg.) • Large or smaller target is Grappled (escape DC 15) and Restrained."],["Tail","+8 to hit • Reach 10 ft • 3d8 + 5 Bludgeoning (18 avg.) • Large or smaller target is knocked Prone."],["Hold Breath","Can hold its breath for 1 hour."]]},
+"Giant Shark":{cr:5,ac:13,speed:"5 ft • Swim 60 ft",size:"Huge",pick:"Aquatic Damage",traits:[["Multiattack","Makes two Bite attacks."],["Bite","+9 to hit with Advantage if the target is missing any HP • Reach 5 ft • 3d10 + 6 Piercing (22 avg.)"],["Water Breathing","Breathes only underwater • Blindsight 60 ft."]]},
+"Giant Squid":{cr:6,ac:12,speed:"5 ft • Swim 80 ft",size:"Huge",pick:"Aquatic Control",traits:[["Multiattack","Makes one Bite attack and one Tentacle attack."],["Bite","+9 to hit • Reach 5 ft • 4d10 + 6 Piercing (28 avg.)"],["Tentacle","+9 to hit • Reach 15 ft • 3d8 + 6 Bludgeoning (19 avg.) • Huge or smaller target is Grappled (escape DC 16); pull it up to 10 ft toward you."],["Ink Cloud","1/Day • Reaction when damaged underwater • 15-ft Cube becomes Heavily Obscured and the squid moves up to its Swim Speed."],["Water Breathing","Breathes only underwater • Darkvision 120 ft • Perception +6."]]},
+"Polar Bear":{cr:2,ac:12,speed:"40 ft • Swim 40 ft",size:"Large",pick:"Combat • Swim",traits:[["Multiattack","Makes two Rend attacks."],["Rend","+7 to hit • Reach 5 ft • 1d8 + 5 Slashing (9 avg.)"],["Cold Resistance","Resistance to Cold damage • Darkvision 60 ft • Perception +5."]]},
+"Giant Scorpion":{cr:3,ac:15,speed:"40 ft",size:"Large",pick:"Combat • Grapple",traits:[["Multiattack","Makes two Claw attacks and one Sting attack."],["Claw","+5 to hit • Reach 5 ft • 1d6 + 3 Bludgeoning (6 avg.) • Large or smaller target is Grappled (escape DC 13)."],["Sting","+5 to hit • Reach 5 ft • 1d8 + 3 Piercing (7 avg.) + 2d10 Poison (11 avg.)."],["Blindsight","Blindsight 60 ft."]]},
+"Elephant":{cr:4,ac:12,speed:"40 ft",size:"Huge",pick:"Combat • Charge",traits:[["Multiattack","Makes two Gore attacks."],["Gore","+8 to hit • Reach 5 ft • 2d8 + 6 Piercing (15 avg.) • After moving 20+ ft straight toward a Huge or smaller target, it is knocked Prone."],["Trample","Bonus Action • DC 16 Dexterity save against one Prone creature within 5 ft • 2d10 + 6 Bludgeoning (17 avg.), half on success."]]},
+"Triceratops":{cr:5,ac:14,speed:"50 ft",size:"Huge",pick:"Combat • Charge",traits:[["Multiattack","Makes two Gore attacks."],["Gore","+9 to hit • Reach 5 ft • 2d12 + 6 Piercing (19 avg.) • After moving 20+ ft straight toward a Huge or smaller target, deal +2d8 Piercing and knock it Prone."]]},
+"Mammoth":{cr:6,ac:13,speed:"50 ft",size:"Huge",pick:"Combat • Charge",traits:[["Multiattack","Makes two Gore attacks."],["Gore","+10 to hit • Reach 10 ft • 2d10 + 7 Piercing (18 avg.) • After moving 20+ ft straight toward a Huge or smaller target, knock it Prone."],["Trample","Bonus Action • DC 18 Dexterity save against one Prone creature within 5 ft • 4d10 + 7 Bludgeoning (29 avg.), half on success."]]}
+};
 
 // This list is intentionally small until the Spells tab owns prepared-spell state.
 // Moon Druid granted concentration spells are available immediately; prepared concentration
@@ -1069,7 +1228,7 @@ const druidSpells=[
  {name:"Animal Messenger",level:2,school:"Enchantment",ritual:true},
  {name:"Augury",level:2,school:"Divination",ritual:true},
  {name:"Barkskin",level:2,school:"Transmutation"},
- {name:"Battle Familiar",level:2,school:"Conjuration",arcana:true,battleFamiliar:true,material:"Diamond worth at least 25 gp (not consumed)"},
+ {name:"Battle Familiar",level:2,school:"Conjuration",arcana:true,battleFamiliar:true,material:"Diamond worth at least 25 gp (not consumed)",costlyMaterial:true},
  {name:"Dueling Ground",level:2,school:"Abjuration",arcana:true,ritual:true},
  {name:"Dust Devil",level:2,school:"Conjuration",conc:true},
  {name:"Earthbind",level:2,school:"Transmutation",conc:true},
@@ -1124,7 +1283,7 @@ const druidSpells=[
  {name:"Wind Wall",level:3,school:"Evocation",conc:true},
 
  // Origin feat spell
- {name:"Find Familiar",level:1,school:"Conjuration",ritual:true,familiarFeat:true,featOnly:true},
+ {name:"Find Familiar",level:1,school:"Conjuration",ritual:true,familiarFeat:true,featOnly:true,material:"Burning incense worth 10+ GP (consumed)",costlyMaterial:true,consumesMaterial:true},
  {name:"Dimension Door",level:4,school:"Conjuration",conjGranted:true,featOnly:true,grantAt:7},
  {name:"Blight",level:4,school:"Necromancy"},
  {name:"Charm Monster",level:4,school:"Enchantment"},
@@ -1152,7 +1311,7 @@ const druidSpells=[
  {name:"Awaken",level:5,school:"Transmutation"},
  {name:"Commune with Nature",level:5,school:"Divination",ritual:true},
  {name:"Cone of Cold",level:5,school:"Evocation"},
- {name:"Conjure Elemental",level:5,school:"Conjuration",conc:true},
+ {name:"Conjure Elemental",level:5,school:"Conjuration",conc:true,conjGranted:true,featOnly:true,grantAt:9},
  {name:"Contagion",level:5,school:"Necromancy"},
  {name:"Geas",level:5,school:"Enchantment"},
  {name:"Greater Restoration",level:5,school:"Abjuration"},
@@ -1196,6 +1355,9 @@ const druidSpells=[
  {name:"Storm of Vengeance",level:9,school:"Conjuration",conc:true},
  {name:"True Resurrection",level:9,school:"Necromancy"}
 ];
+
+const beastSpellMaterialBlocked=new Set(['Find Familiar','Protection from Evil and Good','Summon Beast','Continual Flame','Summon Fey','Revivify','Divination','Stoneskin','Summon Elemental','Battle Familiar','Awaken','Greater Restoration','Planar Binding','Reincarnate','Scrying','Heroes’ Feast','Find the Path','Plane Shift','Symbol','Shapechange','True Resurrection']);
+function beastSpellBlocked(s){return !!(s&&(s.costlyMaterial||s.consumesMaterial||beastSpellMaterialBlocked.has(s.name)))}
 
 const spellMeta={
  "Control Flames":{cast:"1 Action",summary:"Control a small nonmagical flame: expand, extinguish, reshape, or change its light."},
@@ -1372,14 +1534,15 @@ const spellMeta={
 };
 
 let selectedSpellName=null;
+let spellDetailBackTarget='spells';
 
 
 function getConcentrationSpells(){
  return druidSpells.filter(s=>{
    if(!s.conc)return false;
-   if(s.moon||s.druidic||s.conjGranted||s.familiarFeat)return true;
-   if(s.level===0)return knownCantrips.includes(s.name);
-   return preparedSpells.includes(s.name);
+   if(s.level>0&&s.level>maxSpellLevel())return false;
+   if(s.level===0)return knownCantrips.includes(s.name)||isAlwaysPreparedSpell(s);
+   return preparedSpells.includes(s.name)||isAlwaysPreparedSpell(s);
  });
 }
 
@@ -1400,9 +1563,277 @@ const conditionRules={
  "Stunned":"You are Incapacitated, automatically fail STR/DEX saves, and attacks against you have Advantage.",
  "Unconscious":"You are Incapacitated and Prone, drop what you’re holding, Speed 0, fail STR/DEX saves, attacks against you have Advantage, and nearby hits are Critical Hits."
 };
+
+function logSession(text){
+ const now=new Date();
+ const stamp=now.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+ sessionLog.unshift({stamp,text});
+ sessionLog=sessionLog.slice(0,120);
+ save();
+ renderSessionLog();
+}
+function renderSessionLog(){
+ const el=document.querySelector('#sessionLogBody'); if(!el)return;
+ if(!sessionLog.length){el.innerHTML='<div class="sub">Nothing logged yet. Gameplay events will appear here automatically.</div>';return}
+ el.innerHTML=sessionLog.map(x=>`<div class="v28-log-row"><b>${x.stamp}</b> · ${x.text}</div>`).join('');
+}
+function turnHelperBlock(title,items){
+ return `<div class="card mt12"><div class="kicker">${title}</div>${items.length?items.map(x=>`<div class="v28-action-card mt8">${x}</div>`).join(''):'<div class="sub mt8">No special tracked options.</div>'}</div>`;
+}
+function spellPreparedOrKnown(s){
+ if(isAlwaysPreparedSpell(s))return true;
+ return s.level===0?knownCantrips.includes(s.name):preparedSpells.includes(s.name);
+}
+function lowestAvailableSlot(s){
+ if(s.level===0)return 0;
+ for(let l=s.level;l<=maxSpellLevel();l++)if(slotAvailable(l)>0)return l;
+ return null;
+}
+function spellTiming(s){
+ const cast=spellMeta[s.name]?.cast||'';
+ if(cast.includes('Reaction'))return 'reaction';
+ if(cast.includes('Bonus Action'))return 'bonus';
+ if(cast.includes('1 Action'))return 'action';
+ return 'other';
+}
+function spellAvailableInForm(s){
+ if(!form)return true;
+ if(s.wildcast)return true;
+ if(level>=18)return !beastSpellBlocked(s);
+ return false;
+}
+function availableTurnSpells(timing){
+ return druidSpells.filter(s=>{
+   if(s.level>0&&s.level>maxSpellLevel())return false;
+   if(!spellPreparedOrKnown(s))return false;
+   if(spellTiming(s)!==timing)return false;
+   if(!spellAvailableInForm(s))return false;
+   if(s.level>0&&lowestAvailableSlot(s)===null)return false;
+   return true;
+ }).sort((a,b)=>a.level-b.level||a.name.localeCompare(b.name));
+}
+function turnSpellButton(s){
+ const slot=lowestAvailableSlot(s);
+ const chips=[s.level===0?'Cantrip':spellLevelLabel(s.level)];
+ if(s.level>0&&slot!==null&&slot>s.level)chips.push(`Lowest slot: ${spellLevelLabel(slot)}`);
+ if(s.conc){
+   chips.push('Concentration');
+   if(concentration&&concentration!==s.name)chips.push(`Ends ${concentration}`);
+ }
+ if(s.wildcast&&form)chips.push('Moon spell');
+ return `<button class="v28-spell-option" data-wcid-spell="${encodeURIComponent(s.name)}">
+   <span><b>${s.name}</b><span class="v28-spell-meta">${chips.map(c=>`<span class="v28-mini-chip">${c}</span>`).join('')}</span></span>
+   <span class="right">›</span>
+ </button>`;
+}
+function turnSpellList(spells){
+ return spells.length?spells.map(turnSpellButton).join(''):'<div class="sub mt8">No available spells for this part of the turn.</div>';
+}
+function actionGroup(key,title,summary,body){
+ return `<details class="v28-action-group" data-action-group="${key}">
+   <summary><span><span>${title}</span><div class="v28-action-summary">${summary}</div></span></summary>
+   <div class="v28-action-group-body">${body}</div>
+ </details>`;
+}
+function bindTurnHelperLinks(){
+ document.querySelectorAll('[data-wcid-spell]').forEach(btn=>btn.onclick=()=>{
+   spellDetailBackTarget='whatcando';
+   openSpellDetail(decodeURIComponent(btn.dataset.wcidSpell));
+ });
+ const attack=document.querySelector('[data-wcid-open-attacks]');
+ if(attack)attack.onclick=()=>{backTargets.attacks='whatcando';show('attacks')};
+ const beast=document.querySelector('[data-wcid-open-beast]');
+ if(beast)beast.onclick=()=>{if(form)openBeast(form,'whatcando')};
+ const familiar=document.querySelector('[data-wcid-open-familiar]');
+ if(familiar)familiar.onclick=()=>{backTargets.familiar='whatcando';show('familiar')};
+}
+function formReactionOptions(){
+ if(!form||!forms[form]?.traits)return [];
+ return forms[form].traits.filter(([name,text])=>String(text).includes('Reaction')).map(([name,text])=>`<div class="v28-inline-option"><b>${name}</b><div class="sub mt4">${text}</div></div>`);
+}
+function formBonusOptions(){if(!form||!forms[form]?.traits)return [];return forms[form].traits.filter(([name,text])=>String(text).includes('Bonus Action')).map(([name,text])=>`<div class="v28-inline-option"><b>${name}</b><div class="sub mt4">${text}</div></div>`)}
+function formActionNames(){if(!form||!forms[form]?.traits)return [];const passive=new Set(['Spider Climb','Web Walker','Amphibious','Standing Leap','Agile','Pack Tactics','Darkvision','Water Breathing','Stealth','Hold Breath','Poison Resistance','Cold Resistance','Blindsight','Perception']);return forms[form].traits.filter(([name,text])=>!String(text).includes('Reaction')&&!String(text).includes('Bonus Action')&&!passive.has(name)).map(([name])=>name)}
+
+function familiarTurnHtml(){
+ if(battleFamiliarActive){const count=battleFamiliarAttackCount(),bonus=battleFamiliarDamageBonus(),special=battleFamiliarForm==='Flyer'?'<div class="v28-inline-option"><b>Flyby</b><div class="sub mt4">Flying away does not provoke Opportunity Attacks.</div></div>':battleFamiliarForm==='Stalker'?'<div class="v28-inline-option"><b>Prowl</b><div class="sub mt4">Replace one Rend: move up to half Speed without provoking Opportunity Attacks, then Hide.</div></div>':'<div class="v28-inline-option"><b>Brute</b><div class="sub mt4">Higher AC and HP are already reflected on the Familiar screen.</div></div>';return `<div class="v28-inline-option"><b>${battleFamiliarStandalone?'Battle Familiar':`Raven • ${battleFamiliarForm}`}</b><div class="sub mt4">Own Initiative • AC ${battleFamiliarAc()} • ${battleFamiliarSpeed()}</div></div><div class="v28-inline-option"><b>Multiattack</b><div class="sub mt4">${count} Rend attack${count===1?'':'s'} • ${fmt(pb()+mod(abilities.wis))} to hit • 1d8 + ${bonus} Force each.</div></div>${special}${battleFamiliarStandalone?'':'<div class="v28-inline-option"><b>Find Familiar Features</b><div class="sub mt4">Raven retains telepathy, senses, pocket-dimension, and Touch-spell delivery.</div></div>'}`}
+ return `<div class="v28-inline-option"><b>Own Initiative & Turn</b><div class="sub mt4">${familiarHp} / ${familiarMaxHp()} HP • Walk 10 ft • Fly 50 ft.</div></div><div class="v28-inline-option"><b>Actions</b><div class="sub mt4">Help • Dodge • Dash • Disengage • Hide • Search • Ready • Utilize. Find Familiar prevents Raven from attacking.</div></div><div class="v28-inline-option"><b>Reaction</b><div class="sub mt4">Deliver a Touch-range spell while within 100 ft.</div></div>`;
+}
+function renderWhatCanIDo(){
+ const el=document.querySelector('#whatCanIDoBody'); if(!el)return;
+
+ const actionSpells=availableTurnSpells('action');
+ const bonusSpells=availableTurnSpells('bonus');
+ const reactionSpells=availableTurnSpells('reaction');
+ const incapacitating=['Incapacitated','Paralyzed','Petrified','Stunned','Unconscious'].find(c=>conditions.includes(c));
+ if(incapacitating){
+   let blocked=`<div class="notice"><b>${incapacitating}</b><div class="sub mt4">Grimsby is Incapacitated and can't take Actions, Bonus Actions, or Reactions.</div></div>`;
+   if(familiarActive){
+     const familiarBody=familiarTurnHtml();blocked+=actionGroup('raven',"Familiar's Turn",'Own Initiative',familiarBody);
+   }
+   el.innerHTML=blocked;
+   bindTurnHelperLinks();
+   return;
+ }
+
+ // Attack Action
+ let attackBody='';
+ if(form){
+   const names=formActionNames().slice(0,5);
+   const attackExtras=[];
+   if(level>=6)attackExtras.push('Lunar Radiance: Beast attacks can deal Radiant instead of their normal damage type.');
+   if(level>=7&&elementalFury==='Primal Strike')attackExtras.push(`Primal Strike: +${level>=15?'2d8':'1d8'} Cold, Fire, Lightning, or Thunder once on each of your turns when you hit.`);
+   if(level>=14)attackExtras.push('Lunar Form: +2d10 Radiant once per turn when a Wild Shape attack hits.');
+   attackBody=`<div class="v28-inline-option"><b>${form}</b><div class="sub mt4">${names.join(' • ')||'Use the form’s listed attacks and actions.'}</div></div>
+   ${attackExtras.map(x=>`<div class="v28-inline-option"><b>Moon Druid</b><div class="sub mt4">${x}</div></div>`).join('')}
+   <button class="btn full mt8" data-wcid-open-beast>Open ${form}</button>`;
+ }else{
+   const weaponExtra=level>=7&&elementalFury==='Primal Strike'
+     ? `<div class="v28-inline-option"><b>Primal Strike</b><div class="sub mt4">+${level>=15?'2d8':'1d8'} Cold, Fire, Lightning, or Thunder once on each of your turns when you hit with a weapon attack.</div></div>`
+     : '';
+   attackBody=`<div class="v28-inline-option"><b>Attack</b><div class="sub mt4">Use Quarterstaff or another equipped attack.</div></div>
+   ${weaponExtra}<button class="btn full mt8" data-wcid-open-attacks>Open Attacks</button>`;
+ }
+
+ // Magic Action: Action-cast spells + familiar pocket control.
+ let magicExtras='';
+ if(familiarActive&&!battleFamiliarStandalone){
+   magicExtras+=`<div class="v28-inline-option"><b>Send Raven to Pocket Dimension</b><div class="sub mt4">Magic Action • temporarily dismiss Raven.</div></div>`;
+ }else if(familiarPocket){
+   magicExtras+=`<div class="v28-inline-option"><b>Bring Raven Back</b><div class="sub mt4">Magic Action • Raven reappears in an unoccupied space within 30 ft.</div></div>`;
+ }else if(level>=2&&!form&&(wild>0||totalSlotsAvailable()>0)){
+   magicExtras+=`<div class="v28-inline-option"><b>Wild Companion</b><div class="sub mt4">Magic Action • spend a Wild Shape use or spell slot to summon a Fey Raven until your next Long Rest.</div></div><button class="btn full mt8" data-wcid-open-familiar>Open Familiar</button>`;
+ }
+ const potent=level>=7&&elementalFury==='Potent Spellcasting'
+   ? `<div class="v28-inline-option"><b>Potent Spellcasting</b><div class="sub mt4">Add WIS ${fmt(mod(abilities.wis))} to Druid cantrip damage.${level>=15?' Druid cantrips with a range of 10+ ft gain +300 ft range.':''}</div></div>`
+   : '';
+ const familiarMagicOption=(familiarActive||familiarPocket||(!familiarActive&&!familiarPocket&&level>=2&&!form&&(wild>0||totalSlotsAvailable()>0)))?1:0;
+ if((familiarActive||familiarPocket)&&!magicExtras.includes('data-wcid-open-familiar'))magicExtras+=`<button class="btn full mt8" data-wcid-open-familiar>Open Familiar</button>`;
+ const magicBody=`${magicExtras}${potent}${actionSpells.length?`<div class="kicker mt12">Spells</div>${turnSpellList(actionSpells)}`:'<div class="sub mt8">No Action-cast spells are currently available.</div>'}`;
+ const magicCount=actionSpells.length+familiarMagicOption+(potent?1:0);
+
+ // Bonus Action: features and spells combined into one bucket.
+ const bonusOptions=[];
+ if(form)bonusOptions.push('<div class="v28-inline-option"><b>End Wild Shape</b><div class="sub mt4">Return to Grimsby.</div></div>');
+ else if(wild>0)bonusOptions.push(`<div class="v28-inline-option"><b>Wild Shape</b><div class="sub mt4">${wild} / ${maxWild} uses remaining.</div></div>`);
+ if(adrenalineUses>0)bonusOptions.push(`<div class="v28-inline-option"><b>Adrenaline Rush</b><div class="sub mt4">Dash and gain ${pb()} Temp HP • ${adrenalineUses} uses left.</div></div>`);
+ if(level>=10&&moonlightStepUses>0)bonusOptions.push(`<div class="v28-inline-option"><b>Moonlight Step</b><div class="sub mt4">Teleport up to 30 ft; Advantage on your next attack this turn${level>=14?'; one willing creature within 10 ft can travel with you':''} • ${moonlightStepUses} / ${moonlightStepMax()} uses.</div></div>`);
+ formBonusOptions().forEach(x=>bonusOptions.push(x));
+ if(familiarActive&&!battleFamiliarStandalone)bonusOptions.push('<div class="v28-inline-option"><b>See through Raven’s senses</b><div class="sub mt4">While within 100 ft; lasts until the start of your next turn.</div></div>');
+ const bonusBody=`${bonusOptions.join('')}${bonusSpells.length?`<div class="kicker mt12">Bonus Action Spells</div>${turnSpellList(bonusSpells)}`:''}`;
+ const bonusCount=bonusOptions.length+bonusSpells.length;
+
+ // Reactions: form reactions + reaction spells.
+ const formReactions=formReactionOptions();
+ const reactionBody=`${formReactions.join('')}${reactionSpells.length?`<div class="kicker mt12">Reaction Spells</div>${turnSpellList(reactionSpells)}`:''}${!formReactions.length&&!reactionSpells.length?'<div class="sub mt8">No tracked reactions are currently available.</div>':''}`;
+ const reactionCount=formReactions.length+reactionSpells.length;
+
+ // Other actions stay available without making the default view noisy.
+ const otherBody=`<div class="v28-inline-option"><b>Core Actions</b><div class="sub mt4">Dash • Disengage • Dodge • Help • Hide • Ready • Search • Study • Influence • Utilize.</div></div>`;
+
+ let out='';
+ out+=`<div class="notice"><b>Choose the part of your turn you're using.</b><div class="sub mt4">Open a section to see only the options that fit that action economy.</div></div>`;
+ const attackGroupTitle=form?'Beast Actions':'Attack Action';
+ out+=actionGroup('attack',attackGroupTitle,form?form:'Weapons & attacks',attackBody);
+ out+=actionGroup('magic','Magic Action',`${magicCount} currently available option${magicCount===1?'':'s'}`,magicBody);
+ out+=actionGroup('bonus','Bonus Action',`${bonusCount} currently available option${bonusCount===1?'':'s'}`,bonusBody||'<div class="sub mt8">No tracked Bonus Actions available.</div>');
+ out+=actionGroup('reaction','Reaction',`${reactionCount} currently available option${reactionCount===1?'':'s'}`,reactionBody);
+ out+=actionGroup('other','Other Actions','Movement & core actions',otherBody);
+
+ if(familiarActive){
+   const familiarBody=familiarTurnHtml();out+=actionGroup('raven',"Familiar's Turn",'Own Initiative',familiarBody);
+ }
+
+ const state=[];
+ if(concentration){
+   const active=druidSpells.find(s=>s.name===concentration);
+   state.push(`<b>Concentrating: ${concentration}</b><div class="sub mt4">${active?.school==='Conjuration'?'Conjuration Adept applies to concentration saves. ':''}Damage checks are handled in Manage HP.</div>`);
+ }
+ if(temp>0)state.push(`<b>${temp} Temp HP</b>`);
+ if(conditions.length)state.push(`<b>Conditions:</b> ${conditions.join(' • ')}`);
+ if(familiarPocket)state.push('<b>Raven:</b> Pocket Dimension');
+ else if(!familiarActive)state.push(`<b>Raven:</b> Not summoned${!familiarFreeCastUsed?' • free cast ready':''}`);
+ if(!relentlessUsed)state.push('<b>Relentless Endurance:</b> Ready');
+ if(familiarActive&&!battleFamiliarStandalone&&familiarHelpUses>0)state.push(`<b>Helpful Friend:</b> ${familiarHelpUses} / ${pb()} uses`);
+
+ if(state.length)out+=`<div class="card mt12"><div class="kicker">Current State</div>${state.map(x=>`<div class="sub mt8">${x}</div>`).join('')}</div>`;
+
+ el.innerHTML=out;
+ bindTurnHelperLinks();
+}
+function concentrationCheckForDamage(damage){
+ if(!concentration || damage<=0)return;
+ const spell=druidSpells.find(s=>s.name===concentration);
+ const info=conSaveInfo(spell);
+ pendingConcentrationCheck={damage,dc:Math.min(30,Math.max(10,Math.floor(damage/2))),bonus:info.total,spell:concentration,sources:info.sources,wis:info.wis,base:info.base};
+ renderDamageConcentration();
+}
+function renderDamageConcentration(){
+ const card=document.querySelector('#damageConcentrationCard'); if(!card)return;
+ if(!pendingConcentrationCheck){card.classList.add('hidden');return}
+ const c=pendingConcentrationCheck;
+ card.classList.remove('hidden');
+ document.querySelector('#damageConcentrationTitle').textContent=`DC ${c.dc} • CON save ${fmt(c.bonus)}`;
+ const pieces=[`Base CON ${fmt(c.base)}`];
+ if(c.sources.includes('Increased Toughness'))pieces.push(`WIS ${fmt(c.wis)} Increased Toughness`);
+ if(c.sources.includes('Conjuration Adept'))pieces.push(`WIS ${fmt(c.wis)} Conjuration Adept`);
+ document.querySelector('#damageConcentrationBreakdown').textContent=`${concentration}: ${pieces.join(' + ')} = ${fmt(c.bonus)}.`;
+}
+
+function renderBattleFamiliarPreview(){
+ const wrap=document.querySelector('#battleFamiliarChoiceWrap'),choice=document.querySelector('#battleFamiliarChoice'),preview=document.querySelector('#battleFamiliarPreview'),slot=document.querySelector('#spellCastSlot');
+ if(!wrap||!choice||!preview)return;const s=druidSpells.find(x=>x.name===selectedSpellName);if(!s?.battleFamiliar){wrap.classList.add('hidden');return}
+ wrap.classList.remove('hidden');const l=Math.max(2,Number(slot?.value||2)),kind=choice.value||'Brute',hpMax=battleFamiliarHpMax(l,kind),ac=battleFamiliarAc(l,kind),attacks=battleFamiliarAttackCount(l),bonus=battleFamiliarDamageBonus(l),talent=battleFamiliarTalent(l);
+ const feature=kind==='Brute'?'+2 AC and +10 HP':kind==='Flyer'?'Fly 30 ft (Hover) + Flyby':'Prowl can replace one attack';
+ const target=familiarActive&&!battleFamiliarStandalone?'Empowers Raven':(!familiarActive&&!familiarPocket?'Summons a Battle Familiar':'Bring Raven back before empowering it');
+ preview.innerHTML=`<b>${target}</b><br>AC ${ac} • ${hpMax} ${familiarActive&&!battleFamiliarStandalone?'Temp ':''}HP • ${battleFamiliarSpeed(kind)}<br>${attacks} Rend attack${attacks===1?'':'s'} • ${fmt(pb()+mod(abilities.wis))} to hit • 1d8 + ${bonus} Force each<br>Talented +${talent} • ${feature}`;
+}
+function renderSpellCastControls(s){
+ const card=document.querySelector('#spellCastCard'),controls=document.querySelector('#spellCastControls'),sel=document.querySelector('#spellCastSlot'),note=document.querySelector('#spellCastNote'),btn=document.querySelector('#castSpellBtn'),ritual=document.querySelector('#castRitualBtn'),bfWrap=document.querySelector('#battleFamiliarChoiceWrap'),bfChoice=document.querySelector('#battleFamiliarChoice'),result=document.querySelector('#spellCastResult');
+ if(!card||!controls||!sel||!note||!btn||!ritual)return;if(result)result.textContent='';if(bfWrap)bfWrap.classList.add('hidden');
+ const prepared=s.level===0?(knownCantrips.includes(s.name)||isAlwaysPreparedSpell(s)):(preparedSpells.includes(s.name)||isAlwaysPreparedSpell(s));
+ const legalInForm=spellAvailableInForm(s);ritual.classList.add('hidden');ritual.disabled=true;btn.disabled=!prepared||!legalInForm;
+ if(!prepared){note.textContent=s.level===0?'This cantrip is not currently known.':'This spell is not currently prepared.';controls.classList.add('hidden');return}
+ if(!legalInForm){note.textContent=level>=18&&beastSpellBlocked(s)?'Beast Spells cannot cast this spell in Wild Shape because it has a costly or consumed Material component.':'Grimsby cannot cast this spell while Wild Shaped at his current level.';controls.classList.add('hidden');return}
+ controls.classList.remove('hidden');
+ if(s.level===0){sel.innerHTML='<option value="0">Cantrip — no slot</option>';sel.disabled=true;note.textContent='Casting this cantrip does not spend a spell slot.'}
+ else{sel.disabled=false;sel.innerHTML='';for(let l=s.level;l<=maxSpellLevel();l++){const n=slotAvailable(l);if(n>0){const extra=bonusSlotCount(l)>0?` • ${bonusSlotCount(l)} created`:'';const o=document.createElement('option');o.value=l;o.textContent=`${spellLevelLabel(l)} • ${n} available${extra}`;sel.appendChild(o)}}if(!sel.options.length){const o=document.createElement('option');o.value='';o.textContent='No suitable slots remaining';sel.appendChild(o);btn.disabled=true}note.textContent=s.conc?'Casting starts concentration automatically.':'Choose an available slot.'}
+ if(s.ritual){ritual.classList.remove('hidden');ritual.disabled=false;ritual.textContent=`Cast as Ritual • +10 min • no slot${s.material?' • material still required':''}`}
+ if(s.battleFamiliar&&bfWrap){
+   bfWrap.classList.remove('hidden');
+   note.textContent='Requires a diamond worth at least 25 GP (not consumed). Choose a Battle Familiar form and spell slot, then Cast.';
+   sel.onchange=renderBattleFamiliarPreview;
+   if(bfChoice)bfChoice.onchange=renderBattleFamiliarPreview;
+   renderBattleFamiliarPreview();
+ }else sel.onchange=null;
+}
+function validBackupState(s){if(!s||typeof s!=='object')return false;if(!Number.isInteger(Number(s.level))||Number(s.level)<1||Number(s.level)>20)return false;if(!s.abilities||typeof s.abilities!=='object')return false;for(const k of ['str','dex','con','int','wis','cha']){const v=Number(s.abilities[k]);if(!Number.isFinite(v)||v<1||v>30)return false}for(const k of ['preparedSpells','knownCantrips','knownForms','conditions','levelHistory'])if(s[k]!==undefined&&!Array.isArray(s[k]))return false;if(s.slots!==undefined&&(typeof s.slots!=='object'||Array.isArray(s.slots)))return false;return true}
+async function exportBackup(){
+ save();
+ const raw=localStorage.getItem('grimsbyState_v141')||'{}';
+ const payload={app:'Grimsby Companion',schema:'grimsbyState_v141',build:'v2.8',exportedAt:new Date().toISOString(),state:JSON.parse(raw)};
+ const text=JSON.stringify(payload,null,2);
+ const filename=`Grimsby-backup-${new Date().toISOString().slice(0,10)}.json`;
+ const file=new File([text],filename,{type:'application/json'});
+
+ if(navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+   try{
+     await navigator.share({title:'Grimsby Backup',text:'Grimsby Companion character backup',files:[file]});
+     return {method:'share',filename};
+   }catch(err){
+     if(err?.name==='AbortError')return {method:'cancelled',filename};
+   }
+ }
+
+ const blob=new Blob([text],{type:'application/json'});
+ const url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download=filename;
+ document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+ return {method:'download',filename};
+}
+
 function save(){
   try{
-    localStorage.setItem('grimsbyState_v141',JSON.stringify({level,abilities,maxHp,levelHistory,elementalFury,featChoices,epicBoon,hp,temp,wild,form,inspiration,concentration,conditions,shield,equipment,extraLanguage,knownForms,preparedSpells,knownCantrips,slots,familiarFreeCastUsed,familiarHp,familiarHelpUses,hitDice,wildResurgenceSlotUsed,adrenalineUses,relentlessUsed,notes,initiativeMisc,initiativeBonus:initiativeTotal()}));
+    localStorage.setItem('grimsbyState_v141',JSON.stringify({level,abilities,maxHp,levelHistory,elementalFury,featChoices,epicBoon,hp,temp,wild,form,inspiration,concentration,conditions,shield,equipment,extraLanguage,knownForms,preparedSpells,knownCantrips,slots,familiarFreeCastUsed,familiarHp,familiarHelpUses,familiarActive,familiarPocket,familiarExpiresOnLongRest,battleFamiliarActive,battleFamiliarForm,battleFamiliarSpellLevel,battleFamiliarTempHp,battleFamiliarStandalone,hitDice,wildResurgenceSlotUsed,moonlightStepUses,natureMagicianUsed,bonusSlots,formSwapAvailable,adrenalineUses,relentlessUsed,notes,sessionLog,initiativeMisc,initiativeBonus:initiativeTotal()}));
   }catch(e){}
 }
 function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id)); window.scrollTo({top:0,behavior:'instant'})}
@@ -1473,36 +1904,13 @@ function spellSourceBadges(s){
  return tags;
 }
 function renderSlots(){
- const wrap=document.querySelector('#slotTracker');
- if(!wrap)return;
- wrap.innerHTML='';
- const highest=maxSpellLevel();
- for(let spellLevel=1;spellLevel<=highest;spellLevel++){
-   const max=slotMax(spellLevel);
-   if(max<=0)continue;
-   if((slots[spellLevel]??0)>max)slots[spellLevel]=max;
-   const row=document.createElement('div');
-   row.className='row between';
-   row.innerHTML=`
-     <div><b>${spellLevelLabel(spellLevel)}</b><div class="sub mt8">${slots[spellLevel]??0} / ${max} remaining</div></div>
-     <div class="row">
-       <button class="btn" data-slot-use="${spellLevel}" style="min-height:40px;padding:8px 12px">Use</button>
-       <button class="btn" data-slot-restore="${spellLevel}" style="min-height:40px;padding:8px 12px">Restore</button>
-     </div>`;
-   wrap.appendChild(row);
-   if(spellLevel<highest){const sep=document.createElement('div');sep.className='sep';wrap.appendChild(sep)}
- }
- wrap.querySelectorAll('[data-slot-use]').forEach(b=>b.onclick=()=>{
-   const l=Number(b.dataset.slotUse);
-   if((slots[l]??0)>0){slots[l]--;save();renderSpells();sync()}
- });
- wrap.querySelectorAll('[data-slot-restore]').forEach(b=>b.onclick=()=>{
-   const l=Number(b.dataset.slotRestore),max=slotMax(l);
-   if((slots[l]??0)<max){slots[l]=(slots[l]??0)+1;save();renderSpells();sync()}
- });
+ const wrap=document.querySelector('#slotTracker');if(!wrap)return;wrap.innerHTML='';const highest=maxSpellLevel();
+ for(let spellLevel=1;spellLevel<=highest;spellLevel++){const max=slotMax(spellLevel);if(max<=0)continue;if((slots[spellLevel]??0)>max)slots[spellLevel]=max;const bonus=bonusSlotCount(spellLevel),total=slotAvailable(spellLevel);const row=document.createElement('div');row.className='row between';row.innerHTML=`<div><b>${spellLevelLabel(spellLevel)}</b><div class="sub mt8">${total} available • ${slots[spellLevel]??0} / ${max} base${bonus?` • +${bonus} created`:''}</div></div><div class="row"><button class="btn" data-slot-use="${spellLevel}" style="min-height:40px;padding:8px 12px">Use</button><button class="btn" data-slot-restore="${spellLevel}" style="min-height:40px;padding:8px 12px">Restore</button></div>`;wrap.appendChild(row);if(spellLevel<highest){const sep=document.createElement('div');sep.className='sep';wrap.appendChild(sep)}}
+ wrap.querySelectorAll('[data-slot-use]').forEach(b=>b.onclick=()=>{const l=Number(b.dataset.slotUse);if(spendSlot(l)){save();renderSpells();sync()}});wrap.querySelectorAll('[data-slot-restore]').forEach(b=>b.onclick=()=>{const l=Number(b.dataset.slotRestore),max=slotMax(l);if((slots[l]??0)<max){slots[l]=(slots[l]??0)+1;save();renderSpells();sync()}})
 }
 
-function openSpellDetail(name){
+function openSpellDetail(name,backTarget=null){
+ if(backTarget)spellDetailBackTarget=backTarget;
  const s=druidSpells.find(x=>x.name===name);
  if(!s)return;
  selectedSpellName=name;
@@ -1525,6 +1933,7 @@ function openSpellDetail(name){
  }
 
  document.querySelector('#spellDetailWildCard').style.display=s.wildcast?'block':'none';
+ renderSpellCastControls(s);
  show('spellDetail');
  document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Spells'));
 }
@@ -1546,13 +1955,15 @@ function renderSpells(){
  const free=document.querySelector('#freeFamiliarCast');
  const freeNote=document.querySelector('#familiarCastNote');
  if(free){
-   free.textContent=familiarFreeCastUsed?'Used Today':'Cast Free';
-   free.disabled=familiarFreeCastUsed;
-   free.classList.toggle('accent',!familiarFreeCastUsed);
+   free.textContent=familiarFreeCastUsed?'Used':'Cast Free';
+   free.disabled=familiarFreeCastUsed||!!form;
+   free.classList.toggle('accent',!familiarFreeCastUsed&&!form);
  }
- if(freeNote) freeNote.textContent=familiarFreeCastUsed
-   ? 'Free Familiar Friend cast used. Resets on a Long Rest.'
-   : "Doesn't spend a spell slot or material components.";
+ if(freeNote) freeNote.textContent=form
+   ? 'Find Familiar cannot be cast while Wild Shaped.'
+   : (familiarFreeCastUsed
+      ? `Free Familiar Friend cast used. ${familiarActive?'Raven is currently summoned.':(familiarPocket?'Raven is in the pocket dimension.':'Raven is not currently summoned.')} Resets on a Long Rest.`
+      : `Doesn't spend a spell slot or material components.${familiarActive?' Raven is already summoned.':(familiarPocket?' Raven is currently in the pocket dimension.':'')}`);
 
  const q=spellSearch.trim().toLowerCase();
  let spells=druidSpells.filter(s=>{
@@ -1603,7 +2014,7 @@ function renderSpells(){
  });
 
  list.querySelectorAll('[data-spell-open]').forEach(b=>b.onclick=()=>{
-   openSpellDetail(b.dataset.spellOpen);
+   openSpellDetail(b.dataset.spellOpen,'spells');
  });
 
  list.querySelectorAll('[data-prepare]').forEach(b=>b.onclick=()=>{
@@ -1631,19 +2042,28 @@ function renderSpells(){
 
 
 function renderFamiliar(){
- const homeFam=document.querySelector('#homeFamiliarHp');
- if(homeFam) homeFam.textContent=`${familiarHp} / ${familiarMaxHp()} HP`;
- const hpEl=document.querySelector('#familiarHp');
- const help=document.querySelector('#famHelpCount');
- const helpBtn=document.querySelector('#famHelpUse');
- if(hpEl) hpEl.textContent=Math.min(familiarHp,familiarMaxHp());
- const hpMaxEl=document.querySelector('#familiarHpMax'); if(hpMaxEl) hpMaxEl.textContent=` / ${familiarMaxHp()}`;
- if(help) help.textContent=`${familiarHelpUses} / ${pb()} uses`;
- if(helpBtn){
-   helpBtn.disabled=familiarHelpUses<=0;
-   helpBtn.textContent=familiarHelpUses>0?'Use':'Spent';
-   helpBtn.classList.toggle('accent',familiarHelpUses>0);
+ const displayMax=familiarCurrentMaxHp(),homeFam=document.querySelector('#homeFamiliarHp');if(homeFam)homeFam.textContent=battleFamiliarActive?`Battle ${battleFamiliarForm}${battleFamiliarStandalone?` • ${familiarHp}/${displayMax} HP`:` • ${battleFamiliarTempHp} Temp`}`:(familiarActive?`${familiarHp} / ${familiarMaxHp()} HP`:(familiarPocket?'Pocket Dimension':'Not Summoned'));
+ const hpEl=document.querySelector('#familiarHp'),hpMaxEl=document.querySelector('#familiarHpMax'),acEl=document.querySelector('#familiarAc'),moveChips=document.querySelector('#familiarMovementChips');if(hpEl)hpEl.textContent=Math.min(familiarHp,displayMax);if(hpMaxEl)hpMaxEl.textContent=` / ${displayMax}`;if(acEl)acEl.textContent=battleFamiliarActive?battleFamiliarAc():12;
+ if(moveChips){
+   const parts=battleFamiliarActive
+     ? (battleFamiliarForm==='Flyer'?['Walk 40 ft','Swim 30 ft','Fly 30 ft','Hover']:['Walk 40 ft','Swim 30 ft'])
+     : ['Walk 10 ft','Fly 50 ft'];
+   moveChips.innerHTML=parts.map(x=>`<span class="chip">${x}</span>`).join('');
  }
+ const help=document.querySelector('#famHelpCount'),helpStatus=document.querySelector('#famHelpStatus'),helpBtn=document.querySelector('#famHelpUse'),helpCard=document.querySelector('#familiarHelpfulCard');if(helpCard)helpCard.classList.toggle('hidden',battleFamiliarActive&&battleFamiliarStandalone);if(help)help.textContent=`${familiarHelpUses} / ${pb()} uses`;if(helpStatus)helpStatus.textContent=familiarActive?'':(familiarPocket?'Raven is in the pocket dimension.':'Raven must be summoned and close enough.');if(helpBtn){helpBtn.style.display=familiarActive&&!battleFamiliarStandalone?'':'none';helpBtn.disabled=familiarHelpUses<=0;helpBtn.textContent=familiarHelpUses>0?'Use':'Spent';helpBtn.classList.toggle('accent',familiarHelpUses>0)}
+ const title=document.querySelector('#familiarLiveTitle'),text=document.querySelector('#familiarLiveText'),badge=document.querySelector('#familiarLiveBadge');if(battleFamiliarActive){if(title)title.textContent=battleFamiliarStandalone?`Battle Familiar • ${battleFamiliarForm}`:`Raven • Battle Familiar (${battleFamiliarForm})`;if(text)text.textContent=battleFamiliarStandalone?'Conjured by Battle Familiar; rolls its own Initiative and can attack.':`Raven is empowered by Battle Familiar and retains its Find Familiar features.${familiarExpiresOnLongRest?' Wild Companion still expires at the next Long Rest.':''}`;if(badge)badge.textContent='Battle'}else{if(title)title.textContent=familiarActive?'Raven Summoned':(familiarPocket?'Raven in Pocket Dimension':'Raven Not Summoned');if(text)text.textContent=familiarActive?`Raven is in play, rolls its own Initiative and gets its own turn.${familiarExpiresOnLongRest?' Wild Companion: disappears at the next Long Rest.':''}`:(familiarPocket?`Raven is temporarily dismissed.${familiarExpiresOnLongRest?' Wild Companion: it still disappears at the next Long Rest.':' Bring it back with a Magic Action.'}`:'Cast Find Familiar or use Wild Companion to bring Raven into play.');if(badge)badge.textContent=familiarActive?'Active':(familiarPocket?'Pocket':'Inactive')}
+ const bfCard=document.querySelector('#battleFamiliarCard'),bfTitle=document.querySelector('#battleFamiliarTitle'),bfTempWrap=document.querySelector('#battleFamiliarTempWrap'),bfTempText=document.querySelector('#battleFamiliarTempText'),bfStats=document.querySelector('#battleFamiliarStats'),bfFeature=document.querySelector('#battleFamiliarFeature');if(bfCard)bfCard.classList.toggle('hidden',!battleFamiliarActive);if(battleFamiliarActive){const count=battleFamiliarAttackCount(),bonus=battleFamiliarDamageBonus(),talent=battleFamiliarTalent();if(bfTitle)bfTitle.textContent=`${battleFamiliarForm} • ${spellLevelLabel(battleFamiliarSpellLevel)}`;if(bfTempWrap)bfTempWrap.classList.toggle('hidden',battleFamiliarStandalone);if(bfTempText)bfTempText.textContent=`${battleFamiliarTempHp} / ${battleFamiliarHpMax()} remaining. At 0, Raven returns to normal.`;if(bfStats)bfStats.innerHTML=`Initiative <b>+3</b> • Talented <b>+${talent}</b> to ability checks and saves<br>Immune to <b>Charmed</b> and <b>Frightened</b><br>Multiattack: <b>${count} Rend${count===1?'':'s'}</b> • ${fmt(pb()+mod(abilities.wis))} to hit • <b>1d8 + ${bonus} Force</b> each`;if(bfFeature){
+   const f=battleFamiliarForm==='Brute'
+     ? '+2 AC and +10 HP are included above.'
+     : battleFamiliarForm==='Flyer'
+       ? 'Adds Fly 30 ft (Hover); Flyby avoids Opportunity Attacks when flying out of reach.'
+       : 'Prowl can replace one Rend: move up to half Speed without provoking Opportunity Attacks, then Hide.';
+   bfFeature.innerHTML=`<b>${battleFamiliarForm}</b><div class="sub mt4">${f}</div><div class="sub mt8">While empowered, Raven uses the Battle Familiar movement statistics, including its 30-ft Swim Speed.</div>`;
+ }}
+ const normalStats=document.querySelector('#familiarNormalStats'),normalActions=document.querySelector('#familiarNormalActions');if(normalStats)normalStats.classList.toggle('hidden',battleFamiliarActive);if(normalActions)normalActions.classList.toggle('hidden',battleFamiliarActive);
+ const pocketBtn=document.querySelector('#familiarPocketToggle'),pocketTitle=document.querySelector('#familiarPocketToggleTitle'),pocketText=document.querySelector('#familiarPocketToggleText');if(pocketBtn){const canPocket=(familiarActive||familiarPocket)&&!battleFamiliarStandalone;pocketBtn.style.display=canPocket?'block':'none';if(pocketTitle)pocketTitle.textContent=familiarActive?'Send to Pocket Dimension':'Bring Raven Back';if(pocketText)pocketText.textContent=familiarActive?'Magic Action • temporarily dismiss Raven':'Magic Action • reappear within 30 ft'}
+ ['famDamage','famHeal','famFull'].forEach(id=>{const b=document.querySelector('#'+id);if(b)b.disabled=!familiarActive});
+ const wc=document.querySelector('#wildCompanionCard'),wcWild=document.querySelector('#wildCompanionWild'),wcSlot=document.querySelector('#wildCompanionSlot'),wcSlotBtn=document.querySelector('#wildCompanionSlotBtn'),wcStatus=document.querySelector('#wildCompanionStatus');if(wc){const canUse=!familiarActive&&!familiarPocket&&!battleFamiliarActive&&level>=2&&!form;wc.classList.toggle('hidden',!canUse);if(wcWild)wcWild.disabled=wild<1;if(wcSlot){wcSlot.innerHTML='';for(let l=1;l<=maxSpellLevel();l++)if(slotAvailable(l)>0){const o=document.createElement('option');o.value=l;o.textContent=`${spellLevelLabel(l)} • ${slotAvailable(l)} available`;wcSlot.appendChild(o)}}if(wcSlotBtn)wcSlotBtn.disabled=!wcSlot||!wcSlot.options.length;if(wcStatus)wcStatus.textContent=canUse?(wild>0||totalSlotsAvailable()>0?'Choose which resource to spend.':'No Wild Shape use or spell slot is available.'):''}
 }
 function renderRest(){
  const hd=document.querySelector('#hitDiceCount');
@@ -1715,15 +2135,9 @@ function renderCombat(){
    if(wildSub) wildSub.textContent=`${wild} / ${maxWild} uses`;
  }
  const wu=document.querySelector('#combatWildUses'); if(wu) wu.textContent=`${wild}/${maxWild}`;
- const wr=document.querySelector('#wildResurgenceSummary');
- const gainWild=document.querySelector('#resurgenceGainWild');
- const gainSlot=document.querySelector('#resurgenceGainSlot');
- if(wr){
-   const availableSlots=Object.values(slots).reduce((a,b)=>a+(b||0),0);
-   wr.textContent=`Spell slots available: ${availableSlots} • 1st-level slots: ${slots[1]}/4 • Wild→slot ${wildResurgenceSlotUsed?'used':'ready'}`;
- }
- if(gainWild) gainWild.disabled=wild!==0 || Object.values(slots).reduce((a,b)=>a+(b||0),0)===0;
- if(gainSlot) gainSlot.disabled=wild<1 || slots[1]>=slotMax(1) || wildResurgenceSlotUsed;
+ const wr=document.querySelector('#wildResurgenceSummary'),gainWild=document.querySelector('#resurgenceGainWild'),gainSlot=document.querySelector('#resurgenceGainSlot');if(wr)wr.textContent=`Spell slots available: ${totalSlotsAvailable()} • 1st-level base slots: ${slots[1]||0}/${slotMax(1)} • Wild→slot ${wildResurgenceSlotUsed?'used':'ready'}`;if(gainWild)gainWild.disabled=wild!==0||totalSlotsAvailable()===0;if(gainSlot)gainSlot.disabled=wild<1||(slots[1]||0)>=slotMax(1)||wildResurgenceSlotUsed;
+ const moonWrap=document.querySelector('#moonlightStepResource');if(moonWrap){moonWrap.classList.toggle('hidden',level<10);const c=document.querySelector('#moonlightStepCount'),u=document.querySelector('#useMoonlightStep'),r=document.querySelector('#restoreMoonlightStep'),restore=[2,3,4,5,6,7,8,9].find(l=>slotAvailable(l)>0);if(c)c.textContent=`${moonlightStepUses} / ${moonlightStepMax()} uses • restores on Long Rest`;if(u)u.disabled=level<10||moonlightStepUses<=0;if(r){r.disabled=level<10||moonlightStepUses>=moonlightStepMax()||!restore;r.textContent=restore?`${spellLevelLabel(restore)} → 1 Use`:'2+ Slot → 1 Use'}}
+ const arch=document.querySelector('#archdruidResource');if(arch){arch.classList.toggle('hidden',level<20);const e=document.querySelector('#evergreenWildShape'),sel=document.querySelector('#natureMagicianSlot'),u=document.querySelector('#useNatureMagician'),s=document.querySelector('#natureMagicianStatus');if(e)e.disabled=level<20||wild>0;if(sel){sel.innerHTML='';for(let uses=1;uses<=Math.min(4,wild);uses++){const o=document.createElement('option');o.value=uses;o.textContent=`${uses} Wild Shape → ${spellLevelLabel(uses*2)}`;sel.appendChild(o)}}if(u)u.disabled=level<20||natureMagicianUsed||wild<1||!sel?.options.length;if(s)s.textContent=natureMagicianUsed?'Nature Magician used • restores on Long Rest':`Ready • ${wild} Wild Shape use${wild===1?'':'s'} available`}
 
  const adr=document.querySelector('#adrenalineCount');
  const adrBtn=document.querySelector('#useAdrenaline');
@@ -1733,7 +2147,7 @@ function renderCombat(){
  const rel=document.querySelector('#relentlessStatus');
  const relBtn=document.querySelector('#useRelentless');
  if(rel) rel.textContent=relentlessUsed?'Used • restores on Long Rest':'Ready';
- if(relBtn){relBtn.disabled=relentlessUsed;relBtn.textContent=relentlessUsed?'Used':'Use'}
+ if(relBtn){relBtn.disabled=relentlessUsed||hp!==0;relBtn.textContent=relentlessUsed?'Used':(hp===0?'Use':'Ready at 0 HP')}
 
  const status=document.querySelector('#combatStatusSummary');
  if(status){
@@ -1841,7 +2255,7 @@ function renderCharacterDynamic(){
    const cards=[];
    if(level>=6)cards.push(['Improved Circle Forms',`Wild Shape attacks can deal Radiant damage instead; Increased Toughness adds your Wisdom modifier (${fmt(w)}) to every Constitution save while transformed. This stacks with Conjuration Adept on Concentration saves for Conjuration spells.`]);
    if(level>=7&&elementalFury)cards.push(['Elemental Fury',elementalFury==='Primal Strike'?`Primal Strike: extra ${level>=15?'2d8':'1d8'} elemental damage once per turn on a weapon or Beast attack.`:`Potent Spellcasting: add WIS ${fmt(w)} to Druid cantrip damage${level>=15?'; cantrips with 10+ ft range gain +300 ft range':''}.`]);
-   if(level>=10)cards.push(['Moonlight Step','Bonus Action teleport up to 30 ft; gain Advantage on your next attack before the end of the turn.']);
+   if(level>=10)cards.push(['Moonlight Step',`Bonus Action teleport up to 30 ft; gain Advantage on your next attack before the end of the turn. ${moonlightStepMax()} uses per Long Rest; expend a level 2+ spell slot to restore one use.`]);
    if(level>=14)cards.push(['Lunar Form','Once per turn, a Wild Shape attack can deal an extra 2d10 Radiant damage; Moonlight Step can take one nearby willing creature with you.']);
    if(level>=18)cards.push(['Beast Spells','While Wild Shaped, cast spells except those with a costly or consumed Material component.']);
    if(level>=20)cards.push(['Archdruid','Evergreen Wild Shape, Nature Magician spell-slot conversion, and greatly slowed aging.']);
@@ -1871,25 +2285,10 @@ function sync(){
  chips.forEach(t=>{let c=document.createElement('span');c.className='chip';c.textContent=t;st.appendChild(c)}); st.classList.toggle('show',chips.length>0);
  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav==='home'));
  const homeFam=document.querySelector('#homeFamiliarHp');
- if(homeFam) homeFam.textContent=`${familiarHp} / ${familiarMaxHp()} HP`;
+ if(homeFam) homeFam.textContent=familiarActive?`${familiarHp} / ${familiarMaxHp()} HP`:(familiarPocket?'Pocket Dimension':'Not Summoned');
 
- const combatConTotal=document.querySelector('#combatConSaveTotal');
- const combatConSummary=document.querySelector('#combatConSaveSummary');
- if(combatConTotal && combatConSummary){
-   const base=mod(abilities.con);
-   const wis=mod(abilities.wis);
-   const wildBonus=(level>=6 && form)?wis:0;
-   const total=base+wildBonus;
-   combatConTotal.textContent=fmt(total);
-   if(level>=6){
-     combatConSummary.innerHTML=form
-       ? `Base CON ${fmt(base)} + WIS modifier ${fmt(wis)} from Increased Toughness = <b>${fmt(total)}</b>.<br>Conjuration concentration saves add WIS ${fmt(wis)} again from Conjuration Adept.`
-       : `Base CON ${fmt(base)}. In Wild Shape, Increased Toughness adds WIS modifier ${fmt(wis)} → <b>${fmt(base+wis)}</b>.`;
-   }else{
-     combatConSummary.textContent=`Base CON ${fmt(base)}. Increased Toughness unlocks at Druid 6.`;
-   }
- }
  renderCharacterDynamic(); renderEquipment(); renderLanguages(); renderCombat(); renderCombatStatus(); renderWildForms(); renderSpells(); renderMore(); renderFamiliar(); renderRest();
+ renderWhatCanIDo(); renderSessionLog(); renderDamageConcentration();
  save();
 }
 function renderBeast(name){
@@ -1922,7 +2321,7 @@ function renderBeast(name){
  }
  document.querySelector('#beastHp').textContent=hp;
  document.querySelector('#beastTemp').textContent=form===name?temp:moonTempHp();
- const beastAc=document.querySelector('#beastAc'); if(beastAc) beastAc.textContent=moonAc();
+ const beastAc=document.querySelector('#beastAc'); if(beastAc) beastAc.textContent=moonAc(name);
 }
 function openBeast(name=null,from=null){
  if(from) backTargets.beast=from;
@@ -1936,7 +2335,7 @@ function renderWildForms(){
  list.innerHTML='';
  activeKnownForms().forEach(name=>{
    const f=forms[name];
-   if(!f)return;
+   if(!f||!formEligible(name))return;
    const b=document.createElement('button');
    b.className='btn full';
    b.style.textAlign='left';
@@ -1949,39 +2348,12 @@ function renderWildForms(){
  if(count) count.textContent=`(${activeKnownForms().length} / ${knownFormCap()} known)`;
 }
 function renderManageForms(){
- const known=document.querySelector('#knownFormsManage');
- const avail=document.querySelector('#availableFormsManage');
- if(!known||!avail)return;
- known.innerHTML='';avail.innerHTML='';
- const cap=knownFormCap();
- activeKnownForms().forEach(name=>{
-   const b=document.createElement('button'); b.className='btn full'; b.style.textAlign='left';
-   if(pendingReplace===name)b.classList.add('form-active');
-   b.innerHTML=`<div class="row between"><div><b>${name}</b><div class="sub mt8">${pendingReplace===name?'Selected for replacement':'Tap to replace'}</div></div><span>${pendingReplace===name?'✓':'›'}</span></div>`;
-   b.onclick=()=>{pendingReplace=(pendingReplace===name?null:name);renderManageForms()};
-   known.appendChild(b);
- });
- if(activeKnownForms().length<cap){
-   const d=document.createElement('div');d.className='notice';d.innerHTML=`<b>${cap-activeKnownForms().length} open form slot${cap-activeKnownForms().length===1?'':'s'}</b><div class="small mt8">Choose an available form below to learn it.</div>`;known.appendChild(d);
- }
- Object.keys(forms).filter(name=>!knownForms.includes(name)).forEach(name=>{
-   const f=forms[name],canAdd=activeKnownForms().length<cap;
-   const b=document.createElement('button');b.className='btn full';b.style.textAlign='left';
-   b.innerHTML=`<div class="row between"><div><b>${name}</b><div class="sub mt8">${f.speed} • ${f.size}</div></div><span>${canAdd?'Learn':(pendingReplace?'Replace':'Select a known form first')}</span></div>`;
-   b.disabled=!canAdd&&!pendingReplace;
-   b.onclick=()=>{
-     if(canAdd) knownForms.push(name);
-     else{
-       if(!pendingReplace)return;
-       const idx=knownForms.indexOf(pendingReplace); if(idx<0)return;
-       knownForms[idx]=name;if(form===pendingReplace)form=null;
-     }
-     pendingReplace=null;save();renderManageForms();renderWildForms();sync();
-   };
-   avail.appendChild(b);
- });
+ const known=document.querySelector('#knownFormsManage'),avail=document.querySelector('#availableFormsManage');if(!known||!avail)return;known.innerHTML='';avail.innerHTML='';const cap=knownFormCap(),active=activeKnownForms();
+ if(active.length>=cap&&!formSwapAvailable){const n=document.createElement('div');n.className='notice';n.innerHTML='<b>Replacement used</b><div class="small mt8">Grimsby has already replaced one known form since his last Long Rest.</div>';known.appendChild(n)}
+ active.forEach(name=>{const b=document.createElement('button');b.className='btn full';b.style.textAlign='left';const canReplace=active.length>=cap&&formSwapAvailable;if(pendingReplace===name)b.classList.add('form-active');b.disabled=!canReplace;b.innerHTML=`<div class="row between"><div><b>${name}</b><div class="sub mt8">${active.length<cap?'Keep this form; fill the open slot below':(!formSwapAvailable?'Replacement already used':pendingReplace===name?'Selected for replacement':'Tap to replace')}</div></div><span>${pendingReplace===name?'✓':(canReplace?'›':'')}</span></div>`;b.onclick=()=>{if(!canReplace)return;pendingReplace=(pendingReplace===name?null:name);renderManageForms()};known.appendChild(b)});
+ if(active.length<cap){const d=document.createElement('div');d.className='notice';d.innerHTML=`<b>${cap-active.length} open form slot${cap-active.length===1?'':'s'}</b><div class="small mt8">Choose an eligible form below. Filling a newly unlocked slot does not use the Long Rest replacement.</div>`;known.appendChild(d)}
+ const eligible=Object.keys(forms).filter(name=>!knownForms.includes(name)&&formEligible(name));eligible.forEach(name=>{const f=forms[name],canAdd=active.length<cap,canReplace=!!pendingReplace&&formSwapAvailable;const b=document.createElement('button');b.className='btn full';b.style.textAlign='left';b.innerHTML=`<div class="row between"><div><b>${name}</b><div class="sub mt8">CR ${f.cr} • ${f.speed} • ${f.size}${f.pick?` • ${f.pick}`:''}</div></div><span>${canAdd?'Learn':(canReplace?'Replace':'Select a known form first')}</span></div>`;b.disabled=!canAdd&&!canReplace;b.onclick=()=>{if(canAdd)knownForms.push(name);else{if(!pendingReplace||!formSwapAvailable)return;const idx=knownForms.indexOf(pendingReplace);if(idx<0)return;knownForms[idx]=name;if(form===pendingReplace)form=null;formSwapAvailable=false}pendingReplace=null;save();renderManageForms();renderWildForms();sync()};avail.appendChild(b)});if(!eligible.length){const n=document.createElement('div');n.className='notice';n.innerHTML=`No other eligible library forms are available at CR ${moonMaxCr()}${level<8?' without a Fly Speed':''}.`;avail.appendChild(n)}
 }
-
 document.querySelector('#hpCard').onclick=(e)=>{
  if(e.target.closest('#shieldToggle')) return;
  backTargets.hp='home'; show('hp');
@@ -2011,11 +2383,40 @@ function amt(){return Math.max(0,Number(document.querySelector('#hpAmount').valu
 document.querySelector('#minusOne').onclick=()=>{let x=document.querySelector('#hpAmount');x.value=Math.max(0,(Number(x.value)||0)-1)}
 document.querySelector('#plusOne').onclick=()=>{let x=document.querySelector('#hpAmount');x.value=(Number(x.value)||0)+1}
 document.querySelector('#clearAmount').onclick=()=>document.querySelector('#hpAmount').value='';
-document.querySelector('#damageBtn').onclick=()=>{let n=amt(),a=Math.min(temp,n);temp-=a;n-=a;hp=Math.max(0,hp-n);sync()}
-document.querySelector('#healBtn').onclick=()=>{hp=Math.min(maxHp,hp+amt());sync()}
-document.querySelector('#tempBtn').onclick=()=>{temp=amt();sync()}
-document.querySelector('#shortRest').onclick=()=>{wild=Math.min(maxWild,wild+1);adrenalineUses=pb();sync();document.querySelector('#restMsg').textContent='Short Rest complete: 1 Wild Shape use and all Adrenaline Rush uses restored.'}
-document.querySelector('#longRest').onclick=()=>{hp=maxHp;temp=0;wild=maxWild;form=null;for(let i=1;i<=9;i++)slots[i]=slotMax(i);familiarFreeCastUsed=false;familiarHp=familiarMaxHp();familiarHelpUses=pb();hitDice=level;wildResurgenceSlotUsed=false;adrenalineUses=pb();relentlessUsed=false;sync();document.querySelector('#restMsg').textContent='Long Rest complete: HP, Hit Dice, spell slots, Wild Shape, Familiar Friend, Wild Resurgence and Orc resources restored.'}
+document.querySelector('#damageBtn').onclick=()=>{
+ const damage=amt(); if(damage<=0)return;
+ let n=damage,a=Math.min(temp,n);temp-=a;n-=a;
+ const hpBefore=hp,normalDamage=n;
+ hp=Math.max(0,hp-normalDamage);
+ let remainedConscious=hp>0;
+ if(hp===0){
+   const excess=Math.max(0,normalDamage-hpBefore);
+   const killedOutright=excess>=maxHp;
+   if(!killedOutright&&!relentlessUsed&&confirm('Relentless Endurance is ready. Use it to drop to 1 HP instead?')){
+     hp=1;relentlessUsed=true;remainedConscious=true;
+     logSession('Relentless Endurance • 0 HP → 1 HP');
+   }else{
+     remainedConscious=false;
+     if(!conditions.includes('Unconscious'))conditions.push('Unconscious');
+     if(concentration){logSession('Concentration ended at 0 HP');concentration=null}
+     if(form){logSession(`Wild Shape ended at 0 HP (${form})`);form=null;previewForm=null}
+     pendingConcentrationCheck=null;
+     if(killedOutright)logSession('Damage met the instant-death threshold');
+   }
+ }
+ if(remainedConscious&&concentration)concentrationCheckForDamage(damage);
+ logSession(`Took ${damage} damage${a?` (${a} absorbed by Temp HP)`:''}`);
+ sync();
+}
+document.querySelector('#healBtn').onclick=()=>{const n=amt();if(n<=0)return;hp=Math.min(maxHp,hp+n);if(hp>0){const i=conditions.indexOf('Unconscious');if(i>=0)conditions.splice(i,1)}logSession(`Healed ${n} HP`);sync()}
+document.querySelector('#tempBtn').onclick=()=>{temp=amt();logSession(`Temp HP set to ${temp}`);sync()}
+document.querySelector('#shortRest').onclick=()=>{wild=Math.min(maxWild,wild+1);adrenalineUses=pb();logSession('Completed a Short Rest');sync();document.querySelector('#restMsg').textContent='Short Rest complete: 1 Wild Shape use and all Adrenaline Rush uses restored.'}
+document.querySelector('#longRest').onclick=()=>{
+ hp=maxHp;temp=0;wild=maxWild;form=null;concentration=null;for(let i=1;i<=9;i++)slots[i]=slotMax(i);bonusSlots={};familiarFreeCastUsed=false;
+ const standaloneBattle=battleFamiliarActive&&battleFamiliarStandalone;clearBattleFamiliarState();if(standaloneBattle){familiarActive=false;familiarPocket=false;familiarHp=0}
+ if(familiarExpiresOnLongRest){familiarActive=false;familiarPocket=false;familiarExpiresOnLongRest=false}else if(familiarActive||familiarPocket)familiarHp=familiarMaxHp();
+ familiarHelpUses=pb();hitDice=level;wildResurgenceSlotUsed=false;moonlightStepUses=moonlightStepMax();natureMagicianUsed=false;formSwapAvailable=true;adrenalineUses=pb();relentlessUsed=false;pendingConcentrationCheck=null;logSession('Completed a Long Rest');sync();document.querySelector('#restMsg').textContent='Long Rest complete: HP, Hit Dice, spell slots, Wild Shape, Moonlight Step and long-rest resources restored. Battle Familiar and Concentration ended; one Wild Shape form replacement is available.'
+}
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{const p=b.dataset.nav;
  if(p==='home'){show('home');sync();document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='home'));return}
  if(p==='Character'){show('character');document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Character'));return}
@@ -2030,9 +2431,28 @@ document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{const p=b.dat
 
 
 
-document.querySelector('#famDamage').onclick=()=>{familiarHp=Math.max(0,familiarHp-1);save();sync()};
-document.querySelector('#famHeal').onclick=()=>{familiarHp=Math.min(familiarMaxHp(),familiarHp+1);save();sync()};
-document.querySelector('#famFull').onclick=()=>{familiarHp=familiarMaxHp();save();sync()};
+function summonWildCompanion(sourceText){if(battleFamiliarActive)clearBattleFamiliarState();familiarActive=true;familiarPocket=false;familiarHp=familiarMaxHp();familiarExpiresOnLongRest=true;logSession(`Wild Companion • ${sourceText} • Fey Raven summoned until Long Rest`);save();sync()}
+document.querySelector('#wildCompanionWild').onclick=()=>{if(level<2||form||familiarActive||familiarPocket||wild<1)return;wild--;summonWildCompanion('spent 1 Wild Shape use')};
+document.querySelector('#wildCompanionSlotBtn').onclick=()=>{if(level<2||form||familiarActive||familiarPocket)return;const l=Number(document.querySelector('#wildCompanionSlot').value);if(!l||!spendSlot(l))return;summonWildCompanion(`spent ${spellLevelLabel(l)} slot`)};
+
+document.querySelector('#familiarPocketToggle').onclick=()=>{
+ if(battleFamiliarStandalone)return;
+ if(familiarActive){
+   familiarActive=false;
+   familiarPocket=true;
+   logSession('Raven sent to pocket dimension');
+ }else if(familiarPocket){
+   familiarPocket=false;
+   familiarActive=true;
+   logSession('Raven brought back from pocket dimension');
+ }else return;
+ save();sync();
+};
+
+document.querySelector('#famDamage').onclick=()=>{if(!familiarActive)return;const input=document.querySelector('#famHpAmount');let damage=Math.max(0,Math.trunc(Number(input?.value)||0));if(damage<=0)return;let remaining=damage;if(battleFamiliarActive&&!battleFamiliarStandalone&&battleFamiliarTempHp>0){const absorbed=Math.min(battleFamiliarTempHp,remaining);battleFamiliarTempHp-=absorbed;remaining-=absorbed;if(battleFamiliarTempHp===0){clearBattleFamiliarState();logSession('Battle Familiar Temp HP depleted • Raven returned to normal')}}if(remaining>0){familiarHp=Math.max(0,familiarHp-remaining);if(familiarHp===0){if(battleFamiliarActive&&battleFamiliarStandalone){clearBattleFamiliarState();familiarActive=false;familiarPocket=false;logSession('Battle Familiar dropped to 0 HP and disappeared')}else{familiarActive=false;familiarPocket=false;familiarExpiresOnLongRest=false;clearBattleFamiliarState();logSession('Raven dropped to 0 HP and disappeared')}}}logSession(`Familiar took ${damage} damage`);save();sync()};
+document.querySelector('#famHeal').onclick=()=>{if(!familiarActive)return;const input=document.querySelector('#famHpAmount');const n=Math.max(0,Math.trunc(Number(input?.value)||0));if(n<=0)return;familiarHp=Math.min(familiarCurrentMaxHp(),familiarHp+n);logSession(`Familiar healed ${n} HP`);save();sync()};
+document.querySelector('#famFull').onclick=()=>{if(!familiarActive)return;familiarHp=familiarCurrentMaxHp();save();sync()};
+document.querySelector('#endBattleFamiliar').onclick=()=>{if(!battleFamiliarActive)return;endBattleFamiliar('marked ended');save();sync()};
 document.querySelector('#famHelpUse').onclick=()=>{if(familiarHelpUses>0){familiarHelpUses--;save();renderFamiliar();renderMore()}};
 
 document.querySelector('#spendHitDie').onclick=()=>{
@@ -2049,9 +2469,8 @@ document.querySelector('#spendHitDie').onclick=()=>{
 
 document.querySelector('#resurgenceGainWild').onclick=()=>{
  if(wild!==0)return;
- let level=[1,2,3,4,5,6,7,8,9].find(l=>(slots[l]||0)>0);
- if(!level)return;
- slots[level]--;
+ let level=[1,2,3,4,5,6,7,8,9].find(l=>slotAvailable(l)>0);
+ if(!level||!spendSlot(level))return;
  wild=1;
  save();sync();
 };
@@ -2062,6 +2481,10 @@ document.querySelector('#resurgenceGainSlot').onclick=()=>{
  wildResurgenceSlotUsed=true;
  save();sync();
 };
+document.querySelector('#useMoonlightStep').onclick=()=>{if(level<10||moonlightStepUses<=0)return;moonlightStepUses--;logSession('Used Moonlight Step');save();sync()};
+document.querySelector('#restoreMoonlightStep').onclick=()=>{if(level<10||moonlightStepUses>=moonlightStepMax())return;const l=[2,3,4,5,6,7,8,9].find(x=>slotAvailable(x)>0);if(!l||!spendSlot(l))return;moonlightStepUses++;logSession(`Restored 1 Moonlight Step use with ${spellLevelLabel(l)} slot`);save();sync()};
+document.querySelector('#evergreenWildShape').onclick=()=>{if(level<20||wild>0)return;wild=1;logSession('Archdruid • Evergreen Wild Shape restored 1 use when Initiative was rolled');save();sync()};
+document.querySelector('#useNatureMagician').onclick=()=>{if(level<20||natureMagicianUsed)return;const uses=Number(document.querySelector('#natureMagicianSlot').value);if(!uses||wild<uses)return;const spellLevel=uses*2;wild-=uses;bonusSlots[spellLevel]=bonusSlotCount(spellLevel)+1;natureMagicianUsed=true;logSession(`Archdruid • Nature Magician: ${uses} Wild Shape use${uses===1?'':'s'} → ${spellLevelLabel(spellLevel)} slot`);save();sync()};
 document.querySelector('#useAdrenaline').onclick=()=>{
  if(adrenalineUses<=0)return;
  adrenalineUses--;
@@ -2069,9 +2492,10 @@ document.querySelector('#useAdrenaline').onclick=()=>{
  save();sync();
 };
 document.querySelector('#useRelentless').onclick=()=>{
- if(relentlessUsed)return;
- relentlessUsed=true;
- if(hp===0)hp=1;
+ if(relentlessUsed||hp!==0)return;
+ relentlessUsed=true;hp=1;
+ const i=conditions.indexOf('Unconscious');if(i>=0)conditions.splice(i,1);
+ logSession('Relentless Endurance • 0 HP → 1 HP');
  save();sync();
 };
 
@@ -2079,7 +2503,7 @@ document.querySelector('#learnForm').onclick=()=>{pendingReplace=null;renderMana
 document.querySelector('#beastActionBtn').onclick=()=>{
  if(!previewForm)return;
  if(form===previewForm){
-   form=null;previewForm=null;sync();
+   const oldForm=form;form=null;previewForm=null;logSession(`Ended Wild Shape (${oldForm})`);sync();
    const dest=backTargets.beast||'home';show(dest);
    return;
  }
@@ -2087,6 +2511,7 @@ document.querySelector('#beastActionBtn').onclick=()=>{
  wild--;
  form=previewForm;
  temp=Math.max(temp,moonTempHp());
+ logSession(`Wild Shape → ${form}`);
  backTargets.beast=backTargets.wild||backTargets.beast||'home';
  sync();
  renderBeast(form);
@@ -2114,17 +2539,17 @@ document.querySelector('#startConcentration').onclick=()=>{
  const sel=document.querySelector('#concentrationSelect');
  const v=sel.value;
  if(!v)return;
- concentration=v;save();renderCombatStatus();sync();
+ concentration=v;logSession(`Started concentration: ${v}`);save();renderCombatStatus();sync();
 };
 document.querySelector('#clearConcentration').onclick=()=>{
- concentration=null;save();renderCombatStatus();sync();
+ if(concentration)logSession(`Ended concentration: ${concentration}`);concentration=null;save();renderCombatStatus();sync();
 };
 document.querySelector('#addCondition').onclick=()=>{
  const sel=document.querySelector('#conditionSelect');
  const v=sel.value;
  if(!v)return;
- if(!conditions.includes(v)) conditions.push(v);
- if(['Incapacitated','Paralyzed','Petrified','Stunned','Unconscious'].includes(v)) concentration=null;
+ if(!conditions.includes(v))conditions.push(v);
+ if(['Incapacitated','Paralyzed','Petrified','Stunned','Unconscious'].includes(v)){if(concentration)logSession(`Concentration ended by ${v}`);concentration=null;if(form){logSession(`Wild Shape ended by ${v}`);form=null;previewForm=null}}
  sel.value='';save();renderCombatStatus();sync();
 };
 
@@ -2167,8 +2592,8 @@ function restoreLevelSnapshot(s){
  hp=Math.min(hp,maxHp);
  for(let i=1;i<=9;i++)slots[i]=Math.min(slots[i]||0,slotMax(i));
  wild=Math.min(wild,maxWild);hitDice=Math.min(hitDice,level);
- familiarHp=Math.min(familiarHp,familiarMaxHp());familiarHelpUses=Math.min(familiarHelpUses,pb());adrenalineUses=Math.min(adrenalineUses,pb());
- if(form && !activeKnownForms().includes(form))form=null;
+ familiarHp=Math.min(familiarHp,familiarCurrentMaxHp());familiarHelpUses=Math.min(familiarHelpUses,pb());adrenalineUses=Math.min(adrenalineUses,pb());moonlightStepUses=Math.min(moonlightStepUses,moonlightStepMax());if(level<20){natureMagicianUsed=false;bonusSlots={}}
+ if(form&&(!activeKnownForms().includes(form)||!formEligible(form)))form=null;
 }
 function renderLevelUp(){
  const next=level+1,body=document.querySelector('#levelUpBody'),max=document.querySelector('#levelMaxNotice');
@@ -2182,7 +2607,7 @@ function renderLevelUp(){
  for(let i=0;i<9;i++)if(np.slots[i]!==oldP.slots[i])changes.push(`${spellLevelLabel(i+1)} slots: ${oldP.slots[i]} → ${np.slots[i]}`);
  if(np.pb!==oldP.pb)changes.push(`Proficiency Bonus: ${fmt(oldP.pb)} → ${fmt(np.pb)}; Adrenaline Rush and Familiar Friend also increase`);
  if(np.wild!==oldP.wild)changes.push(`Wild Shape uses: ${oldP.wild} → ${np.wild}`);
- if(next===8)changes.push(`Known Wild Shape forms: 6 → 8; Fly Speed forms become eligible; Moon max CR becomes 2`);
+ if(next===8)changes.push(`Known Wild Shape forms: 6 → 8; Fly Speed forms become eligible`);
  else if(Math.floor(next/3)!==Math.floor(level/3))changes.push(`Moon Wild Shape maximum CR: ${Math.floor(level/3)} → ${Math.floor(next/3)}`);
  changes.push(`Moon Wild Shape Temp HP: ${3*level} → ${3*next}`);
  const feat=featureAtLevel(next);if(feat)changes.push(`New feature: ${feat}`);
@@ -2217,7 +2642,7 @@ document.querySelector('#confirmLevelUp').onclick=()=>{
  if(next===7&&!document.querySelector('#elementalChoice').value){document.querySelector('#levelUpMessage').textContent='Choose Elemental Fury first.';return}
  const needsFeat=[8,12,16,19].includes(next),featName=needsFeat?document.querySelector('#levelFeatName').value.trim():'';
  if(needsFeat&&!featName){document.querySelector('#levelUpMessage').textContent=next===19?'Enter the Epic Boon or feat name first.':'Enter the feat / ASI name first.';return}
- const before=levelSnapshot(),oldPb=druidProgression[level].pb,oldWild=druidProgression[level].wild,oldConMod=mod(abilities.con);let choiceText='';
+ const before=levelSnapshot(),oldPb=druidProgression[level].pb,oldWild=druidProgression[level].wild,oldConMod=mod(abilities.con),oldMoonlightMax=moonlightStepMax();let choiceText='';
  if(next===7){elementalFury=document.querySelector('#elementalChoice').value;choiceText=elementalFury}
  if(needsFeat){
    const a1=document.querySelector('#levelAbility1').value,a2=next===19?'':document.querySelector('#levelAbility2').value;
@@ -2229,7 +2654,7 @@ document.querySelector('#confirmLevelUp').onclick=()=>{
  maxHp=Math.max(1,maxHp+hpGain);hp=Math.min(maxHp,hp+hpGain);
  const oldProg=druidProgression[level],newProg=druidProgression[next];
  for(let i=1;i<=9;i++){const oldMax=oldProg.slots[i-1]||0,newMax=newProg.slots[i-1]||0;slots[i]=Math.min(newMax,(slots[i]||0)+Math.max(0,newMax-oldMax))}
- level=next;maxWild=druidProgression[level].wild;wild=Math.min(maxWild,wild+Math.max(0,maxWild-oldWild));hitDice=Math.min(level,hitDice+1);
+ level=next;maxWild=druidProgression[level].wild;wild=Math.min(maxWild,wild+Math.max(0,maxWild-oldWild));hitDice=Math.min(level,hitDice+1);const newMoonlightMax=moonlightStepMax();if(newMoonlightMax>oldMoonlightMax)moonlightStepUses=Math.min(newMoonlightMax,moonlightStepUses+(newMoonlightMax-oldMoonlightMax));
  const pbGain=pb()-oldPb;if(pbGain>0){adrenalineUses=Math.min(pb(),adrenalineUses+pbGain);familiarHelpUses=Math.min(pb(),familiarHelpUses+pbGain)}
  familiarHp=Math.min(familiarHp,familiarMaxHp());
  levelHistory.push({from:before.level,to:level,hpText:`HP +${hpGain} → ${maxHp} max`,choiceText,before});save();sync();renderLevelUp();renderLevelHistory();document.querySelector('#levelUpMessage').textContent=`Level ${level} committed and saved.`;
@@ -2258,17 +2683,128 @@ document.querySelector('#saveInitiative').onclick=()=>{
  save();sync();
 };
 
-document.querySelector('#spellDetailBack').onclick=()=>{renderSpells();show('spells');document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Spells'))};
+
+document.querySelector('#whatCanIDoBtn').onclick=()=>{renderWhatCanIDo();show('whatcando')};
+document.querySelector('#moreSessionLog').onclick=()=>{backTargets.sessionlog='more';renderSessionLog();show('sessionlog')};
+document.querySelector('#moreBackup').onclick=()=>show('backuprestore');
+
+document.querySelector('#clearSessionLog').onclick=()=>{
+ sessionLog=[];
+ save();
+ renderSessionLog();
+};
+
+document.querySelector('#concentrationPassed').onclick=()=>{
+ if(!pendingConcentrationCheck)return;
+ const c=pendingConcentrationCheck;
+ pendingConcentrationCheck=null;
+ logSession(`Concentration maintained vs DC ${c.dc} (${fmt(c.bonus)} CON save)`);
+ sync();
+};
+document.querySelector('#concentrationFailed').onclick=()=>{
+ if(!pendingConcentrationCheck)return;
+ const c=pendingConcentrationCheck;
+ const old=concentration;
+ logSession(`Concentration failed vs DC ${c.dc} (${fmt(c.bonus)} CON save) • ${old} ended`);
+ concentration=null;
+ pendingConcentrationCheck=null;
+ save();
+ renderCombatStatus();
+ sync();
+};
+document.querySelector('#dismissConcentrationSave').onclick=()=>{pendingConcentrationCheck=null;renderDamageConcentration()};
+
+function completeSpellCast(s,label,slotLevel=null){if(s.conc)concentration=s.name;let extra='';if(s.name==='Find Familiar'){if(battleFamiliarActive)endBattleFamiliar('replaced by Find Familiar');familiarActive=true;familiarPocket=false;familiarExpiresOnLongRest=false;familiarHp=familiarMaxHp();extra=' • Raven summoned'}if(s.battleFamiliar){const choice=document.querySelector('#battleFamiliarChoice')?.value||'Brute';const existing=activateBattleFamiliar(slotLevel||2,choice);extra=` • ${existing?'Raven empowered':'Battle Familiar summoned'} • ${choice}`}logSession(`Cast ${s.name}${label?` • ${label}`:''}${extra}${s.conc?' • Concentration started':''}`);save();sync();renderSpellCastControls(s)}
+document.querySelector('#castSpellBtn').onclick=()=>{
+ const result=document.querySelector('#spellCastResult');
+ const s=druidSpells.find(x=>x.name===selectedSpellName);
+ if(!s){if(result)result.textContent='Could not identify this spell.';return}
+ const prepared=s.level===0?(knownCantrips.includes(s.name)||isAlwaysPreparedSpell(s)):(preparedSpells.includes(s.name)||isAlwaysPreparedSpell(s));
+ if(!prepared){if(result)result.textContent='This spell is not currently prepared.';return}
+ if(!spellAvailableInForm(s)){if(result)result.textContent='This spell cannot be cast in the current Wild Shape state.';return}
+ if(s.battleFamiliar&&familiarPocket){if(result)result.textContent='Bring Raven back from the pocket dimension before empowering it with Battle Familiar.';return}
+ if(s.conc&&concentration&&concentration!==s.name&&!confirm(`Casting ${s.name} will end concentration on ${concentration}. Continue?`)){if(result)result.textContent='Cast cancelled.';return}
+ if(s.level>0){
+   const l=Number(document.querySelector('#spellCastSlot').value);
+   const before=slotAvailable(l);
+   if(!l||before<=0){if(result)result.textContent='No suitable spell slot is available.';return}
+   if(!spendSlot(l)){if(result)result.textContent='The selected spell slot could not be spent.';return}
+   completeSpellCast(s,`using ${spellLevelLabel(l)}`,l);
+   const after=slotAvailable(l);
+   if(result)result.textContent=s.battleFamiliar
+     ? `${s.name} cast as ${battleFamiliarForm} • ${spellLevelLabel(l)} slot spent (${before} → ${after}).`
+     : `${s.name} cast • ${spellLevelLabel(l)} slot spent (${before} → ${after}).`;
+ }else{
+   completeSpellCast(s,'Cantrip',0);
+   if(result)result.textContent=`${s.name} cast.`;
+ }
+};
+document.querySelector('#castRitualBtn').onclick=()=>{const s=druidSpells.find(x=>x.name===selectedSpellName);if(!s||!s.ritual||!spellPreparedOrKnown(s)||!spellAvailableInForm(s))return;if(s.conc&&concentration&&concentration!==s.name&&!confirm(`Casting ${s.name} as a Ritual will end concentration on ${concentration}. Continue?`))return;if(s.material&&!confirm(`Ritual casting does not remove Material requirements.\n\n${s.material}\n\nContinue?`))return;completeSpellCast(s,'Ritual • no spell slot')};
+
+document.querySelector('#exportBackupBtn').onclick=async()=>{
+ const status=document.querySelector('#backupRestoreStatus');
+ const btn=document.querySelector('#exportBackupBtn');
+ try{
+   if(btn){btn.disabled=true;btn.textContent='Preparing Backup…'}
+   if(status)status.textContent='Creating backup…';
+   const result=await exportBackup();
+   if(status){
+     status.textContent=result.method==='share'
+       ? 'Backup created. Use the share sheet to Save to Files or send it somewhere safe.'
+       : result.method==='cancelled'
+         ? 'Backup created, but sharing was cancelled.'
+         : `Backup download started: ${result.filename}`;
+   }
+ }catch(e){
+   if(status)status.textContent='Backup export failed. Your saved character state has not been changed.';
+ }finally{
+   if(btn){btn.disabled=false;btn.textContent='Share / Save Grimsby Backup'}
+ }
+};
+document.querySelector('#importBackupInput').onchange=async(e)=>{
+ const file=e.target.files?.[0];if(!file)return;
+ const status=document.querySelector('#backupRestoreStatus');
+ try{
+  const payload=JSON.parse(await file.text());
+  if(payload?.app!=='Grimsby Companion'||payload?.schema!=='grimsbyState_v141'||!validBackupState(payload.state))throw new Error('Invalid backup');
+  if(!confirm('Restore this Grimsby backup? Current saved state will be replaced.')){e.target.value='';return}
+  const current=localStorage.getItem('grimsbyState_v141');if(current)localStorage.setItem('grimsbyPreImportBackup_v28',current);
+  localStorage.setItem('grimsbyState_v141',JSON.stringify(payload.state));
+  status.textContent='Backup restored. Reloading…';
+  setTimeout(()=>location.reload(),300);
+ }catch(err){
+  status.textContent='That file is not a valid Grimsby backup.';
+  e.target.value='';
+ }
+};
+
+
+document.querySelector('#spellDetailBack').onclick=()=>{
+ if(spellDetailBackTarget==='whatcando'){
+  renderWhatCanIDo();show('whatcando');
+  return;
+ }
+ spellDetailBackTarget='spells';
+ renderSpells();show('spells');
+ document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Spells'));
+};
 
 document.querySelector('#spellSearch').addEventListener('input',e=>{spellSearch=e.target.value;renderSpells()});
 document.querySelectorAll('[data-spell-filter]').forEach(b=>b.onclick=()=>{spellFilter=b.dataset.spellFilter;renderSpells()});
 document.querySelector('#freeFamiliarCast').onclick=()=>{
- if(familiarFreeCastUsed)return;
- familiarFreeCastUsed=true;save();renderSpells();sync();
+ if(familiarFreeCastUsed||form)return;
+ familiarFreeCastUsed=true;
+ if(battleFamiliarActive)endBattleFamiliar('replaced by Find Familiar');
+ familiarActive=true;
+ familiarPocket=false;
+ familiarExpiresOnLongRest=false;
+ familiarHp=familiarMaxHp();
+ logSession('Cast Find Familiar (Familiar Friend free cast) • Raven summoned');
+ save();renderSpells();sync();
 };
 
 maxWild=druidProgression[level].wild;
-wild=Math.min(wild,maxWild);familiarHp=Math.min(familiarHp,familiarMaxHp());familiarHelpUses=Math.min(familiarHelpUses,pb());adrenalineUses=Math.min(adrenalineUses,pb());
+wild=Math.min(wild,maxWild);if(battleFamiliarActive&&battleFamiliarStandalone){familiarActive=true;familiarPocket=false}familiarHp=Math.min(familiarHp,familiarCurrentMaxHp());battleFamiliarTempHp=Math.min(battleFamiliarTempHp,battleFamiliarHpMax());if(familiarHp<=0){familiarActive=false;familiarPocket=false;familiarExpiresOnLongRest=false;clearBattleFamiliarState()}familiarHelpUses=Math.min(familiarHelpUses,pb());adrenalineUses=Math.min(adrenalineUses,pb());moonlightStepUses=moonlightStepStateSaved?Math.min(Math.max(0,Number(moonlightStepUses)||0),moonlightStepMax()):moonlightStepMax();if(level<20){natureMagicianUsed=false;bonusSlots={}}for(let i=1;i<=9;i++){if(slots[i]===undefined)slots[i]=slotMax(i);slots[i]=Math.min(Number(slots[i]||0),slotMax(i));bonusSlots[i]=Math.max(0,Number(bonusSlots[i]||0))}
 preparedSpells=preparedSpells.filter(n=>druidSpells.some(s=>s.name===n));knownCantrips=knownCantrips.filter(n=>druidSpells.some(s=>s.name===n&&s.level===0));
 sync();
 })();
