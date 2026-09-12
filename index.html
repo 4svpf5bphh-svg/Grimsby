@@ -75,7 +75,7 @@ input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent-l
 .premium-emphasis{animation:premiumPulse .25s ease-out}
 @media(max-width:370px){.home-summary{grid-template-columns:116px 1fr;gap:10px}.home-portrait{min-height:292px}.home-overview{padding:13px 11px;min-height:292px}.overview-item{font-size:11.5px}.overview-skills{font-size:10.5px;gap:6px 7px}.overview-meta{gap:7px 8px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.screen{transform:none!important}}
-/* ===== v2.9 TEST 3 premium hierarchy ===== */
+/* ===== Premium hierarchy ===== */
 body::before{
   content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
   background:
@@ -102,7 +102,7 @@ body::before{
 .familiar-state-card.state-pocket{background:linear-gradient(145deg,#f5f4fa,#efedf7);border-color:#dcd7eb}
 .familiar-state-card.state-battle{background:linear-gradient(145deg,#17221f,#2b3c36);border-color:#30483f;color:white;box-shadow:0 16px 34px rgba(18,38,31,.18)}
 .familiar-state-card.state-battle .sub{color:rgba(255,255,255,.72)}
-.familiar-state-card.state-battle .v28-test-badge{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.22);color:white}
+.familiar-state-card.state-battle .ui-state-badge{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.22);color:white}
 .battle-mode-card{position:relative;overflow:hidden;background:linear-gradient(150deg,#f2f8f6,#e5f2ee)!important;border-color:#bad8cf!important;box-shadow:0 15px 34px rgba(49,104,88,.13)!important}
 .battle-mode-card::before{content:"";position:absolute;top:-70px;right:-62px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(89,145,128,.18),transparent 68%);pointer-events:none}
 .premium-battle-temp{background:linear-gradient(145deg,#e2f0ec,#d6e9e3)!important;border-color:#b7d6cd!important}
@@ -111,7 +111,7 @@ body::before{
 .premium-state-flash{animation:stateFlash .42s var(--ease-premium)}
 @keyframes stateFlash{0%{transform:scale(.985);filter:brightness(.98)}55%{transform:scale(1.012);filter:brightness(1.02)}100%{transform:scale(1);filter:brightness(1)}}
 @media(prefers-reduced-motion:reduce){.premium-state-flash{animation:none!important}}
-/* ===== v2.9 TEST 4 premium completion ===== */
+/* ===== Premium completion ===== */
 .premium-character-pb{background:linear-gradient(145deg,#17221f,#2b3c36)!important;color:white;border-color:#30483f!important;box-shadow:0 10px 24px rgba(18,38,31,.15)!important}
 .premium-character-pb .kicker{color:rgba(255,255,255,.62)}
 .premium-character-tile{position:relative;overflow:hidden;min-height:116px;background:linear-gradient(145deg,#fff,#f8fafb)!important;box-shadow:var(--shadow-sm)!important}
@@ -164,7 +164,7 @@ body::before{
 #premiumTransformSub{font-size:12px;color:rgba(255,255,255,.66);margin-top:7px}
 
 @media(prefers-reduced-motion:reduce){#premiumToast,#premiumTransformVeil,.premium-transform-core{transition:none!important}.premium-slot-flash,.spell-card.spell-state-flash{animation:none!important}}
-/* ===== v2.9 TEST 5 native app shell ===== */
+/* ===== Native app shell ===== */
 .ui-sprite{position:absolute;width:0;height:0;overflow:hidden}
 .ui-icon{width:20px;height:20px;display:inline-block;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px}
 .ui-icon.sm{width:17px;height:17px}.ui-icon.lg{width:23px;height:23px}
@@ -249,8 +249,8 @@ body::before{
 
 
 
-/* ===== v2.8 TEST gameplay layer ===== */
-.v28-test-badge{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;background:#fff}
+/* ===== Gameplay components ===== */
+.ui-state-badge{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;background:#fff}
 .v28-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .v28-action-card{border:1px solid var(--line);border-radius:14px;padding:11px 12px;background:#fff}
 .v28-action-card b{display:block;margin-bottom:4px}
@@ -478,11 +478,11 @@ body::before{
           <b id="familiarLiveTitle">Raven Not Summoned</b>
           <div id="familiarLiveText" class="sub mt8">Cast Find Familiar to bring Raven into play.</div>
         </div>
-        <span id="familiarLiveBadge" class="v28-test-badge">Inactive</span>
+        <span id="familiarLiveBadge" class="ui-state-badge">Inactive</span>
       </div>
     </div>
     <div id="battleFamiliarCard" class="card battle-mode-card mt12 hidden">
-      <div class="row between"><div><div class="kicker">Battle Familiar Active</div><div id="battleFamiliarTitle" class="mid mt8"></div></div><span class="v28-test-badge">Battle</span></div>
+      <div class="row between"><div><div class="kicker">Battle Familiar Active</div><div id="battleFamiliarTitle" class="mid mt8"></div></div><span class="ui-state-badge">Battle</span></div>
       <div id="battleFamiliarTempWrap" class="notice premium-battle-temp mt12"><b>Battle Temp HP</b><div id="battleFamiliarTempText" class="sub mt4"></div></div>
       <div id="battleFamiliarStats" class="sub mt12"></div>
       <div id="battleFamiliarFeature" class="notice mt12"></div>
@@ -939,7 +939,7 @@ body::before{
           <b>Cast Spell</b>
           <div id="spellCastNote" class="sub mt8"></div>
         </div>
-        <span class="v28-test-badge">v2.8 Test</span>
+        
       </div>
       <div id="battleFamiliarChoiceWrap" class="notice mt12 hidden">
         <b>Battle Familiar Form</b>
