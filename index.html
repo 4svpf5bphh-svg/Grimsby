@@ -6,53 +6,248 @@
 <title>Grimsby Companion</title>
 <style>
 :root{
-  --bg:#f6f7f8; --card:#fff; --text:#14171a; --muted:#6b7280; --line:#e5e7eb;
-  --accent:#e8f1ef; --accent-line:#b9d3cd; --danger:#fcecec;
+  --bg:#f4f6f8; --bg-grad-top:#fbfcfd; --bg-grad-bot:#edf2f6;
+  --card:#ffffff; --text:#101418; --muted:#667085; --line:#e4e7ec;
+  --accent:#e8f2ef; --accent-line:#bfd8d1; --danger:#fdf1f1;
+  --shadow-sm:0 6px 18px rgba(16,24,40,.05);
+  --shadow-md:0 14px 34px rgba(16,24,40,.08);
+  --shadow-lg:0 20px 50px rgba(16,24,40,.10);
+  --radius-card:22px; --radius-btn:18px;
+  --ease-premium:cubic-bezier(.22,.9,.24,1);
 }
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-.app{max-width:480px;margin:0 auto;min-height:100vh;padding-top:calc(16px + env(safe-area-inset-top));padding-right:calc(16px + env(safe-area-inset-right));padding-bottom:calc(90px + env(safe-area-inset-bottom));padding-left:calc(16px + env(safe-area-inset-left))}
-.screen{display:none}.screen.active{display:block}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{background:linear-gradient(180deg,var(--bg-grad-top),var(--bg-grad-bot))}
+body{margin:0;background:linear-gradient(180deg,var(--bg-grad-top),var(--bg-grad-bot));color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.app{max-width:480px;margin:0 auto;min-height:100vh;padding-top:calc(16px + env(safe-area-inset-top));padding-right:calc(16px + env(safe-area-inset-right));padding-bottom:calc(92px + env(safe-area-inset-bottom));padding-left:calc(16px + env(safe-area-inset-left))}
+.screen{display:none;opacity:0;transform:translateY(10px) scale(.992)}
+.screen.active{display:block;opacity:1;transform:none}
+.screen.screen-enter-forward{animation:screenForward .28s var(--ease-premium) both}
+.screen.screen-enter-back{animation:screenBack .24s var(--ease-premium) both}
+.screen.screen-enter-fade{animation:screenFade .20s ease-out both}
+@keyframes screenForward{from{opacity:0;transform:translateX(18px) scale(.992)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes screenBack{from{opacity:0;transform:translateX(-14px) scale(.996)}to{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes screenFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes premiumPulse{0%{transform:scale(1)}40%{transform:scale(1.018)}100%{transform:scale(1)}}
+@keyframes premiumGlow{0%{box-shadow:var(--shadow-sm)}50%{box-shadow:0 16px 40px rgba(30,94,80,.14)}100%{box-shadow:var(--shadow-sm)}}
 .row{display:flex;align-items:center;gap:12px}.between{justify-content:space-between}
-.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+.card{background:rgba(255,255,255,.94);backdrop-filter:blur(14px);border:1px solid rgba(228,231,236,.92);border-radius:var(--radius-card);padding:16px;box-shadow:var(--shadow-sm);transition:transform .18s var(--ease-premium), box-shadow .18s var(--ease-premium), border-color .18s var(--ease-premium)}
 button{font:inherit;color:inherit;cursor:pointer}
-.btn{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-height:48px}
-.btn.accent{background:var(--accent);border-color:var(--accent-line)}
-.btn.danger{background:var(--danger)}
+.btn{background:linear-gradient(180deg,#ffffff,#fafbfc);border:1px solid var(--line);border-radius:var(--radius-btn);padding:14px 16px;min-height:48px;box-shadow:0 4px 10px rgba(16,24,40,.04);transition:transform .16s var(--ease-premium), box-shadow .16s var(--ease-premium), border-color .16s var(--ease-premium), background .16s var(--ease-premium)}
+.btn:active{transform:scale(.985)}
+.btn.accent{background:linear-gradient(180deg,#edf6f3,#e2f0ec);border-color:var(--accent-line);box-shadow:0 8px 18px rgba(53,108,92,.10)}
+.btn.danger{background:linear-gradient(180deg,#fff8f8,#fdf0f0)}
 .full{width:100%}
-.title{font-size:26px;font-weight:800}.sub{font-size:14px;color:var(--muted)}
-.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
-.big{font-size:32px;font-weight:800}.mid{font-size:20px;font-weight:750}
+.title{font-size:26px;font-weight:830;letter-spacing:-.02em}.sub{font-size:14px;color:var(--muted);line-height:1.4}
+.kicker{font-size:11px;letter-spacing:.10em;text-transform:uppercase;color:var(--muted);font-weight:800}
+.big{font-size:32px;font-weight:830;letter-spacing:-.03em}.mid{font-size:20px;font-weight:780;letter-spacing:-.02em}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.stat{text-align:center;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:16px}
-.status{margin-top:12px;display:none;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:13px}
+.stat{text-align:center;padding:14px;background:linear-gradient(180deg,#ffffff,#fbfcfd);border:1px solid rgba(228,231,236,.95);border-radius:18px;box-shadow:var(--shadow-sm)}
+.status{margin-top:12px;display:none;gap:8px;flex-wrap:wrap}.chip{padding:7px 10px;border:1px solid rgba(228,231,236,.95);border-radius:999px;background:rgba(255,255,255,.96);font-size:13px;box-shadow:0 2px 8px rgba(16,24,40,.03)}
 .status.show{display:flex}
-.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,255,255,.97);border-top:1px solid var(--line);padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));z-index:50}
-.nav button{border:0;background:transparent;padding:10px 4px;font-size:12px;border-radius:12px}
-.nav button.active{background:var(--accent);font-weight:700}
+.nav{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(480px,100%);display:grid;grid-template-columns:repeat(5,1fr);background:rgba(255,255,255,.88);backdrop-filter:blur(18px);border-top:1px solid rgba(228,231,236,.90);box-shadow:0 -10px 30px rgba(16,24,40,.08);padding:8px max(8px,env(safe-area-inset-right)) calc(8px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left));z-index:50}
+.nav button{border:0;background:transparent;padding:10px 4px;font-size:12px;border-radius:14px;transition:background .16s ease, transform .16s ease, color .16s ease}
+.nav button.active{background:linear-gradient(180deg,#edf6f3,#e3f1ec);font-weight:760;box-shadow:inset 0 0 0 1px rgba(191,216,209,.9)}
 .hidden{display:none!important}
 .list{display:flex;flex-direction:column;gap:10px}
-.back{border:0;background:transparent;font-size:28px;padding:4px 10px 4px 0}
-input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px solid var(--line);font-size:22px;background:#fff}
-.sep{height:1px;background:var(--line);margin:14px 0}
+.back{border:1px solid rgba(228,231,236,.95);background:rgba(255,255,255,.88);font-size:26px;padding:4px 11px;border-radius:14px;box-shadow:0 4px 10px rgba(16,24,40,.04)}
+input[type=number],input[type=text],textarea,select{width:100%;padding:14px 16px;border-radius:16px;border:1px solid var(--line);font-size:16px;background:#fff;box-shadow:inset 0 1px 2px rgba(16,24,40,.03);transition:border-color .16s ease, box-shadow .16s ease}
+input[type=number]{font-size:22px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent-line);box-shadow:0 0 0 4px rgba(191,216,209,.28)}
+.sep{height:1px;background:linear-gradient(90deg,transparent,#e6eaef,transparent);margin:14px 0}
 .muted{color:var(--muted)} .mt8{margin-top:8px}.mt12{margin-top:12px}.mt16{margin-top:16px}.mt20{margin-top:20px}
-.form-active{border-color:var(--accent-line);background:var(--accent)}
-.notice{padding:12px 14px;border-radius:14px;background:#eef5f3;border:1px solid #cfe1dc;font-size:14px}
+.form-active{border-color:var(--accent-line)!important;background:linear-gradient(180deg,#edf6f3,#e6f3ef)!important;animation:premiumGlow .45s ease-out}
+.notice{padding:12px 14px;border-radius:16px;background:linear-gradient(180deg,#f3f8f7,#eef5f3);border:1px solid #d7e6e1;font-size:14px;box-shadow:0 4px 12px rgba(53,108,92,.05)}
 .small{font-size:13px}
-.home-summary{display:grid;grid-template-columns:minmax(126px,40%) 1fr;gap:12px;align-items:stretch;margin-top:14px}
-.home-portrait{width:100%;height:100%;min-height:278px;object-fit:cover;object-position:56% 24%;border-radius:18px;border:1px solid var(--line);background:#17201d}
-.home-overview{padding:15px 14px;min-height:278px}
-.overview-section{margin-top:15px}
+.home-summary{display:grid;grid-template-columns:minmax(134px,40%) 1fr;gap:14px;align-items:stretch;margin-top:14px}
+.home-portrait{width:100%;height:100%;min-height:286px;object-fit:cover;object-position:56% 24%;border-radius:22px;border:1px solid rgba(228,231,236,.95);background:#17201d;box-shadow:var(--shadow-md)}
+.home-overview{padding:17px 15px;min-height:286px}
+.overview-section{margin-top:16px}
 .overview-section:first-of-type{margin-top:12px}
-.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
-.overview-item{display:flex;justify-content:space-between;gap:7px;border-bottom:1px solid #eef0f2;padding:4px 0;font-size:12.5px}
-.overview-label{font-weight:750}.overview-value{white-space:nowrap;font-weight:650}
-.overview-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;margin-top:8px}
+.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 13px}
+.overview-item{display:flex;justify-content:space-between;gap:7px;border-bottom:1px solid #eef0f2;padding:5px 0;font-size:12.6px}
+.overview-label{font-weight:760}.overview-value{white-space:nowrap;font-weight:670}
+.overview-meta{display:grid;grid-template-columns:1fr 1fr;gap:9px 13px;margin-top:8px}
 .overview-meta .overview-item{padding:5px 0}
-.overview-skills{display:grid;grid-template-columns:1fr 1fr;gap:7px 10px;margin-top:8px;font-size:11.5px;color:var(--muted);line-height:1.35}
-.overview-section-title{font-size:10px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:6px}
+.overview-skills{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;margin-top:8px;font-size:11.7px;color:var(--muted);line-height:1.35}
+.overview-section-title{font-size:10px;letter-spacing:.10em;text-transform:uppercase;color:var(--muted);font-weight:820;margin-bottom:6px}
+.premium-hero{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(247,250,252,.94))!important;box-shadow:var(--shadow-md)!important}
+.premium-emphasis{animation:premiumPulse .25s ease-out}
 @media(max-width:370px){.home-summary{grid-template-columns:116px 1fr;gap:10px}.home-portrait{min-height:292px}.home-overview{padding:13px 11px;min-height:292px}.overview-item{font-size:11.5px}.overview-skills{font-size:10.5px;gap:6px 7px}.overview-meta{gap:7px 8px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.screen{transform:none!important}}
+/* ===== v2.9 TEST 3 premium hierarchy ===== */
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:
+    radial-gradient(circle at 18% 2%,rgba(173,205,197,.18),transparent 34%),
+    radial-gradient(circle at 88% 36%,rgba(207,218,232,.18),transparent 31%);
+}
+.premium-page-head{padding:4px 2px 2px}
+.premium-page-head .title{text-shadow:0 1px 0 rgba(255,255,255,.9)}
+.premium-vitals{position:relative;overflow:hidden;background:linear-gradient(145deg,rgba(255,255,255,.99),rgba(246,250,249,.96))!important}
+.premium-vitals::after{content:"";position:absolute;right:-34px;top:-48px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(141,188,176,.13),transparent 67%);pointer-events:none}
+.premium-meter{height:6px;border-radius:999px;background:#edf0f2;overflow:hidden;margin-top:13px;box-shadow:inset 0 1px 2px rgba(16,24,40,.05)}
+.premium-meter-fill{height:100%;width:100%;border-radius:inherit;background:linear-gradient(90deg,#8fbeb2,#bfd8d1);transition:width .30s var(--ease-premium)}
+.premium-meter-fill.low{background:linear-gradient(90deg,#dd8c8c,#efb6b6)}
+.premium-meter-fill.mid{background:linear-gradient(90deg,#d6b36c,#ead59d)}
+.premium-action-primary{position:relative;overflow:hidden;background:linear-gradient(145deg,#eaf5f2,#dfeeea)!important;border-color:#bad7cf!important;box-shadow:0 12px 26px rgba(50,104,89,.12)!important}
+.premium-action-primary::after{content:"";position:absolute;inset:auto -22px -42px auto;width:98px;height:98px;border-radius:50%;background:rgba(255,255,255,.35);pointer-events:none}
+.premium-command{background:linear-gradient(145deg,#17221f,#25342f)!important;border-color:#263b34!important;color:white!important;box-shadow:0 14px 30px rgba(16,31,26,.16)!important}
+.premium-command .kicker,.premium-command .sub{color:rgba(255,255,255,.67)!important}
+.premium-resource-card{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(249,251,252,.96))}
+.premium-form-active{background:linear-gradient(145deg,#e6f3ef,#d9ebe6)!important;border-color:#aacfc5!important;box-shadow:0 14px 32px rgba(49,104,88,.14)!important}
+.premium-form-active .kicker{color:#4b7469}
+.familiar-state-card{transition:background .24s ease,border-color .24s ease,box-shadow .24s ease,transform .24s var(--ease-premium)}
+.familiar-state-card.state-active{background:linear-gradient(145deg,#f2f8f6,#eaf4f1);border-color:#c7dfd8;box-shadow:var(--shadow-sm)}
+.familiar-state-card.state-pocket{background:linear-gradient(145deg,#f5f4fa,#efedf7);border-color:#dcd7eb}
+.familiar-state-card.state-battle{background:linear-gradient(145deg,#17221f,#2b3c36);border-color:#30483f;color:white;box-shadow:0 16px 34px rgba(18,38,31,.18)}
+.familiar-state-card.state-battle .sub{color:rgba(255,255,255,.72)}
+.familiar-state-card.state-battle .v28-test-badge{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.22);color:white}
+.battle-mode-card{position:relative;overflow:hidden;background:linear-gradient(150deg,#f2f8f6,#e5f2ee)!important;border-color:#bad8cf!important;box-shadow:0 15px 34px rgba(49,104,88,.13)!important}
+.battle-mode-card::before{content:"";position:absolute;top:-70px;right:-62px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(89,145,128,.18),transparent 68%);pointer-events:none}
+.premium-battle-temp{background:linear-gradient(145deg,#e2f0ec,#d6e9e3)!important;border-color:#b7d6cd!important}
+.premium-movement .chip{background:linear-gradient(180deg,#fff,#f8fafb)}
+.premium-stat{box-shadow:0 8px 20px rgba(16,24,40,.06)}
+.premium-state-flash{animation:stateFlash .42s var(--ease-premium)}
+@keyframes stateFlash{0%{transform:scale(.985);filter:brightness(.98)}55%{transform:scale(1.012);filter:brightness(1.02)}100%{transform:scale(1);filter:brightness(1)}}
+@media(prefers-reduced-motion:reduce){.premium-state-flash{animation:none!important}}
+/* ===== v2.9 TEST 4 premium completion ===== */
+.premium-character-pb{background:linear-gradient(145deg,#17221f,#2b3c36)!important;color:white;border-color:#30483f!important;box-shadow:0 10px 24px rgba(18,38,31,.15)!important}
+.premium-character-pb .kicker{color:rgba(255,255,255,.62)}
+.premium-character-tile{position:relative;overflow:hidden;min-height:116px;background:linear-gradient(145deg,#fff,#f8fafb)!important;box-shadow:var(--shadow-sm)!important}
+.premium-character-tile::after{content:'›';position:absolute;right:15px;bottom:12px;font-size:23px;color:#a4acb7;transition:transform .18s var(--ease-premium)}
+.premium-character-tile:active::after{transform:translateX(2px)}
+.premium-character-tile .mid{font-size:19px}
+.premium-link-row{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(249,251,252,.96))!important;box-shadow:0 5px 15px rgba(16,24,40,.045)!important}
+.premium-link-row span:last-child{font-size:21px;color:#98a2b3}
+.premium-progress-link{background:linear-gradient(145deg,#eaf5f2,#dcece7)!important;border-color:#b7d5cc!important;box-shadow:0 12px 26px rgba(50,104,89,.11)!important}
+
+.premium-prepared-stat{background:linear-gradient(145deg,#17221f,#2a3a35)!important;color:white;border-color:#30463f!important;box-shadow:0 10px 24px rgba(18,38,31,.14)!important}
+.premium-prepared-stat .kicker,.premium-prepared-stat .sub{color:rgba(255,255,255,.64)}
+.premium-slot-card{background:linear-gradient(145deg,#fff,#f7faf9)!important;border-color:#dce8e4!important;box-shadow:var(--shadow-md)!important}
+.premium-slot-row{padding:3px 0;border-radius:14px;transition:background .18s ease,transform .18s var(--ease-premium)}
+.premium-slot-level{min-width:0;flex:1}
+.premium-slot-pips{display:flex;gap:5px;align-items:center;margin-top:8px;min-height:10px}
+.premium-slot-pip{width:9px;height:9px;border-radius:50%;border:1px solid #b9c3ca;background:#fff;box-shadow:inset 0 1px 2px rgba(16,24,40,.04);transition:transform .2s var(--ease-premium),background .2s ease,border-color .2s ease}
+.premium-slot-pip.filled{background:#7eac9f;border-color:#7eac9f;box-shadow:0 2px 5px rgba(73,130,113,.18)}
+.premium-slot-created{font-size:10px;font-weight:800;color:#4f776c;border:1px solid #c3ddd6;background:#edf6f3;border-radius:999px;padding:3px 7px;margin-left:3px}
+.premium-slot-flash{animation:slotPulse .34s var(--ease-premium)}
+@keyframes slotPulse{0%{transform:scale(.985);background:rgba(223,239,234,.15)}55%{transform:scale(1.01);background:rgba(223,239,234,.72)}100%{transform:scale(1);background:transparent}}
+.premium-search-card{position:sticky;top:calc(4px + env(safe-area-inset-top));z-index:15;background:rgba(255,255,255,.90)!important;backdrop-filter:blur(16px);box-shadow:0 10px 26px rgba(16,24,40,.07)!important}
+#spellFilters{scrollbar-width:none}.premium-search-card #spellFilters::-webkit-scrollbar{display:none}
+#spellFilters .chip{white-space:nowrap;transition:transform .16s var(--ease-premium),background .16s ease,border-color .16s ease,box-shadow .16s ease}
+#spellFilters .chip:active{transform:scale(.96)}
+.spell-card{position:relative;overflow:hidden;transition:transform .18s var(--ease-premium),border-color .18s ease,background .18s ease,box-shadow .18s ease}
+.spell-card.prepared-state{border-color:#c3dcd5;background:linear-gradient(145deg,#fff,#f3f8f6);box-shadow:0 8px 22px rgba(50,104,89,.07)}
+.spell-card.granted-state{border-color:#d9dee6;background:linear-gradient(145deg,#fff,#f8f9fc)}
+.spell-card.spell-state-flash{animation:spellStatePulse .32s var(--ease-premium)}
+@keyframes spellStatePulse{0%{transform:scale(.985)}55%{transform:scale(1.008)}100%{transform:scale(1)}}
+.premium-spell-familiar{background:linear-gradient(145deg,#f6f8fb,#f0f4f7)!important}
+
+.premium-more-head{margin-bottom:2px}
+.premium-more-link{min-height:70px}
+.premium-more-link b{font-size:15.5px}
+.premium-more-utility{background:linear-gradient(180deg,#fff,#fafbfc)!important}
+.premium-more-safety{background:linear-gradient(145deg,#f6f8fb,#f2f5f8)!important;border-color:#dfe4ea!important}
+
+#premiumToast{position:fixed;left:50%;bottom:calc(82px + env(safe-area-inset-bottom));transform:translate(-50%,18px) scale(.98);width:min(410px,calc(100% - 32px));padding:12px 15px;border-radius:16px;background:rgba(20,27,25,.94);backdrop-filter:blur(14px);color:white;font-size:13px;font-weight:650;line-height:1.35;box-shadow:0 16px 38px rgba(16,24,40,.22);opacity:0;pointer-events:none;z-index:130;transition:opacity .2s ease,transform .25s var(--ease-premium)}
+#premiumToast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+
+#premiumTransformVeil{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:30px;background:rgba(13,22,19,.10);backdrop-filter:blur(0px);opacity:0;pointer-events:none;z-index:120;transition:opacity .18s ease,backdrop-filter .3s ease}
+#premiumTransformVeil.show{opacity:1;backdrop-filter:blur(5px)}
+.premium-transform-core{width:min(320px,84vw);padding:28px 22px 25px;text-align:center;border:1px solid rgba(255,255,255,.28);border-radius:28px;background:linear-gradient(145deg,rgba(23,34,31,.94),rgba(45,65,58,.92));box-shadow:0 30px 70px rgba(10,22,17,.30);color:white;transform:scale(.91) translateY(12px);opacity:0;transition:transform .34s var(--ease-premium),opacity .22s ease}
+#premiumTransformVeil.show .premium-transform-core{transform:scale(1) translateY(0);opacity:1}
+.premium-moon-ring{width:54px;height:54px;border-radius:50%;margin:0 auto 14px;border:2px solid rgba(219,239,233,.82);box-shadow:0 0 0 8px rgba(185,216,207,.08),0 0 28px rgba(185,216,207,.16);position:relative}
+.premium-moon-ring::after{content:'';position:absolute;width:44px;height:44px;border-radius:50%;left:11px;top:-3px;background:#253a33}
+.premium-transform-kicker{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.60);font-weight:850}
+#premiumTransformName{font-size:24px;font-weight:820;letter-spacing:-.025em;margin-top:6px}
+#premiumTransformSub{font-size:12px;color:rgba(255,255,255,.66);margin-top:7px}
+
+@media(prefers-reduced-motion:reduce){#premiumToast,#premiumTransformVeil,.premium-transform-core{transition:none!important}.premium-slot-flash,.spell-card.spell-state-flash{animation:none!important}}
+/* ===== v2.9 TEST 5 native app shell ===== */
+.ui-sprite{position:absolute;width:0;height:0;overflow:hidden}
+.ui-icon{width:20px;height:20px;display:inline-block;flex:0 0 auto;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px}
+.ui-icon.sm{width:17px;height:17px}.ui-icon.lg{width:23px;height:23px}
+.ui-icon-wrap{width:34px;height:34px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;background:rgba(232,242,239,.85);color:#52786e;border:1px solid rgba(191,216,209,.82);flex:0 0 auto}
+.ui-card-kicker{display:flex;align-items:center;gap:7px;color:#63746f}
+.ui-card-kicker .kicker{color:inherit}
+.premium-inline-heading{display:flex;align-items:center;gap:8px}
+.premium-inline-heading .ui-icon{color:#5d8177}
+
+.app{padding-bottom:calc(122px + env(safe-area-inset-bottom))}
+.nav{
+  bottom:calc(8px + env(safe-area-inset-bottom));
+  width:min(460px,calc(100% - 20px));
+  padding:7px;
+  border:1px solid rgba(220,225,231,.88);
+  border-radius:24px;
+  background:rgba(250,252,252,.84);
+  backdrop-filter:blur(22px) saturate(1.15);
+  box-shadow:0 18px 42px rgba(16,24,40,.16),0 1px 0 rgba(255,255,255,.86) inset;
+  overflow:hidden
+}
+.nav button{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-height:52px;padding:6px 3px;border-radius:17px;font-size:10px;font-weight:650;color:#79818b;
+  transition:transform .18s var(--ease-premium),background .18s ease,color .18s ease,box-shadow .18s ease
+}
+.nav button .ui-icon{width:20px;height:20px;transition:transform .2s var(--ease-premium),stroke-width .2s ease}
+.nav button .nav-label{line-height:1}
+.nav button.active{
+  color:#315f53;background:linear-gradient(180deg,rgba(233,245,241,.98),rgba(222,239,234,.94));
+  font-weight:790;box-shadow:0 6px 15px rgba(49,104,88,.10),inset 0 0 0 1px rgba(184,214,205,.88)
+}
+.nav button.active .ui-icon{transform:translateY(-1px) scale(1.08);stroke-width:2}
+.nav button:active{transform:scale(.97)}
+
+.premium-detail-head{
+  min-height:48px;padding:2px 1px 8px;margin-bottom:2px;
+  border-bottom:1px solid rgba(228,231,236,.72)
+}
+.premium-detail-head .title{font-weight:820;letter-spacing:-.018em}
+.back{
+  width:36px;height:36px;min-width:36px;display:inline-flex;align-items:center;justify-content:center;padding:0;
+  border-radius:12px;background:rgba(255,255,255,.82);backdrop-filter:blur(10px)
+}
+.back .ui-icon{width:19px;height:19px}
+.back:active{transform:scale(.94)}
+
+.premium-key-card{position:relative;overflow:hidden}
+.premium-key-card .ui-card-kicker{margin-bottom:3px}
+.premium-key-card::before{
+  content:"";position:absolute;width:72px;height:72px;border-radius:50%;right:-36px;top:-38px;
+  background:radial-gradient(circle,rgba(133,177,166,.12),transparent 70%);pointer-events:none
+}
+
+.premium-character-tile .tile-icon{margin-bottom:10px}
+.premium-character-tile .tile-icon .ui-icon{width:21px;height:21px}
+.premium-more-link .ui-icon-wrap{margin-right:1px}
+.premium-progress-link .ui-icon-wrap{background:rgba(255,255,255,.62);border-color:rgba(163,202,191,.86)}
+
+.value-motion{display:inline-block;transform-origin:center}
+.value-pop-up{animation:valuePopUp .30s var(--ease-premium)}
+.value-pop-down{animation:valuePopDown .30s var(--ease-premium)}
+.value-pop-neutral{animation:valuePopNeutral .26s var(--ease-premium)}
+@keyframes valuePopUp{0%{opacity:.45;transform:translateY(5px) scale(.96)}55%{opacity:1;transform:translateY(-2px) scale(1.045)}100%{transform:none}}
+@keyframes valuePopDown{0%{opacity:.45;transform:translateY(-4px) scale(.98)}55%{opacity:1;transform:translateY(2px) scale(1.035)}100%{transform:none}}
+@keyframes valuePopNeutral{0%{opacity:.55;transform:scale(.96)}55%{opacity:1;transform:scale(1.04)}100%{transform:none}}
+
+.status .chip.has-icon{display:inline-flex;align-items:center;gap:6px}
+.status .chip.has-icon .ui-icon{width:14px;height:14px;color:#5f7f76}
+.status .chip.has-icon.condition-icon .ui-icon{color:#786f8c}
+
+#hpCard .hp-icon{color:#9d6666}
+#hpCard .shield-icon{color:#627b91}
+#restCard .ui-icon-wrap{background:#f3f1f8;border-color:#ded8ea;color:#756d89}
+#famCard .ui-icon-wrap{background:#f2f5f8;border-color:#dae1e8;color:#657887}
+
+@media(prefers-reduced-motion:reduce){
+  .value-pop-up,.value-pop-down,.value-pop-neutral{animation:none!important}
+  .nav button,.nav button .ui-icon,.back{transition:none!important}
+}
+
+
+
 
 /* ===== v2.8 TEST gameplay layer ===== */
 .v28-test-badge{display:inline-flex;align-items:center;border:1px solid var(--line);border-radius:999px;padding:4px 8px;font-size:10px;font-weight:850;letter-spacing:.08em;text-transform:uppercase;background:#fff}
@@ -64,21 +259,19 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 .v28-spell-option .right{font-size:18px;opacity:.55}
 .v28-spell-meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
 .v28-mini-chip{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:2px 6px;font-size:10px;font-weight:750;background:#fff}
-.v28-action-group{border:1px solid var(--line);border-radius:16px;background:#fff;margin-top:10px;overflow:hidden}
-.v28-action-group summary{list-style:none;cursor:pointer;padding:13px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:850}
+.v28-action-group{border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.95);margin-top:10px;overflow:hidden;box-shadow:var(--shadow-sm)}
+.v28-action-group summary{list-style:none;cursor:pointer;padding:14px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:850}
 .v28-action-group summary::-webkit-details-marker{display:none}
-.v28-action-group summary:after{content:'›';font-size:21px;opacity:.55;transform:rotate(0deg);transition:transform .15s ease}
+.v28-action-group summary:after{content:'›';font-size:21px;opacity:.55;transform:rotate(0deg);transition:transform .16s ease}
 .v28-action-group[open] summary:after{transform:rotate(90deg)}
-.v28-action-group-body{padding:0 12px 12px}
+.v28-action-group-body{padding:0 12px 12px;animation:screenFade .18s ease-out}
 .v28-action-summary{font-size:11px;font-weight:650;opacity:.62;margin-top:3px}
-.v28-inline-option{border:1px solid var(--line);border-radius:14px;padding:10px 11px;background:#fff;margin-top:8px}
-
-
+.v28-inline-option{border:1px solid var(--line);border-radius:15px;padding:10px 11px;background:#fff;margin-top:8px;box-shadow:0 2px 8px rgba(16,24,40,.03)}
 .v28-log{max-height:390px;overflow:auto}
-.v28-log-row{padding:10px 0;border-bottom:1px solid #eef0f2;font-size:12px;line-height:1.4}
-.v28-conc-check{border:1px solid var(--line);border-radius:16px;padding:13px;background:#fff}
+.v28-log-row{padding:10px 0;border-bottom:1px solid #eef0f2;font-size:12px;line-height:1.45}
+.v28-conc-check{border:1px solid var(--line);border-radius:18px;padding:13px;background:#fff;box-shadow:var(--shadow-sm)}
 .v28-cast-grid{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
-.v28-cast-grid select{width:100%;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#fff;font-size:15px}
+.v28-cast-grid select{width:100%;padding:12px 14px;border-radius:16px;border:1px solid var(--line);background:#fff;font-size:15px}
 
 </style>
 <link rel="manifest" href="manifest.webmanifest">
@@ -90,6 +283,32 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 
 </head>
 <body>
+
+<svg class="ui-sprite" aria-hidden="true" focusable="false">
+  <symbol id="ui-home" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/></symbol>
+  <symbol id="ui-character" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c.8-4.2 3.2-6.5 7.5-6.5s6.7 2.3 7.5 6.5"/></symbol>
+  <symbol id="ui-combat" viewBox="0 0 24 24"><path d="m14.5 4.5 5-2-2 5-9.5 9.5-3 1 1-3Z"/><path d="m13 6 5 5"/><path d="M5 21 3 19l5-5"/></symbol>
+  <symbol id="ui-spells" viewBox="0 0 24 24"><path d="M4 5.5A3.5 3.5 0 0 1 7.5 2H20v17H7.5A3.5 3.5 0 0 0 4 22Z"/><path d="M4 5.5V22"/><path d="m12 6 .7 1.8L14.5 8.5l-1.8.7L12 11l-.7-1.8-1.8-.7 1.8-.7Z"/></symbol>
+  <symbol id="ui-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></symbol>
+  <symbol id="ui-heart" viewBox="0 0 24 24"><path d="M20.8 5.8c-2.1-2.2-5.6-2.2-7.7 0L12 7l-1.1-1.2a5.4 5.4 0 0 0-7.7 7.6L12 22l8.8-8.6a5.4 5.4 0 0 0 0-7.6Z"/></symbol>
+  <symbol id="ui-shield" viewBox="0 0 24 24"><path d="M12 2 20 5v6c0 5.2-3.2 9.1-8 11-4.8-1.9-8-5.8-8-11V5Z"/></symbol>
+  <symbol id="ui-moon" viewBox="0 0 24 24"><path d="M20.5 15.4A8.7 8.7 0 0 1 8.6 3.5 9 9 0 1 0 20.5 15.4Z"/></symbol>
+  <symbol id="ui-bird" viewBox="0 0 24 24"><path d="M4 15c4-1 5-5 8-7 2-1.3 4.5-.9 6 1-1.8.3-3 .9-4 2 2 .1 4 .9 6 2-2 1.4-4 2-6 2.2-1.4 3.1-4.5 4.8-9 4.8 2-1.3 3.2-3 3.6-5.1C7 15.4 5.5 15.5 4 15Z"/></symbol>
+  <symbol id="ui-rest" viewBox="0 0 24 24"><path d="M20.5 15.4A8.7 8.7 0 0 1 8.6 3.5 9 9 0 1 0 20.5 15.4Z"/><path d="M16.5 3.5h4M18.5 1.5v4"/></symbol>
+  <symbol id="ui-bolt" viewBox="0 0 24 24"><path d="m13.5 2-8 12h6L10.5 22l8-12h-6Z"/></symbol>
+  <symbol id="ui-dice" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1"/><circle cx="16" cy="8" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="8" cy="16" r="1"/><circle cx="16" cy="16" r="1"/></symbol>
+  <symbol id="ui-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></symbol>
+  <symbol id="ui-star" viewBox="0 0 24 24"><path d="m12 2.5 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.1l6.2-.9Z"/></symbol>
+  <symbol id="ui-note" viewBox="0 0 24 24"><path d="M5 3h14v18H5Z"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+  <symbol id="ui-history" viewBox="0 0 24 24"><path d="M4 7V3m0 0h4M4 3l3.2 3.2A8 8 0 1 1 5 15"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="ui-backup" viewBox="0 0 24 24"><path d="M4 6h16v14H4Z"/><path d="M8 6V3h8v3M8 14h8M12 10v8"/></symbol>
+  <symbol id="ui-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></symbol>
+  <symbol id="ui-checks" viewBox="0 0 24 24"><path d="m4 7 2 2 4-4M12 7h8M4 13l2 2 4-4M12 13h8M4 19l2 2 4-4M12 19h8"/></symbol>
+  <symbol id="ui-spark" viewBox="0 0 24 24"><path d="m12 2 1.4 4.6L18 8l-4.6 1.4L12 14l-1.4-4.6L6 8l4.6-1.4Z"/><path d="m18.5 14 .8 2.7L22 17.5l-2.7.8-.8 2.7-.8-2.7-2.7-.8 2.7-.8Z"/></symbol>
+  <symbol id="ui-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5h.01"/></symbol>
+  <symbol id="ui-chevron-left" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></symbol>
+</svg>
+
 <noscript>
   <div style="max-width:480px;margin:40px auto;padding:20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">
     <h2>Grimsby Companion</h2>
@@ -98,22 +317,22 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 </noscript>
 <div class="app">
   <section id="home" class="screen active">
-    <div class="row between">
+    <div class="row between premium-page-head">
       <div><div class="title">Grimsby</div><div id="homeIdentity" class="sub">Level 5 Orc • Circle of the Moon Druid</div></div>
       <button id="inspirationBtn" class="btn" style="min-width:54px;padding:10px">★</button>
     </div>
 
     <div id="dynamicStatus" class="status"></div>
 
-    <div id="hpCard" class="card full mt16" style="text-align:left;cursor:pointer">
+    <div id="hpCard" class="card premium-hero premium-vitals full mt16" style="text-align:left;cursor:pointer">
       <div class="row between">
         <div>
-          <div class="kicker">Hit Points</div>
+          <div class="premium-inline-heading"><span class="ui-icon-wrap hp-icon"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-heart"></use></svg></span><div class="kicker">Hit Points</div></div>
           <div class="mt8"><span id="homeHp" class="big">43</span><span id="homeHpMax" class="muted"> / 43</span></div>
           <div id="homeTempWrap" class="sub hidden">+ <span id="homeTemp">0</span> Temp HP</div>
         </div>
         <div style="text-align:right;min-width:86px">
-          <div class="kicker">AC</div>
+          <div class="premium-inline-heading" style="justify-content:flex-end"><span class="ui-icon-wrap shield-icon"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-shield"></use></svg></span><div class="kicker">AC</div></div>
           <div id="homeAc" class="big">16</div>
           <button id="shieldToggle" type="button"
             style="margin-top:4px;border:0;background:transparent;padding:2px 0;font-size:12px;color:var(--muted);font-weight:650">
@@ -121,23 +340,24 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
           </button>
         </div>
       </div>
+      <div class="premium-meter"><div id="homeHpMeter" class="premium-meter-fill"></div></div>
     </div>
 
     <div class="grid2 mt12">
-      <button id="wildCard" class="btn accent" style="text-align:left">
-        <div class="kicker">Wild Shape</div>
+      <button id="wildCard" class="btn accent premium-hero premium-key-card" style="text-align:left">
+        <div class="ui-card-kicker"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-moon"></use></svg></span><div class="kicker">Wild Shape</div></div>
         <div id="wildCardTitle" class="mid mt8">Transform</div>
         <div id="wildCardSub" class="sub mt8">2 / 2 uses</div>
       </button>
-      <button id="famCard" class="btn" style="text-align:left">
-        <div class="kicker">Familiar</div>
+      <button id="famCard" class="btn premium-hero premium-key-card" style="text-align:left">
+        <div class="ui-card-kicker"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-bird"></use></svg></span><div class="kicker">Familiar</div></div>
         <div class="mid mt8">Raven</div>
         <div id="homeFamiliarHp" class="sub mt8">11 / 11 HP</div>
       </button>
     </div>
 
-    <button id="restCard" class="btn full mt12" style="text-align:left">
-      <div class="row between"><div><b>Rest</b><div class="sub mt8">Short or Long Rest</div></div><span>›</span></div>
+    <button id="restCard" class="btn premium-hero premium-key-card full mt12" style="text-align:left">
+      <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-rest"></use></svg></span><div><b>Rest</b><div class="sub mt8">Short or Long Rest</div></div></div><span>›</span></div>
     </button>
 
     <div class="home-summary">
@@ -242,17 +462,17 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
   </section>
 
   <section id="familiar" class="screen">
-    <div class="row"><button class="back" data-back="home">‹</button><div><div class="title" style="font-size:22px">Raven</div><div class="sub">Familiar • Familiar Friend</div></div></div>
+    <div class="row premium-page-head"><button class="back" data-back="home">‹</button><div><div class="title" style="font-size:22px">Raven</div><div class="sub">Familiar • Familiar Friend</div></div></div>
     <div class="grid2 mt16">
-      <div class="stat"><div class="kicker">HP</div><div class="mid"><span id="familiarHp">12</span><span id="familiarHpMax" class="sub"> / 12</span></div></div>
-      <div class="stat"><div class="kicker">AC</div><div id="familiarAc" class="mid">12</div></div>
+      <div class="stat premium-stat"><div class="kicker">HP</div><div class="mid"><span id="familiarHp">12</span><span id="familiarHpMax" class="sub"> / 12</span></div></div>
+      <div class="stat premium-stat"><div class="kicker">AC</div><div id="familiarAc" class="mid">12</div></div>
     </div>
-    <div class="card mt12">
+    <div class="card premium-movement mt12">
       <div class="kicker">Movement</div>
       <div id="familiarMovementChips" class="status show mt8"></div>
     </div>
 
-    <div id="familiarLiveCard" class="notice mt12">
+    <div id="familiarLiveCard" class="notice familiar-state-card mt12">
       <div class="row between">
         <div>
           <b id="familiarLiveTitle">Raven Not Summoned</b>
@@ -261,9 +481,9 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
         <span id="familiarLiveBadge" class="v28-test-badge">Inactive</span>
       </div>
     </div>
-    <div id="battleFamiliarCard" class="card mt12 hidden">
+    <div id="battleFamiliarCard" class="card battle-mode-card mt12 hidden">
       <div class="row between"><div><div class="kicker">Battle Familiar Active</div><div id="battleFamiliarTitle" class="mid mt8"></div></div><span class="v28-test-badge">Battle</span></div>
-      <div id="battleFamiliarTempWrap" class="notice mt12"><b>Battle Temp HP</b><div id="battleFamiliarTempText" class="sub mt4"></div></div>
+      <div id="battleFamiliarTempWrap" class="notice premium-battle-temp mt12"><b>Battle Temp HP</b><div id="battleFamiliarTempText" class="sub mt4"></div></div>
       <div id="battleFamiliarStats" class="sub mt12"></div>
       <div id="battleFamiliarFeature" class="notice mt12"></div>
       <button id="endBattleFamiliar" class="btn full mt12">Mark Battle Familiar Ended</button>
@@ -337,38 +557,38 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 
 
   <section id="character" class="screen">
-    <div class="row between">
+    <div class="row between premium-page-head">
       <div><div class="title">Character</div><div id="characterSubtitle" class="sub">Grimsby • Level 5 Druid</div></div>
-      <div class="stat" style="padding:10px 14px"><div class="kicker">PB</div><div id="characterPb" class="mid">+3</div></div>
+      <div class="stat premium-character-pb" style="padding:10px 14px"><div class="kicker">PB</div><div id="characterPb" class="mid">+3</div></div>
     </div>
 
     <div class="grid2 mt16">
-      <button class="btn" data-character-screen="abilities" style="text-align:left">
-        <div class="kicker">Core</div><div class="mid mt8">Abilities</div><div class="sub mt8">Scores & modifiers</div>
+      <button class="btn premium-character-tile" data-character-screen="abilities" style="text-align:left">
+        <div class="tile-icon ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-dice"></use></svg></div><div class="kicker">Core</div><div class="mid mt8">Abilities</div><div class="sub mt8">Scores & modifiers</div>
       </button>
-      <button class="btn" data-character-screen="skills" style="text-align:left">
-        <div class="kicker">Checks</div><div class="mid mt8">Skills & Saves</div><div class="sub mt8">Proficiencies included</div>
+      <button class="btn premium-character-tile" data-character-screen="skills" style="text-align:left">
+        <div class="tile-icon ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-checks"></use></svg></div><div class="kicker">Checks</div><div class="mid mt8">Skills & Saves</div><div class="sub mt8">Proficiencies included</div>
       </button>
-      <button class="btn" data-character-screen="attacks" style="text-align:left">
-        <div class="kicker">Combat</div><div class="mid mt8">Attacks</div><div class="sub mt8">Normal-form attacks</div>
+      <button class="btn premium-character-tile" data-character-screen="attacks" style="text-align:left">
+        <div class="tile-icon ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-combat"></use></svg></div><div class="kicker">Combat</div><div class="mid mt8">Attacks</div><div class="sub mt8">Normal-form attacks</div>
       </button>
-      <button class="btn" data-character-screen="features" style="text-align:left">
-        <div class="kicker">Rules</div><div class="mid mt8">Features & Feats</div><div class="sub mt8">Druid, Orc & feats</div>
+      <button class="btn premium-character-tile" data-character-screen="features" style="text-align:left">
+        <div class="tile-icon ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-star"></use></svg></div><div class="kicker">Rules</div><div class="mid mt8">Features & Feats</div><div class="sub mt8">Druid, Orc & feats</div>
       </button>
     </div>
 
     <div class="list mt12">
-      <button class="btn full" data-character-screen="wild" style="text-align:left">
-        <div class="row between"><div><b>Wild Shape Forms</b><div id="knownFormsSummary" class="sub mt8">6 known forms</div></div><span>›</span></div>
+      <button class="btn premium-link-row full" data-character-screen="wild" style="text-align:left">
+        <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-moon"></use></svg></span><div><b>Wild Shape Forms</b><div id="knownFormsSummary" class="sub mt8">6 known forms</div></div></div><span>›</span></div>
       </button>
-      <button class="btn full" data-character-screen="familiar" style="text-align:left">
-        <div class="row between"><div><b>Raven Familiar</b><div class="sub mt8">Open companion sheet</div></div><span>›</span></div>
+      <button class="btn premium-link-row full" data-character-screen="familiar" style="text-align:left">
+        <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-bird"></use></svg></span><div><b>Raven Familiar</b><div class="sub mt8">Open companion sheet</div></div></div><span>›</span></div>
       </button>
-      <button class="btn full" data-character-screen="details" style="text-align:left">
-        <div class="row between"><div><b>Character Details</b><div class="sub mt8">Species, background, class & equipment</div></div><span>›</span></div>
+      <button class="btn premium-link-row full" data-character-screen="details" style="text-align:left">
+        <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-character"></use></svg></span><div><b>Character Details</b><div class="sub mt8">Species, background, class & equipment</div></div></div><span>›</span></div>
       </button>
-      <button class="btn full" data-character-screen="languages" style="text-align:left">
-        <div class="row between"><div><b>Languages</b><div id="characterLanguageSummary" class="sub mt8">Common • Orc • Druidic • 1 choice open</div></div><span>›</span></div>
+      <button class="btn premium-link-row full" data-character-screen="languages" style="text-align:left">
+        <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-list"></use></svg></span><div><b>Languages</b><div id="characterLanguageSummary" class="sub mt8">Common • Orc • Druidic • 1 choice open</div></div></div><span>›</span></div>
       </button>
     </div>
   </section>
@@ -503,12 +723,12 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
   </section>
 
   <section id="combat" class="screen">
-    <div class="row between">
+    <div class="row between premium-page-head">
       <div><div class="title">Combat</div><div id="combatSubtitle" class="sub">Grimsby • Normal Form</div></div>
       <div class="stat" style="padding:10px 14px"><div class="kicker">Initiative</div><div id="combatInitiative" class="mid">+2</div></div>
     </div>
 
-    <div class="card mt16">
+    <div id="combatVitalsCard" class="card premium-vitals mt16">
       <div class="row between">
         <div>
           <div class="kicker">Hit Points</div>
@@ -524,19 +744,20 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
           </button>
         </div>
       </div>
+      <div class="premium-meter"><div id="combatHpMeter" class="premium-meter-fill"></div></div>
       <button id="combatHpBtn" class="btn full mt12">Manage HP</button>
     </div>
 
     <div id="combatShapeBanner" class="notice mt12 hidden"></div>
 
     <div class="grid2 mt12">
-      <button id="combatPrimaryAction" class="btn accent" style="text-align:left">
-        <div class="kicker">Primary Action</div>
+      <button id="combatPrimaryAction" class="btn accent premium-action-primary" style="text-align:left">
+        <div class="ui-card-kicker"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-combat"></use></svg><div class="kicker">Primary Action</div></div>
         <div id="combatPrimaryTitle" class="mid mt8">Quarterstaff</div>
         <div id="combatPrimarySub" class="sub mt8">View attack</div>
       </button>
       <button id="combatWildBtn" class="btn" style="text-align:left">
-        <div class="kicker">Wild Shape</div>
+        <div class="ui-card-kicker"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-moon"></use></svg><div class="kicker">Wild Shape</div></div>
         <div id="combatWildTitle" class="mid mt8">Transform</div>
         <div id="combatWildSub" class="sub mt8">2 / 2 uses</div>
       </button>
@@ -544,8 +765,8 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 
 
     <div class="mt12">
-      <button id="whatCanIDoBtn" class="btn full" style="text-align:left">
-        <div class="kicker">Turn Helper</div>
+      <button id="whatCanIDoBtn" class="btn premium-command full" style="text-align:left">
+        <div class="ui-card-kicker"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-spark"></use></svg><div class="kicker">Turn Helper</div></div>
         <div class="mid mt8">What Can I Do?</div>
       </button>
     </div>
@@ -561,7 +782,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       </div>
     </button>
 
-    <div class="card mt12">
+    <div class="card premium-resource-card mt12">
       <div class="row between"><div><b>Resources</b><div class="sub mt8">Wild Shape, Wild Resurgence & Orc traits</div></div><span id="combatWildUses" class="mid">2/2</span></div>
 
       <div class="sep"></div>
@@ -635,17 +856,17 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 
 
   <section id="spells" class="screen">
-    <div class="row between">
+    <div class="row between premium-page-head">
       <div><div class="title">Spells</div><div id="spellHeaderStats" class="sub">DC 15 • Spell Attack +7</div></div>
-      <div class="stat" style="padding:10px 14px"><div class="kicker">Prepared</div><div><span id="preparedCount" class="mid">0</span><span id="preparedCapLabel" class="sub"> / 9</span></div></div>
+      <div id="preparedStatCard" class="stat premium-prepared-stat" style="padding:10px 14px"><div class="kicker">Prepared</div><div><span id="preparedCount" class="mid">0</span><span id="preparedCapLabel" class="sub"> / 9</span></div></div>
     </div>
 
-    <div class="card mt16">
+    <div class="card premium-slot-card mt16">
       <div class="row between"><b>Spell Slots</b><span class="sub">Tap Use / Restore</span></div>
       <div id="slotTracker" class="list mt12"></div>
     </div>
 
-    <div class="card mt12">
+    <div class="card premium-spell-familiar mt12">
       <div class="row between">
         <div><b>Familiar Friend</b><div class="sub mt8">Find Familiar • free cast once per Long Rest</div></div>
         <button id="freeFamiliarCast" class="btn accent" style="min-width:92px">Cast Free</button>
@@ -653,7 +874,7 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
       <div id="familiarCastNote" class="sub mt8">Doesn't spend a spell slot or material components.</div>
     </div>
 
-    <div class="card mt12">
+    <div class="card premium-search-card mt12">
       <input id="spellSearch" type="search" placeholder="Search spells…"
         style="width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--line);font-size:16px;background:#fff">
       <div id="spellFilters" class="row mt12" style="overflow-x:auto;padding-bottom:2px">
@@ -738,70 +959,58 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
   </section>
 
   <section id="more" class="screen">
-    <div>
+    <div class="premium-page-head premium-more-head">
       <div class="title">More</div>
       <div class="sub">Utilities, notes & app controls</div>
     </div>
 
-    <button id="moreRest" class="btn full mt16" style="text-align:left">
-      <div class="row between">
-        <div>
+    <button id="moreRest" class="btn premium-more-link premium-link-row full mt16" style="text-align:left">
+      <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-rest"></use></svg></span><div>
           <b>Rest</b>
           <div class="sub mt8">Short Rest • Long Rest • restore resources</div>
-        </div>
-        <span>›</span>
+        </div></div><span>›</span>
       </div>
     </button>
 
-    <button id="moreLevelUp" class="btn accent full mt12" style="text-align:left">
-      <div class="row between"><div><b>Level Up</b><div id="levelUpSummary" class="sub mt8">Druid 5 → 6</div></div><span>›</span></div>
+    <button id="moreLevelUp" class="btn premium-more-link premium-progress-link full mt12" style="text-align:left">
+      <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-bolt"></use></svg></span><div><b>Level Up</b><div id="levelUpSummary" class="sub mt8">Druid 5 → 6</div></div></div><span>›</span></div>
     </button>
 
-    <button id="moreLevelHistory" class="btn full mt12" style="text-align:left">
-      <div class="row between"><div><b>Level History</b><div id="levelHistorySummary" class="sub mt8">Current level 5</div></div><span>›</span></div>
+    <button id="moreLevelHistory" class="btn premium-more-link premium-link-row full mt12" style="text-align:left">
+      <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-history"></use></svg></span><div><b>Level History</b><div id="levelHistorySummary" class="sub mt8">Current level 5</div></div></div><span>›</span></div>
     </button>
 
-    <button id="moreNotes" class="btn full mt12" style="text-align:left">
-      <div class="row between">
-        <div>
+    <button id="moreNotes" class="btn premium-more-link premium-link-row full mt12" style="text-align:left">
+      <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-note"></use></svg></span><div>
           <b>Adventure Notes</b>
           <div id="notesSummary" class="sub mt8">No notes yet</div>
-        </div>
-        <span>›</span>
+        </div></div><span>›</span>
       </div>
     </button>
 
-    <button id="moreQuickRef" class="btn full mt12" style="text-align:left">
-      <div class="row between">
-        <div>
+    <button id="moreQuickRef" class="btn premium-more-link premium-link-row full mt12" style="text-align:left">
+      <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-list"></use></svg></span><div>
           <b>Quick Reference</b>
           <div class="sub mt8">Actions, Bonus Actions, Reactions & key reminders</div>
-        </div>
-        <span>›</span>
+        </div></div><span>›</span>
       </div>
     </button>
 
-    <button id="moreSessionLog" class="btn full mt12" style="text-align:left">
-      <div class="row between">
-        <div><b>Session Log</b><div class="sub mt8">Wild Shape, spells, damage, rests & concentration checks</div></div>
-        <span>›</span>
+    <button id="moreSessionLog" class="btn premium-more-link premium-link-row full mt12" style="text-align:left">
+      <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-history"></use></svg></span><div><b>Session Log</b><div class="sub mt8">Wild Shape, spells, damage, rests & concentration checks</div></div></div><span>›</span>
       </div>
     </button>
 
-    <button id="moreBackup" class="btn full mt12" style="text-align:left">
-      <div class="row between">
-        <div><b>Backup & Restore</b><div class="sub mt8">Export or restore Grimsby's saved character state</div></div>
-        <span>›</span>
+    <button id="moreBackup" class="btn premium-more-link premium-more-safety full mt12" style="text-align:left">
+      <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-backup"></use></svg></span><div><b>Backup & Restore</b><div class="sub mt8">Export or restore Grimsby's saved character state</div></div></div><span>›</span>
       </div>
     </button>
 
-    <button id="moreSettings" class="btn full mt12" style="text-align:left">
-      <div class="row between">
-        <div>
+    <button id="moreSettings" class="btn premium-more-link premium-more-utility full mt12" style="text-align:left">
+      <div class="row between"><div class="row"><span class="ui-icon-wrap"><svg class="ui-icon sm" aria-hidden="true"><use href="#ui-settings"></use></svg></span><div>
           <b>Character & App Settings</b>
           <div class="sub mt8">Initiative modifier and character-management tools</div>
-        </div>
-        <span>›</span>
+        </div></div><span>›</span>
       </div>
     </button>
 
@@ -985,8 +1194,8 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
     </div>
 
     <div class="card mt12">
-      <div class="row between"><b>App Version</b><span class="sub">v2.8</span></div>
-      <div class="sub mt8">Rules-audit fixes, familiar casting, Moonlight Step and high-level mechanics.</div>
+      <div class="row between"><b>App Version</b><span class="sub">v2.9</span></div>
+      <div class="sub mt8">Premium v2.9 interface: native-style navigation, iconography, polished motion, Wild Shape transitions, live-value animation and the audited Grimsby rules engine.</div>
     </div>
 
     <div class="card mt12">
@@ -1003,12 +1212,22 @@ input[type=number]{width:100%;padding:14px 16px;border-radius:14px;border:1px so
 </div>
 
 <nav class="nav" id="nav">
-  <button class="active" data-nav="home">Home</button>
-  <button data-nav="Character">Character</button>
-  <button data-nav="Combat">Combat</button>
-  <button data-nav="Spells">Spells</button>
-  <button data-nav="More">More</button>
+  <button class="active" data-nav="home"><svg class="ui-icon" aria-hidden="true"><use href="#ui-home"></use></svg><span class="nav-label">Home</span></button>
+  <button data-nav="Character"><svg class="ui-icon" aria-hidden="true"><use href="#ui-character"></use></svg><span class="nav-label">Character</span></button>
+  <button data-nav="Combat"><svg class="ui-icon" aria-hidden="true"><use href="#ui-combat"></use></svg><span class="nav-label">Combat</span></button>
+  <button data-nav="Spells"><svg class="ui-icon" aria-hidden="true"><use href="#ui-spells"></use></svg><span class="nav-label">Spells</span></button>
+  <button data-nav="More"><svg class="ui-icon" aria-hidden="true"><use href="#ui-more"></use></svg><span class="nav-label">More</span></button>
 </nav>
+
+<div id="premiumTransformVeil" aria-hidden="true">
+  <div class="premium-transform-core">
+    <div class="premium-moon-ring"></div>
+    <div id="premiumTransformKicker" class="premium-transform-kicker">Wild Shape</div>
+    <div id="premiumTransformName">Brown Bear</div>
+    <div id="premiumTransformSub">Moon Druid transformation</div>
+  </div>
+</div>
+<div id="premiumToast" role="status" aria-live="polite"></div>
 
 <script>
 (()=>{
@@ -1048,6 +1267,8 @@ let battleFamiliarForm=S.battleFamiliarForm??null;
 let battleFamiliarSpellLevel=Math.max(0,Number(S.battleFamiliarSpellLevel||0));
 let battleFamiliarTempHp=Math.max(0,Number(S.battleFamiliarTempHp||0));
 let battleFamiliarStandalone=!!S.battleFamiliarStandalone;
+let lastPremiumFamiliarState=null;
+let lastPremiumPreparedCount=null;
 let adrenalineUses=S.adrenalineUses??3;
 let relentlessUsed=S.relentlessUsed??false;
 let spellFilter='all';
@@ -1810,7 +2031,7 @@ function validBackupState(s){if(!s||typeof s!=='object')return false;if(!Number.
 async function exportBackup(){
  save();
  const raw=localStorage.getItem('grimsbyState_v141')||'{}';
- const payload={app:'Grimsby Companion',schema:'grimsbyState_v141',build:'v2.8',exportedAt:new Date().toISOString(),state:JSON.parse(raw)};
+ const payload={app:'Grimsby Companion',schema:'grimsbyState_v141',build:'v2.9',exportedAt:new Date().toISOString(),state:JSON.parse(raw)};
  const text=JSON.stringify(payload,null,2);
  const filename=`Grimsby-backup-${new Date().toISOString().slice(0,10)}.json`;
  const file=new File([text],filename,{type:'application/json'});
@@ -1836,7 +2057,25 @@ function save(){
     localStorage.setItem('grimsbyState_v141',JSON.stringify({level,abilities,maxHp,levelHistory,elementalFury,featChoices,epicBoon,hp,temp,wild,form,inspiration,concentration,conditions,shield,equipment,extraLanguage,knownForms,preparedSpells,knownCantrips,slots,familiarFreeCastUsed,familiarHp,familiarHelpUses,familiarActive,familiarPocket,familiarExpiresOnLongRest,battleFamiliarActive,battleFamiliarForm,battleFamiliarSpellLevel,battleFamiliarTempHp,battleFamiliarStandalone,hitDice,wildResurgenceSlotUsed,moonlightStepUses,natureMagicianUsed,bonusSlots,formSwapAvailable,adrenalineUses,relentlessUsed,notes,sessionLog,initiativeMisc,initiativeBonus:initiativeTotal()}));
   }catch(e){}
 }
-function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.toggle('active',x.id===id)); window.scrollTo({top:0,behavior:'instant'})}
+let currentScreen='home';
+let navTransitionDirection='forward';
+function setNavDirection(dir='forward'){navTransitionDirection=dir}
+function show(id){
+ const next=document.getElementById(id);
+ if(!next)return;
+ document.querySelectorAll('.screen').forEach(x=>{
+   if(x.id!==id)x.classList.remove('active','screen-enter-forward','screen-enter-back','screen-enter-fade');
+ });
+ next.classList.add('active');
+ next.classList.remove('screen-enter-forward','screen-enter-back','screen-enter-fade');
+ if(id!==currentScreen){
+   next.classList.add(navTransitionDirection==='back'?'screen-enter-back':(navTransitionDirection==='fade'?'screen-enter-fade':'screen-enter-forward'));
+   setTimeout(()=>next.classList.remove('screen-enter-forward','screen-enter-back','screen-enter-fade'),280);
+ }
+ currentScreen=id;
+ navTransitionDirection='forward';
+ window.scrollTo({top:0,behavior:'instant'});
+}
 
 function renderEquipment(){
  const list=document.querySelector('#equipmentList');
@@ -1905,12 +2144,30 @@ function spellSourceBadges(s){
 }
 function renderSlots(){
  const wrap=document.querySelector('#slotTracker');if(!wrap)return;wrap.innerHTML='';const highest=maxSpellLevel();
- for(let spellLevel=1;spellLevel<=highest;spellLevel++){const max=slotMax(spellLevel);if(max<=0)continue;if((slots[spellLevel]??0)>max)slots[spellLevel]=max;const bonus=bonusSlotCount(spellLevel),total=slotAvailable(spellLevel);const row=document.createElement('div');row.className='row between';row.innerHTML=`<div><b>${spellLevelLabel(spellLevel)}</b><div class="sub mt8">${total} available • ${slots[spellLevel]??0} / ${max} base${bonus?` • +${bonus} created`:''}</div></div><div class="row"><button class="btn" data-slot-use="${spellLevel}" style="min-height:40px;padding:8px 12px">Use</button><button class="btn" data-slot-restore="${spellLevel}" style="min-height:40px;padding:8px 12px">Restore</button></div>`;wrap.appendChild(row);if(spellLevel<highest){const sep=document.createElement('div');sep.className='sep';wrap.appendChild(sep)}}
- wrap.querySelectorAll('[data-slot-use]').forEach(b=>b.onclick=()=>{const l=Number(b.dataset.slotUse);if(spendSlot(l)){save();renderSpells();sync()}});wrap.querySelectorAll('[data-slot-restore]').forEach(b=>b.onclick=()=>{const l=Number(b.dataset.slotRestore),max=slotMax(l);if((slots[l]??0)<max){slots[l]=(slots[l]??0)+1;save();renderSpells();sync()}})
+ for(let spellLevel=1;spellLevel<=highest;spellLevel++){
+   const max=slotMax(spellLevel);if(max<=0)continue;
+   if((slots[spellLevel]??0)>max)slots[spellLevel]=max;
+   const base=Math.max(0,Number(slots[spellLevel]||0)),bonus=bonusSlotCount(spellLevel),total=slotAvailable(spellLevel);
+   const row=document.createElement('div');
+   row.className='row between premium-slot-row'+(pendingPremiumSlotFlash===spellLevel?' premium-slot-flash':'');
+   const pips=Array.from({length:max},(_,i)=>`<span class="premium-slot-pip ${i<base?'filled':''}"></span>`).join('');
+   row.innerHTML=`<div class="premium-slot-level"><b>${spellLevelLabel(spellLevel)}</b><div class="premium-slot-pips">${pips}${bonus?`<span class="premium-slot-created">+${bonus} created</span>`:''}</div><div class="sub mt8">${total} available • ${base} / ${max} base</div></div><div class="row"><button class="btn" data-slot-use="${spellLevel}" style="min-height:40px;padding:8px 12px">Use</button><button class="btn" data-slot-restore="${spellLevel}" style="min-height:40px;padding:8px 12px">Restore</button></div>`;
+   wrap.appendChild(row);
+   if(spellLevel<highest){const sep=document.createElement('div');sep.className='sep';wrap.appendChild(sep)}
+ }
+ pendingPremiumSlotFlash=null;
+ wrap.querySelectorAll('[data-slot-use]').forEach(b=>b.onclick=()=>{
+   const l=Number(b.dataset.slotUse);const before=slotAvailable(l);
+   if(spendSlot(l)){pendingPremiumSlotFlash=l;save();sync();showPremiumToast(`${spellLevelLabel(l)} slot used • ${Math.max(0,before-1)} remaining`)}
+ });
+ wrap.querySelectorAll('[data-slot-restore]').forEach(b=>b.onclick=()=>{
+   const l=Number(b.dataset.slotRestore),max=slotMax(l);
+   if((slots[l]??0)<max){slots[l]=(slots[l]??0)+1;pendingPremiumSlotFlash=l;save();sync();showPremiumToast(`${spellLevelLabel(l)} slot restored`)}
+ });
 }
 
 function openSpellDetail(name,backTarget=null){
- if(backTarget)spellDetailBackTarget=backTarget;
+ if(backTarget)spellDetailBackTarget=backTarget;setNavDirection('forward');
  const s=druidSpells.find(x=>x.name===name);
  if(!s)return;
  selectedSpellName=name;
@@ -1943,7 +2200,11 @@ function renderSpells(){
  if(!list)return;
 
  const preparedCount=document.querySelector('#preparedCount');
- if(preparedCount) preparedCount.textContent=preparedSpells.length;
+ if(preparedCount){
+   preparedCount.textContent=preparedSpells.length;
+   if(lastPremiumPreparedCount!==null&&lastPremiumPreparedCount!==preparedSpells.length)flashState('preparedStatCard');
+ }
+ lastPremiumPreparedCount=preparedSpells.length;
  const cap=preparedCap();
  const capLabel=document.querySelector('#preparedCapLabel'); if(capLabel) capLabel.textContent=` / ${cap}`;
  const legendCap=document.querySelector('#legendPreparedCap'); if(legendCap) legendCap.textContent=cap;
@@ -1982,12 +2243,15 @@ function renderSpells(){
  list.innerHTML='';
  spells.forEach(s=>{
    const card=document.createElement('div');
-   card.className='card';
+   card.className='card spell-card';
 
    const always=isAlwaysPreparedSpell(s);
    const isKnown=s.level===0 ? (knownCantrips.includes(s.name)||always) : (preparedSpells.includes(s.name)||always);
    const canChoose=s.level===0 ? !always : !always&&!s.featOnly;
    const tags=spellSourceBadges(s);
+   if(always)card.classList.add('granted-state');
+   else if(isKnown)card.classList.add('prepared-state');
+   if(pendingPremiumSpellFlash===s.name)card.classList.add('spell-state-flash');
 
    let action='';
    if(s.level===0){
@@ -2012,6 +2276,7 @@ function renderSpells(){
    `;
    list.appendChild(card);
  });
+ pendingPremiumSpellFlash=null;
 
  list.querySelectorAll('[data-spell-open]').forEach(b=>b.onclick=()=>{
    openSpellDetail(b.dataset.spellOpen,'spells');
@@ -2019,22 +2284,24 @@ function renderSpells(){
 
  list.querySelectorAll('[data-prepare]').forEach(b=>b.onclick=()=>{
    const name=b.dataset.prepare;
-   const i=preparedSpells.indexOf(name);
-   if(i>=0)preparedSpells.splice(i,1);
+   const i=preparedSpells.indexOf(name),wasPrepared=i>=0;
+   if(wasPrepared)preparedSpells.splice(i,1);
    else if(preparedSpells.length<preparedCap())preparedSpells.push(name);
    else {alert(`Grimsby can prepare ${preparedCap()} Druid spells at level ${level}. Unprepare one first.`);return}
-   save();renderSpells();renderCombatStatus();sync();
+   pendingPremiumSpellFlash=name;save();sync();
    const ss=document.querySelector('#spellSaveStatus'); if(ss) ss.textContent='✓ Saved';
+   showPremiumToast(`${name} ${wasPrepared?'unprepared':'prepared'}`);
  });
 
  list.querySelectorAll('[data-cantrip]').forEach(b=>b.onclick=()=>{
    const name=b.dataset.cantrip;
-   const i=knownCantrips.indexOf(name);
-   if(i>=0)knownCantrips.splice(i,1);
+   const i=knownCantrips.indexOf(name),wasKnown=i>=0;
+   if(wasKnown)knownCantrips.splice(i,1);
    else if(knownCantrips.length<cantripCap())knownCantrips.push(name);
    else {alert(`Grimsby knows ${cantripCap()} selectable Druid cantrips at level ${level} with Magician. Replace one first.`);return}
-   save();renderSpells();renderCombatStatus();sync();
+   pendingPremiumSpellFlash=name;save();sync();
    const ss=document.querySelector('#spellSaveStatus'); if(ss) ss.textContent='✓ Saved';
+   showPremiumToast(`${name} ${wasKnown?'removed':'learned'}`);
  });
 
  document.querySelectorAll('[data-spell-filter]').forEach(b=>b.classList.toggle('form-active',b.dataset.spellFilter===spellFilter));
@@ -2051,6 +2318,16 @@ function renderFamiliar(){
    moveChips.innerHTML=parts.map(x=>`<span class="chip">${x}</span>`).join('');
  }
  const help=document.querySelector('#famHelpCount'),helpStatus=document.querySelector('#famHelpStatus'),helpBtn=document.querySelector('#famHelpUse'),helpCard=document.querySelector('#familiarHelpfulCard');if(helpCard)helpCard.classList.toggle('hidden',battleFamiliarActive&&battleFamiliarStandalone);if(help)help.textContent=`${familiarHelpUses} / ${pb()} uses`;if(helpStatus)helpStatus.textContent=familiarActive?'':(familiarPocket?'Raven is in the pocket dimension.':'Raven must be summoned and close enough.');if(helpBtn){helpBtn.style.display=familiarActive&&!battleFamiliarStandalone?'':'none';helpBtn.disabled=familiarHelpUses<=0;helpBtn.textContent=familiarHelpUses>0?'Use':'Spent';helpBtn.classList.toggle('accent',familiarHelpUses>0)}
+ const liveCard=document.querySelector('#familiarLiveCard');
+ const premiumFamState=battleFamiliarActive?'battle':(familiarPocket?'pocket':(familiarActive?'active':'inactive'));
+ if(liveCard){
+   liveCard.classList.remove('state-active','state-pocket','state-battle');
+   if(premiumFamState==='active')liveCard.classList.add('state-active');
+   if(premiumFamState==='pocket')liveCard.classList.add('state-pocket');
+   if(premiumFamState==='battle')liveCard.classList.add('state-battle');
+   if(lastPremiumFamiliarState!==null&&lastPremiumFamiliarState!==premiumFamState)flashState('familiarLiveCard');
+ }
+ lastPremiumFamiliarState=premiumFamState;
  const title=document.querySelector('#familiarLiveTitle'),text=document.querySelector('#familiarLiveText'),badge=document.querySelector('#familiarLiveBadge');if(battleFamiliarActive){if(title)title.textContent=battleFamiliarStandalone?`Battle Familiar • ${battleFamiliarForm}`:`Raven • Battle Familiar (${battleFamiliarForm})`;if(text)text.textContent=battleFamiliarStandalone?'Conjured by Battle Familiar; rolls its own Initiative and can attack.':`Raven is empowered by Battle Familiar and retains its Find Familiar features.${familiarExpiresOnLongRest?' Wild Companion still expires at the next Long Rest.':''}`;if(badge)badge.textContent='Battle'}else{if(title)title.textContent=familiarActive?'Raven Summoned':(familiarPocket?'Raven in Pocket Dimension':'Raven Not Summoned');if(text)text.textContent=familiarActive?`Raven is in play, rolls its own Initiative and gets its own turn.${familiarExpiresOnLongRest?' Wild Companion: disappears at the next Long Rest.':''}`:(familiarPocket?`Raven is temporarily dismissed.${familiarExpiresOnLongRest?' Wild Companion: it still disappears at the next Long Rest.':' Bring it back with a Magic Action.'}`:'Cast Find Familiar or use Wild Companion to bring Raven into play.');if(badge)badge.textContent=familiarActive?'Active':(familiarPocket?'Pocket':'Inactive')}
  const bfCard=document.querySelector('#battleFamiliarCard'),bfTitle=document.querySelector('#battleFamiliarTitle'),bfTempWrap=document.querySelector('#battleFamiliarTempWrap'),bfTempText=document.querySelector('#battleFamiliarTempText'),bfStats=document.querySelector('#battleFamiliarStats'),bfFeature=document.querySelector('#battleFamiliarFeature');if(bfCard)bfCard.classList.toggle('hidden',!battleFamiliarActive);if(battleFamiliarActive){const count=battleFamiliarAttackCount(),bonus=battleFamiliarDamageBonus(),talent=battleFamiliarTalent();if(bfTitle)bfTitle.textContent=`${battleFamiliarForm} • ${spellLevelLabel(battleFamiliarSpellLevel)}`;if(bfTempWrap)bfTempWrap.classList.toggle('hidden',battleFamiliarStandalone);if(bfTempText)bfTempText.textContent=`${battleFamiliarTempHp} / ${battleFamiliarHpMax()} remaining. At 0, Raven returns to normal.`;if(bfStats)bfStats.innerHTML=`Initiative <b>+3</b> • Talented <b>+${talent}</b> to ability checks and saves<br>Immune to <b>Charmed</b> and <b>Frightened</b><br>Multiattack: <b>${count} Rend${count===1?'':'s'}</b> • ${fmt(pb()+mod(abilities.wis))} to hit • <b>1d8 + ${bonus} Force</b> each`;if(bfFeature){
    const f=battleFamiliarForm==='Brute'
@@ -2119,6 +2396,9 @@ function renderCombat(){
  const primarySub=document.querySelector('#combatPrimarySub');
  const wildTitle=document.querySelector('#combatWildTitle');
  const wildSub=document.querySelector('#combatWildSub');
+ const primaryAction=document.querySelector('#combatPrimaryAction'),wildAction=document.querySelector('#combatWildBtn');
+ if(primaryAction)primaryAction.classList.toggle('premium-form-active',!!form);
+ if(wildAction)wildAction.classList.toggle('premium-form-active',!!form);
  if(form){
    if(subtitle) subtitle.textContent=`Grimsby • ${form}`;
    if(banner){banner.textContent=`Wild Shaped: ${form} • ${temp} Temp HP • AC ${activeAc}`;banner.classList.remove('hidden')}
@@ -2265,6 +2545,7 @@ function renderCharacterDynamic(){
 
 function sync(){
  document.querySelector('#homeHp').textContent=hp;document.querySelector('#hpCurrent').textContent=hp;document.querySelector('#beastHp').textContent=hp;
+ setPremiumMeter('homeHpMeter',hp,maxHp);setPremiumMeter('combatHpMeter',hp,maxHp);
  const homeHpMax=document.querySelector('#homeHpMax'); if(homeHpMax) homeHpMax.textContent=` / ${maxHp}`;
  const combatHpMax=document.querySelector('#combatHpMax'); if(combatHpMax) combatHpMax.textContent=` / ${maxHp}`;
  document.querySelector('#homeTemp').textContent=temp;document.querySelector('#hpTemp').textContent=temp;document.querySelector('#beastTemp').textContent=temp;
@@ -2282,7 +2563,7 @@ function sync(){
  const st=document.querySelector('#dynamicStatus');st.innerHTML='';
  const chips=[];
  if(form)chips.push(`Wild Shaped: ${form}`); if(concentration)chips.push(`Concentrating: ${concentration}`); conditions.forEach(c=>chips.push(c)); if(temp>0)chips.push(`${temp} Temp HP`);
- chips.forEach(t=>{let c=document.createElement('span');c.className='chip';c.textContent=t;st.appendChild(c)}); st.classList.toggle('show',chips.length>0);
+ chips.forEach(t=>{let c=document.createElement('span');let ico='info';if(t.startsWith('Wild Shaped:'))ico='moon';else if(t.startsWith('Concentrating:'))ico='spark';else if(t.includes('Temp HP'))ico='heart';else{ico='info';c.classList.add('condition-icon')}c.classList.add('chip','has-icon');c.innerHTML=`${iconMarkup(ico,'sm')}<span>${t}</span>`;st.appendChild(c)}); st.classList.toggle('show',chips.length>0);
  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.nav==='home'));
  const homeFam=document.querySelector('#homeFamiliarHp');
  if(homeFam) homeFam.textContent=familiarActive?`${familiarHp} / ${familiarMaxHp()} HP`:(familiarPocket?'Pocket Dimension':'Not Summoned');
@@ -2324,7 +2605,7 @@ function renderBeast(name){
  const beastAc=document.querySelector('#beastAc'); if(beastAc) beastAc.textContent=moonAc(name);
 }
 function openBeast(name=null,from=null){
- if(from) backTargets.beast=from;
+ if(from) backTargets.beast=from;setNavDirection('forward');
  const target=name||form;
  if(!target){backTargets.wild=from||'home';return show('wild')}
  renderBeast(target);show('beast');
@@ -2372,18 +2653,97 @@ document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>{
  let dest=b.dataset.back;
  const current=b.closest('.screen')?.id;
  if(current && backTargets[current]) dest=backTargets[current];
+ setNavDirection('back');
  show(dest);
  if(dest==='character') document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Character'));
  if(dest==='combat') document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Combat'));
  if(dest==='more') document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='More'));
  if(dest==='home') document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='home'));
 });
-document.querySelector('#inspirationBtn').onclick=()=>{inspiration=!inspiration;sync()};
+function nudge(id){
+ const el=document.querySelector('#'+id);
+ if(!el)return;
+ el.classList.remove('premium-emphasis');
+ void el.offsetWidth;
+ el.classList.add('premium-emphasis');
+ setTimeout(()=>el.classList.remove('premium-emphasis'),260);
+}
+function setPremiumMeter(id,current,max){
+ const el=document.querySelector('#'+id);if(!el)return;
+ const pct=max>0?Math.max(0,Math.min(100,(current/max)*100)):0;
+ el.style.width=`${pct}%`;
+ el.classList.toggle('low',pct<=30);
+ el.classList.toggle('mid',pct>30&&pct<=60);
+}
+function flashState(id){
+ const el=document.querySelector('#'+id);if(!el)return;
+ el.classList.remove('premium-state-flash');void el.offsetWidth;el.classList.add('premium-state-flash');
+ setTimeout(()=>el.classList.remove('premium-state-flash'),440);
+}
+let premiumToastTimer=null;
+function showPremiumToast(text){
+ const toast=document.querySelector('#premiumToast');if(!toast)return;
+ toast.textContent=text;toast.classList.add('show');
+ clearTimeout(premiumToastTimer);premiumToastTimer=setTimeout(()=>toast.classList.remove('show'),1800);
+}
+function playWildShapeTransition(name,ending=false){
+ const veil=document.querySelector('#premiumTransformVeil');if(!veil)return;
+ const kicker=document.querySelector('#premiumTransformKicker'),title=document.querySelector('#premiumTransformName'),sub=document.querySelector('#premiumTransformSub');
+ if(kicker)kicker.textContent=ending?'Wild Shape Ending':'Wild Shape';
+ if(title)title.textContent=ending?'Grimsby':name;
+ if(sub)sub.textContent=ending?`Returning from ${name}`:'Circle of the Moon transformation';
+ veil.classList.remove('show');void veil.offsetWidth;veil.classList.add('show');
+ setTimeout(()=>veil.classList.remove('show'),680);
+}
+let pendingPremiumSlotFlash=null;
+let pendingPremiumSpellFlash=null;
+function setupPremiumChrome(){
+ document.querySelectorAll('.screen').forEach(screen=>{
+   const first=screen.firstElementChild;
+   if(first && first.classList?.contains('row') && first.querySelector('.back'))first.classList.add('premium-detail-head');
+ });
+ document.querySelectorAll('.back').forEach(btn=>{btn.innerHTML=iconMarkup('chevron-left');btn.setAttribute('aria-label','Back')});
+}
+function iconMarkup(name,extra=''){
+ return `<svg class="ui-icon ${extra}" aria-hidden="true"><use href="#ui-${name}"></use></svg>`;
+}
+function premiumNumericValue(text){
+ const m=String(text??'').replace(/−/g,'-').match(/-?\d+(?:\.\d+)?/);
+ return m?Number(m[0]):null;
+}
+function setupPremiumValueMotion(){
+ const ids=[
+  'homeHp','homeAc','homeTemp','wildCardSub','homeFamiliarHp',
+  'hpCurrent','hpTemp','wildUses','beastHp','beastTemp','beastAc',
+  'familiarHp','familiarAc','battleFamiliarTempText','famHelpCount',
+  'combatHp','combatTemp','combatAc','combatInitiative','combatWildUses','combatWildSub',
+  'adrenalineCount','relentlessStatus','moonlightStepCount',
+  'preparedCount','moreWild','moreFamiliarCast','morePrepared','moreAdrenaline','hitDiceCount'
+ ];
+ ids.forEach(id=>{
+   const el=document.getElementById(id);if(!el)return;
+   el.classList.add('value-motion');
+   let previous=el.textContent;
+   const observer=new MutationObserver(()=>{
+     const current=el.textContent;if(current===previous)return;
+     const a=premiumNumericValue(previous),b=premiumNumericValue(current);
+     el.classList.remove('value-pop-up','value-pop-down','value-pop-neutral');
+     void el.offsetWidth;
+     el.classList.add(a!==null&&b!==null?(b>a?'value-pop-up':(b<a?'value-pop-down':'value-pop-neutral')):'value-pop-neutral');
+     previous=current;
+     setTimeout(()=>el.classList.remove('value-pop-up','value-pop-down','value-pop-neutral'),330);
+   });
+   observer.observe(el,{childList:true,subtree:true,characterData:true});
+ });
+}
+
+
+document.querySelector('#inspirationBtn').onclick=()=>{inspiration=!inspiration;nudge('inspirationBtn');sync()};
 function amt(){return Math.max(0,Number(document.querySelector('#hpAmount').value)||0)}
 document.querySelector('#minusOne').onclick=()=>{let x=document.querySelector('#hpAmount');x.value=Math.max(0,(Number(x.value)||0)-1)}
 document.querySelector('#plusOne').onclick=()=>{let x=document.querySelector('#hpAmount');x.value=(Number(x.value)||0)+1}
 document.querySelector('#clearAmount').onclick=()=>document.querySelector('#hpAmount').value='';
-document.querySelector('#damageBtn').onclick=()=>{
+document.querySelector('#damageBtn').onclick=()=>{nudge('hpCard');
  const damage=amt(); if(damage<=0)return;
  let n=damage,a=Math.min(temp,n);temp-=a;n-=a;
  const hpBefore=hp,normalDamage=n;
@@ -2408,16 +2768,17 @@ document.querySelector('#damageBtn').onclick=()=>{
  logSession(`Took ${damage} damage${a?` (${a} absorbed by Temp HP)`:''}`);
  sync();
 }
-document.querySelector('#healBtn').onclick=()=>{const n=amt();if(n<=0)return;hp=Math.min(maxHp,hp+n);if(hp>0){const i=conditions.indexOf('Unconscious');if(i>=0)conditions.splice(i,1)}logSession(`Healed ${n} HP`);sync()}
-document.querySelector('#tempBtn').onclick=()=>{temp=amt();logSession(`Temp HP set to ${temp}`);sync()}
-document.querySelector('#shortRest').onclick=()=>{wild=Math.min(maxWild,wild+1);adrenalineUses=pb();logSession('Completed a Short Rest');sync();document.querySelector('#restMsg').textContent='Short Rest complete: 1 Wild Shape use and all Adrenaline Rush uses restored.'}
-document.querySelector('#longRest').onclick=()=>{
+document.querySelector('#healBtn').onclick=()=>{nudge('hpCard');const n=amt();if(n<=0)return;hp=Math.min(maxHp,hp+n);if(hp>0){const i=conditions.indexOf('Unconscious');if(i>=0)conditions.splice(i,1)}logSession(`Healed ${n} HP`);sync()}
+document.querySelector('#tempBtn').onclick=()=>{nudge('hpCard');temp=amt();logSession(`Temp HP set to ${temp}`);sync()}
+document.querySelector('#shortRest').onclick=()=>{nudge('restCard');wild=Math.min(maxWild,wild+1);adrenalineUses=pb();logSession('Completed a Short Rest');sync();document.querySelector('#restMsg').textContent='Short Rest complete: 1 Wild Shape use and all Adrenaline Rush uses restored.'}
+document.querySelector('#longRest').onclick=()=>{nudge('restCard');
  hp=maxHp;temp=0;wild=maxWild;form=null;concentration=null;for(let i=1;i<=9;i++)slots[i]=slotMax(i);bonusSlots={};familiarFreeCastUsed=false;
  const standaloneBattle=battleFamiliarActive&&battleFamiliarStandalone;clearBattleFamiliarState();if(standaloneBattle){familiarActive=false;familiarPocket=false;familiarHp=0}
  if(familiarExpiresOnLongRest){familiarActive=false;familiarPocket=false;familiarExpiresOnLongRest=false}else if(familiarActive||familiarPocket)familiarHp=familiarMaxHp();
  familiarHelpUses=pb();hitDice=level;wildResurgenceSlotUsed=false;moonlightStepUses=moonlightStepMax();natureMagicianUsed=false;formSwapAvailable=true;adrenalineUses=pb();relentlessUsed=false;pendingConcentrationCheck=null;logSession('Completed a Long Rest');sync();document.querySelector('#restMsg').textContent='Long Rest complete: HP, Hit Dice, spell slots, Wild Shape, Moonlight Step and long-rest resources restored. Battle Familiar and Concentration ended; one Wild Shape form replacement is available.'
 }
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{const p=b.dataset.nav;
+ setNavDirection('fade');
  if(p==='home'){show('home');sync();document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='home'));return}
  if(p==='Character'){show('character');document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Character'));return}
  if(p==='Combat'){show('combat');sync();document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('active',x.dataset.nav==='Combat'));return}
@@ -2503,18 +2864,20 @@ document.querySelector('#learnForm').onclick=()=>{pendingReplace=null;renderMana
 document.querySelector('#beastActionBtn').onclick=()=>{
  if(!previewForm)return;
  if(form===previewForm){
-   const oldForm=form;form=null;previewForm=null;logSession(`Ended Wild Shape (${oldForm})`);sync();
-   const dest=backTargets.beast||'home';show(dest);
+   const oldForm=form;playWildShapeTransition(oldForm,true);form=null;previewForm=null;logSession(`Ended Wild Shape (${oldForm})`);sync();showPremiumToast(`Wild Shape ended • ${oldForm}`);
+   const dest=backTargets.beast||'home';setTimeout(()=>{setNavDirection('back');show(dest)},160);
    return;
  }
  if(wild<1)return;
  wild--;
  form=previewForm;
  temp=Math.max(temp,moonTempHp());
+ playWildShapeTransition(form,false);
  logSession(`Wild Shape → ${form}`);
  backTargets.beast=backTargets.wild||backTargets.beast||'home';
  sync();
  renderBeast(form);
+ showPremiumToast(`${form} • ${moonTempHp()} Temp HP • AC ${moonAc(form)}`);
 };
 
 document.querySelector('#combatShieldToggle').onclick=(e)=>{
@@ -2714,7 +3077,7 @@ document.querySelector('#concentrationFailed').onclick=()=>{
 };
 document.querySelector('#dismissConcentrationSave').onclick=()=>{pendingConcentrationCheck=null;renderDamageConcentration()};
 
-function completeSpellCast(s,label,slotLevel=null){if(s.conc)concentration=s.name;let extra='';if(s.name==='Find Familiar'){if(battleFamiliarActive)endBattleFamiliar('replaced by Find Familiar');familiarActive=true;familiarPocket=false;familiarExpiresOnLongRest=false;familiarHp=familiarMaxHp();extra=' • Raven summoned'}if(s.battleFamiliar){const choice=document.querySelector('#battleFamiliarChoice')?.value||'Brute';const existing=activateBattleFamiliar(slotLevel||2,choice);extra=` • ${existing?'Raven empowered':'Battle Familiar summoned'} • ${choice}`}logSession(`Cast ${s.name}${label?` • ${label}`:''}${extra}${s.conc?' • Concentration started':''}`);save();sync();renderSpellCastControls(s)}
+function completeSpellCast(s,label,slotLevel=null){if(s.conc)concentration=s.name;let extra='';if(s.name==='Find Familiar'){if(battleFamiliarActive)endBattleFamiliar('replaced by Find Familiar');familiarActive=true;familiarPocket=false;familiarExpiresOnLongRest=false;familiarHp=familiarMaxHp();extra=' • Raven summoned'}if(s.battleFamiliar){const choice=document.querySelector('#battleFamiliarChoice')?.value||'Brute';const existing=activateBattleFamiliar(slotLevel||2,choice);extra=` • ${existing?'Raven empowered':'Battle Familiar summoned'} • ${choice}`;setTimeout(()=>flashState('battleFamiliarCard'),20)}logSession(`Cast ${s.name}${label?` • ${label}`:''}${extra}${s.conc?' • Concentration started':''}`);save();sync();renderSpellCastControls(s)}
 document.querySelector('#castSpellBtn').onclick=()=>{
  const result=document.querySelector('#spellCastResult');
  const s=druidSpells.find(x=>x.name===selectedSpellName);
@@ -2734,9 +3097,10 @@ document.querySelector('#castSpellBtn').onclick=()=>{
    if(result)result.textContent=s.battleFamiliar
      ? `${s.name} cast as ${battleFamiliarForm} • ${spellLevelLabel(l)} slot spent (${before} → ${after}).`
      : `${s.name} cast • ${spellLevelLabel(l)} slot spent (${before} → ${after}).`;
+   showPremiumToast(`${s.name} cast • ${spellLevelLabel(l)} slot spent`);
  }else{
    completeSpellCast(s,'Cantrip',0);
-   if(result)result.textContent=`${s.name} cast.`;
+   if(result)result.textContent=`${s.name} cast.`;showPremiumToast(`${s.name} cast`);
  }
 };
 document.querySelector('#castRitualBtn').onclick=()=>{const s=druidSpells.find(x=>x.name===selectedSpellName);if(!s||!s.ritual||!spellPreparedOrKnown(s)||!spellAvailableInForm(s))return;if(s.conc&&concentration&&concentration!==s.name&&!confirm(`Casting ${s.name} as a Ritual will end concentration on ${concentration}. Continue?`))return;if(s.material&&!confirm(`Ritual casting does not remove Material requirements.\n\n${s.material}\n\nContinue?`))return;completeSpellCast(s,'Ritual • no spell slot')};
@@ -2790,7 +3154,7 @@ document.querySelector('#spellDetailBack').onclick=()=>{
 };
 
 document.querySelector('#spellSearch').addEventListener('input',e=>{spellSearch=e.target.value;renderSpells()});
-document.querySelectorAll('[data-spell-filter]').forEach(b=>b.onclick=()=>{spellFilter=b.dataset.spellFilter;renderSpells()});
+document.querySelectorAll('[data-spell-filter]').forEach(b=>b.onclick=()=>{spellFilter=b.dataset.spellFilter;renderSpells();showPremiumToast(`${b.textContent.trim()} spells`)});
 document.querySelector('#freeFamiliarCast').onclick=()=>{
  if(familiarFreeCastUsed||form)return;
  familiarFreeCastUsed=true;
@@ -2807,12 +3171,16 @@ maxWild=druidProgression[level].wild;
 wild=Math.min(wild,maxWild);if(battleFamiliarActive&&battleFamiliarStandalone){familiarActive=true;familiarPocket=false}familiarHp=Math.min(familiarHp,familiarCurrentMaxHp());battleFamiliarTempHp=Math.min(battleFamiliarTempHp,battleFamiliarHpMax());if(familiarHp<=0){familiarActive=false;familiarPocket=false;familiarExpiresOnLongRest=false;clearBattleFamiliarState()}familiarHelpUses=Math.min(familiarHelpUses,pb());adrenalineUses=Math.min(adrenalineUses,pb());moonlightStepUses=moonlightStepStateSaved?Math.min(Math.max(0,Number(moonlightStepUses)||0),moonlightStepMax()):moonlightStepMax();if(level<20){natureMagicianUsed=false;bonusSlots={}}for(let i=1;i<=9;i++){if(slots[i]===undefined)slots[i]=slotMax(i);slots[i]=Math.min(Number(slots[i]||0),slotMax(i));bonusSlots[i]=Math.max(0,Number(bonusSlots[i]||0))}
 preparedSpells=preparedSpells.filter(n=>druidSpells.some(s=>s.name===n));knownCantrips=knownCantrips.filter(n=>druidSpells.some(s=>s.name===n&&s.level===0));
 sync();
+setupPremiumChrome();
+setupPremiumValueMotion();
 })();
 </script>
 
 <script>
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(console.warn));
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(console.warn);
+  });
 }
 </script>
 </body>

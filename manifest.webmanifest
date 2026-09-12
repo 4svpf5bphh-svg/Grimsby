@@ -1,10 +1,12 @@
 {
   "name": "Grimsby Companion",
   "short_name": "Grimsby",
+  "description": "Grimsby's D&D companion character manager.",
   "start_url": "./",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#f6f7f8",
-  "theme_color": "#f6f7f8",
+  "background_color": "#f4f6f8",
+  "theme_color": "#f4f6f8",
   "icons": [
     {
       "src": "icon-192.png",
